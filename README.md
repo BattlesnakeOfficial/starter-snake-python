@@ -1,77 +1,62 @@
 ## battlesnake-python
 
-A simple [BattleSnake AI](http://battlesnake.io) written in Python.
+A simple [BattleSnake AI](http://battlesnake.io) written in Python. Available live at [battlesnake-python.herokuapp.com](http://battlesnake-python.herokuapp.com).
 
-Available at [http://battlesnake-python.herokuapp.com](http://battlesnake-python.herokuapp.com).
+To get started you'll need a working Python 2.7.6+ development environment and should be familiar with [deploying Python apps to Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#introduction).
 
-To get started, you'll need:
-  1. TODO
+If you don't have a Python environment setup, we suggest [starting here](http://hackercodex.com/guide/python-development-environment-on-mac-osx/). You'll need [pip](https://pip.pypa.io/en/latest/installing.html) and [virtualenv](https://virtualenv.pypa.io/en/latest/) for dependency management. We also suggest using [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/).
+
+This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/index.html) for route management and response building, and the [gunicorn web server](http://gunicorn.org/) for running bottle on Heroku.
+
+Dependencies are listed in [requirements.txt](requirements.txt).
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-
-
-
-
-
-
-
-
-
 ### Running the AI locally
 
-1) Fork and clone this repo.
+Fork and clone this repo:
 ```
-cd $GOPATH/github.com/sendwithus/battlesnake-go
-git clone git@github.com:sendwithus/battlesnake-go.git
-cd battlesnake-go
-```
-
-2) Load dependencies.
-```
-godep restore
+> git clone git@github.com:sendwithus/battlesnake-python.git
+> cd battlesnake-python
 ```
 
-3) Compile the battlesnake-go server.
+Create new virtualenv (using virtualenvwrapper) and install dependencies:
 ```
-go build
-```
-This will create a `battlesnake-go` executable.
-
-4) Run the server.
-```
-./battlesnake-go
+> mkvirtualenv battlesnake-python
+> workon battlesnake-python
+> pip install -r requirements.txt
 ```
 
-5) Test the client in your browser: [http://127.0.0.1:9000](http://127.0.0.1:9000)
+Run the server locally:
+```
+> ./run
+Bottle v0.12.8 server starting up (using WSGIRefServer())...
+Listening on http://localhost:8080/
+Hit Ctrl-C to quit.
+```
 
+Test client in your browser: [http://localhost:8080](http://localhost:8080)
 
 ### Deploying to Heroku
 
-1) Save godep dependencies:
+Create a new Heroku app:
 ```
-godep save
-git add .
-git commit -m "save godependencies"
+heroku create [APP_NAME]
 ```
 
-2) Create a new Go Heroku app using Go buildpack.
-```
-heroku create [APP_NAME] --buildpack https://github.com/kr/heroku-buildpack-go
-```
-
-3) Push code to Heroku servers.
+Push code to Heroku servers:
 ```
 git push heroku master
 ```
 
-4) Open Heroku app in browser.
+Open Heroku app in browser.
 ```
 heroku open
 ```
-Or go directly via http://APP_NAME.herokuapp.com
 
-5) View/stream server logs.
+Or go directly to: [http://APP_NAME.herokuapp.com](http://APP_NAME.herokuapp.com)
+
+You can also view liveserver logs with the heroku logs command:
 ```
 heroku logs --tail
 ```
