@@ -24,6 +24,8 @@ def index():
 def start():
     data = bottle.request.json
 
+    # TODO: Do things with data
+
     return json.dumps({
         'taunt': 'battlesnake-python!'
     })
@@ -32,6 +34,8 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
+
+    # TODO: Do things with data
 
     return json.dumps({
         'move': 'north',
@@ -43,8 +47,10 @@ def move():
 def end():
     data = bottle.request.json
 
+    # TODO: Do things with data
+
     return json.dumps({
-        'taunt': 'battlesnake-python out!'
+        'taunt': 'battlesnake-python!'
     })
 
 
