@@ -1,5 +1,4 @@
 import bottle
-import json
 
 
 @bottle.route('/static/<path:path>')
@@ -14,10 +13,10 @@ def index():
         bottle.request.urlparts.netloc
     )
 
-    return json.dumps({
+    return {
         'color': '#00ff00',
         'head': head_url
-    })
+    }
 
 
 @bottle.post('/start')
@@ -26,9 +25,9 @@ def start():
 
     # TODO: Do things with data
 
-    return json.dumps({
+    return {
         'taunt': 'battlesnake-python!'
-    })
+    }
 
 
 @bottle.post('/move')
@@ -37,10 +36,10 @@ def move():
 
     # TODO: Do things with data
 
-    return json.dumps({
+    return {
         'move': 'north',
         'taunt': 'battlesnake-python!'
-    })
+    }
 
 
 @bottle.post('/end')
@@ -49,9 +48,9 @@ def end():
 
     # TODO: Do things with data
 
-    return json.dumps({
+    return {
         'taunt': 'battlesnake-python!'
-    })
+    }
 
 
 # Expose WSGI app (so gunicorn can find it)
