@@ -60,4 +60,4 @@ heroku logs --tail
 
 ## Questions?
 
-[Email](mailto:battlesnake@sendwithus.com), [Twitter](http://twitter.com/send_with_us)
+Email [battlesnake@sendwithus.com](mailto:battlesnake@sendwithus.com), or tweet [@send_with_us](http://twitter.com/send_with_us).
