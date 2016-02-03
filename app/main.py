@@ -2,12 +2,21 @@ import bottle
 import json
 
 
+@bottle.route('/static/<path:path>')
+def static(path):
+    return bottle.static_file(path, root='static/')
+
+
 @bottle.get('/')
 def index():
+    head_url = '%s://%s/static/head.png' % (
+        bottle.request.urlparts.scheme,
+        bottle.request.urlparts.netloc
+    )
+
     return json.dumps({
-        'name': 'battlesnake-python',
         'color': '#00ff00',
-        'head': 'http://battlesnake-python.herokuapp.com'
+        'head': head_url
     })
 
 
@@ -25,7 +34,7 @@ def move():
     data = bottle.request.json
 
     return json.dumps({
-        'move': 'west',
+        'move': 'north',
         'taunt': 'battlesnake-python!'
     })
 
@@ -39,5 +48,7 @@ def end():
     })
 
 
-# Expose WSGI app
+# Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
+if __name__ == '__main__':
+    bottle.run(application, host='127.0.0.1', port=8080)
