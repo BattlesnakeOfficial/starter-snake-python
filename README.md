@@ -2,17 +2,19 @@
 
 A simple [BattleSnake AI](http://battlesnake.io) written in Python.
 
-To get started you'll need a working Python 2.7 development environment and should be familiar with [deploying Python apps to Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#introduction). If you don't have a Python environment setup, we suggest [starting here](http://hackercodex.com/guide/python-development-environment-on-mac-osx/). You'll also need [pip](https://pip.pypa.io/en/latest/installing.html) to install Python dependencies.
+You will need:
+* a working Python 2.7 development environment ([getting started guide](http://hackercodex.com/guide/python-development-environment-on-mac-osx/)).
+* experience [deploying Python apps to Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#introduction)
+* 
+* [pip](https://pip.pypa.io/en/latest/installing.html) to install Python dependencies.
 
-This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/index.html) to serve requests and the [gunicorn web server](http://gunicorn.org/) for running bottle on Heroku.
-
-Dependencies are listed in [requirements.txt](requirements.txt).
+This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/index.html) to serve requests and the [gunicorn web server](http://gunicorn.org/) for running bottle on Heroku. Dependencies are listed in [requirements.txt](requirements.txt).
 
 
 ##### DOES THIS WORK STILL??
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-### Running the Snake Locally
+## Running the Snake Locally
 
 1) [Fork this repo](#fork-destination-box).
 
@@ -33,7 +35,7 @@ python app/main.py
 
 5) Test client in your browser: [http://localhost:8080](http://localhost:8080).
 
-### Deploying to Heroku
+## Deploying to Heroku
 
 1) Create a new Heroku app:
 ```
@@ -56,6 +58,6 @@ or visit [http://APP_NAME.herokuapp.com](http://APP_NAME.herokuapp.com).
 heroku logs --tail
 ```
 
-### Questions?
+## Questions?
 
 [Email](mailto:battlesnake@sendwithus.com), [Twitter](http://twitter.com/send_with_us)
