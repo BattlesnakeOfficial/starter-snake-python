@@ -14,7 +14,7 @@ This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/inde
 
 ## Running the Snake Locally
 
-1) [Fork this repo](#fork-destination-box).
+1) [Fork this repo](https://github.com/sendwithus/battlesnake-python/fork).
 
 2) Clone repo to your development environment:
 ```
