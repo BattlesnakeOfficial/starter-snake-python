@@ -1,4 +1,3 @@
-import pprint
 import bottle
 import os
 import random
