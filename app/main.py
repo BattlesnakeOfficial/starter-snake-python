@@ -3,6 +3,12 @@ import os
 import random
 
 
+
+@bottle.route('/')
+def static():
+    return "the server is running"
+
+
 @bottle.route('/static/<path:path>')
 def static(path):
     return bottle.static_file(path, root='static/')
@@ -11,9 +17,10 @@ def static(path):
 @bottle.post('/start')
 def start():
     data = bottle.request.json
-    game_id = data['game_id']
-    board_width = data['width']
-    board_height = data['height']
+    print data
+    game_id = data.get('game_id')
+    board_width = data.get('width')
+    board_height = data.get('height')
 
     head_url = '%s://%s/static/head.png' % (
         bottle.request.urlparts.scheme,
