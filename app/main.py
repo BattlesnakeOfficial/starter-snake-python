@@ -17,7 +17,6 @@ def static(path):
 @bottle.post('/start')
 def start():
     data = bottle.request.json
-    print data
     game_id = data.get('game_id')
     board_width = data.get('width')
     board_height = data.get('height')
@@ -42,10 +41,12 @@ def move():
     data = bottle.request.json
 
     # TODO: Do things with data
+    
     directions = ['up', 'down', 'left', 'right']
-
+    direction = random.choice(directions)
+    print direction
     return {
-        'move': random.choice(directions),
+        'move': direction,
         'taunt': 'battlesnake-python!'
     }
 
