@@ -2,6 +2,7 @@ import bottle
 import os
 import random
 
+from api import *
 
 
 @bottle.route('/')
@@ -17,9 +18,7 @@ def static(path):
 @bottle.post('/start')
 def start():
     data = bottle.request.json
-    game_id = data.get('game_id')
-    board_width = data.get('width')
-    board_height = data.get('height')
+    req = SnakeRequest(data)
 
     head_url = '%s://%s/static/head.png' % (
         bottle.request.urlparts.scheme,
@@ -28,26 +27,28 @@ def start():
 
     # TODO: Do things with data
 
-    return {
-        'color': '#00FF00',
-        'taunt': '{} ({}x{})'.format(game_id, board_width, board_height),
-        'head_url': head_url
-    }
+    return StartResponse("#00ff00")
 
 
 @bottle.post('/move')
 def move():
     data = bottle.request.json
+    req = SnakeRequest(data)
 
     # TODO: Do things with data
     
     directions = ['up', 'down', 'left', 'right']
     direction = random.choice(directions)
     print direction
-    return {
-        'move': direction,
-        'taunt': 'battlesnake-python!'
-    }
+    return MoveResponse(direction)
+
+
+@bottle.post('/end')
+def end():
+    data = bottle.request.json
+    req = SnakeRequest(data)
+
+    # TODO: Do things with data
 
 
 # Expose WSGI app (so gunicorn can find it)
