@@ -18,7 +18,6 @@ def static(path):
 @bottle.post('/start')
 def start():
     data = bottle.request.json
-    req = SnakeRequest(data)
 
     head_url = '%s://%s/static/head.png' % (
         bottle.request.urlparts.scheme,
@@ -27,28 +26,30 @@ def start():
 
     # TODO: Do things with data
 
+    print "Starting game %s" % data["game"]["id"]
     return StartResponse("#00ff00")
 
 
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-    req = SnakeRequest(data)
 
     # TODO: Do things with data
     
     directions = ['up', 'down', 'left', 'right']
     direction = random.choice(directions)
-    print direction
+
+    print "Moving %s" % direction
     return MoveResponse(direction)
 
 
 @bottle.post('/end')
 def end():
     data = bottle.request.json
-    req = SnakeRequest(data)
 
     # TODO: Do things with data
+
+    print "Game %s ended" % data["game"]["id"]
 
 
 # Expose WSGI app (so gunicorn can find it)
@@ -59,4 +60,4 @@ if __name__ == '__main__':
         application,
         host=os.getenv('IP', '0.0.0.0'),
         port=os.getenv('PORT', '8080'),
-        debug = True)
+        debug=True)
