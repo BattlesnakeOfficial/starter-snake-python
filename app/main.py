@@ -42,7 +42,7 @@ def move():
 def end():
     data = bottle.request.json
 
-    # TODO: Any cleanup that needs to be done.
+    # TODO: Any cleanup that needs to be done for this game based on the data
     print json.dumps(data)
 
 
