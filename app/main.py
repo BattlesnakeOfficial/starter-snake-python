@@ -35,7 +35,6 @@ def move():
     directions = ['up', 'down', 'left', 'right']
     direction = random.choice(directions)
 
-    print "Moving %s" % direction
     return MoveResponse(direction)
 
 
@@ -43,10 +42,9 @@ def move():
 def end():
     data = bottle.request.json
 
-    # TODO: Do things with data
+    # TODO: Any cleanup that needs to be done.
     print json.dumps(data)
 
-    print "Game ended"
 
 @bottle.post('/ping')
 def ping():
