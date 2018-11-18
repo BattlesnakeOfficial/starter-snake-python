@@ -19,14 +19,9 @@ def static(path):
 def start():
     data = bottle.request.json
 
-    head_url = '%s://%s/static/head.png' % (
-        bottle.request.urlparts.scheme,
-        bottle.request.urlparts.netloc
-    )
-
     # TODO: Do things with data
+    print(json.dumps(data))
 
-    print "Starting game %s" % data["game"]["id"]
     return StartResponse("#00ff00")
 
 
@@ -35,11 +30,11 @@ def move():
     data = bottle.request.json
 
     # TODO: Do things with data
+    print(json.dumps(data))
     
     directions = ['up', 'down', 'left', 'right']
     direction = random.choice(directions)
 
-    print "Moving %s" % direction
     return MoveResponse(direction)
 
 
@@ -47,9 +42,13 @@ def move():
 def end():
     data = bottle.request.json
 
-    # TODO: Do things with data
+    # TODO: Any cleanup that needs to be done for this game based on the data
+    print json.dumps(data)
 
-    print "Game %s ended" % data["game"]["id"]
+
+@bottle.post('/ping')
+def ping():
+    return "Alive"
 
 
 # Expose WSGI app (so gunicorn can find it)
