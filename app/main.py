@@ -20,7 +20,7 @@ def start():
     data = bottle.request.json
 
     # TODO: Do things with data
-    print json.dumps(data)
+    print(json.dumps(data))
 
     return StartResponse("#00ff00")
 
