@@ -3,7 +3,12 @@ import os
 import random
 import bottle
 
+from bottle import template
 from api import ping_response, start_response, move_response, end_response
+
+@bottle.route('/')
+def index():
+    return template('index')
 
 @bottle.route('/static/<path:path>')
 def static(path):
