@@ -3,12 +3,20 @@ import os
 import random
 import bottle
 
-from bottle import template
 from api import ping_response, start_response, move_response, end_response
 
 @bottle.route('/')
 def index():
-    return template('index')
+    return """
+    <h1>Starter Snake Python</h1>
+    <main>
+        <h2>Your snake is online!</h2>
+        <p>
+        Battlesnake documentation can be found at
+        <a href="https://github.com/battlesnakeio/docs">https://github.com/battlesnakeio/docs</a>.
+        </p>
+    </main>
+    """
 
 @bottle.route('/static/<path:path>')
 def static(path):
