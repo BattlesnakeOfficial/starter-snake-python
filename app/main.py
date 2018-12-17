@@ -30,7 +30,7 @@ def start():
     """
     TODO: If you intend to have a stateful snake AI,
             initialize your snake state here using the
-            requests data if necessary.
+            request's data if necessary.
     """
     print(json.dumps(data))
 
@@ -57,11 +57,13 @@ def move():
 
 @bottle.post('/end')
 def end():
+    data = bottle.request.json
 
     """
     TODO: If your snake AI was stateful,
         clean up any stateful objects here.
     """
+    print(json.dumps(data))
 
     return end_response()
 
