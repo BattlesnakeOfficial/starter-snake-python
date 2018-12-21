@@ -9,7 +9,7 @@ from api import ping_response, start_response, move_response, end_response
 def index():
     return '''
     Battlesnake documentation can be found at
-    <a href="https://battlesnake.io/docs">https://battlesnake.io/docs</a>.
+       <a href="https://docs.battlesnake.io">https://docs.battlesnake.io</a>.
     '''
 
 @bottle.route('/static/<path:path>')
