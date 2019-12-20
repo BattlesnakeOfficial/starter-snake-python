@@ -5,12 +5,14 @@ import bottle
 
 from api import ping_response, start_response, move_response, end_response
 
+
 @bottle.route('/')
 def index():
     return '''
     Battlesnake documentation can be found at
-       <a href="https://docs.battlesnake.io">https://docs.battlesnake.io</a>.
+       <a href="https://docs.battlesnake.com">https://docs.battlesnake.com</a>.
     '''
+
 
 @bottle.route('/static/<path:path>')
 def static(path):
@@ -22,6 +24,7 @@ def static(path):
     """
     return bottle.static_file(path, root='static/')
 
+
 @bottle.post('/ping')
 def ping():
     """
@@ -29,6 +32,7 @@ def ping():
     such as Heroku, from sleeping the application instance.
     """
     return ping_response()
+
 
 @bottle.post('/start')
 def start():
@@ -73,6 +77,7 @@ def end():
     print(json.dumps(data))
 
     return end_response()
+
 
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
