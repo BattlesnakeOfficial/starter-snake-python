@@ -4,7 +4,7 @@ import random
 import bottle
 from cheroot import wsgi
 
-from api import ping_response, start_response, move_response, end_response
+from .api import ping_response, start_response, move_response, end_response
 
 
 @bottle.route('/')
@@ -90,10 +90,13 @@ class CherryPyServer(bottle.ServerAdapter):
             server.stop()
 
 
-if __name__ == '__main__':
+def main():
     bottle.run(
         host=os.getenv('IP', '0.0.0.0'),
         port=os.getenv('PORT', '8080'),
         debug=os.getenv('DEBUG', True),
         server=CherryPyServer
     )
+
+if __name__ == '__main__':
+    main()
