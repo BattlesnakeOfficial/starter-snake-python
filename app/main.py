@@ -131,8 +131,8 @@ def boardToArray(dataDump):
 def getNearestFood(datadump):
     food_array = []
     distance_array = []
-    snake_x = datadump["you"][0]['x']
-    snake_y = datadump["you"][0]['y']
+    snake_x = datadump["you"]["body"][0]['x']
+    snake_y = datadump["you"]["body"][0]['y']
     for z in datadump["board"]["food"]:
         x = z['x']
         y = z['y']
