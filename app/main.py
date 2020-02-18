@@ -53,7 +53,9 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-
+    #Converts data to be parsable
+    converted_data = json.loads(json.dumps(data))
+    game_id = converted_data["game"]["id"]
     """
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
