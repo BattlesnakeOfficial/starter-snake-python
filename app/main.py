@@ -83,7 +83,6 @@ def end():
 class CherryPyServer(bottle.ServerAdapter):
     def run(self, handler):
         server = wsgi.Server((self.host, self.port), handler)
-        
         try:
             server.start()
         finally:

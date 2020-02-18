@@ -31,7 +31,7 @@ pip install -r requirements.txt
 
 4) Run local server:
 ```
-python app/main.py
+python run.py
 ```
 
 5) Test your snake by sending a curl to the running snake
