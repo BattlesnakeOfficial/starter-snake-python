@@ -56,6 +56,14 @@ def move():
     #Converts data to be parsable
     converted_data = json.loads(json.dumps(data))
     game_id = converted_data["game"]["id"]
+
+    board = boardToArray(converted_data)
+    for x in board:
+        for y in x:
+            print(str(y) + " "),
+
+        print()
+
     """
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
@@ -80,6 +88,43 @@ def end():
 
     return end_response()
 
+
+def boardToArray(dataDump):
+    board_width = dataDump["board"]["width"]
+    board_height = dataDump["board"]["height"]
+    board = [[10 for x in range(board_width)] for y in range(board_height)] 
+    #label spaces as food
+    for z in dataDump["board"]["food"]:
+        x = z['x']
+        y = z['y']
+        board[y][x] = 'F'
+    #finding your body
+    me=dataDump["you"]["id"]
+    for z in dataDump["you"]["body"]:
+        
+        if (z==dataDump["you"]["body"][0]):
+            x = z['x']
+            y = z['y']
+            board[y][x] = 'H'
+            headPosition=z
+        else:
+            x = z['x']
+            y = z['y']
+            board[y][x] = 'S'
+    #to find other snakes
+    for z in dataDump["board"]["snakes"]:
+        name = z["id"]
+        for a in z["body"]:
+            if (name!=me):
+                if (a == z["body"][0]):
+                    x = a['x']
+                    y = a['y']
+                    board[y][x] = 'E'
+                else:
+                    x = a['x']
+                    y = a['y']
+                    board[y][x]='S'
+    return board
 
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
