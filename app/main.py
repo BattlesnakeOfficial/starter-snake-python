@@ -54,7 +54,7 @@ def start():
 @bottle.post('/move')
 def move():
     data = bottle.request.json
-    #Converts data to be parsable
+    # Converts data to be parsable
     converted_data = json.loads(json.dumps(data))
     game_id = converted_data["game"]["id"]
 
@@ -93,30 +93,30 @@ def end():
 def boardToArray(dataDump):
     board_width = dataDump["board"]["width"]
     board_height = dataDump["board"]["height"]
-    board = [[10 for x in range(board_width)] for y in range(board_height)] 
-    #label spaces as food
+    board = [[10 for x in range(board_width)] for y in range(board_height)]
+    # label spaces as food
     for z in dataDump["board"]["food"]:
         x = z['x']
         y = z['y']
         board[y][x] = 'F'
-    #finding your body
-    me=dataDump["you"]["id"]
+    # finding your body
+    me = dataDump["you"]["id"]
     for z in dataDump["you"]["body"]:
-        
-        if (z==dataDump["you"]["body"][0]):
+
+        if (z == dataDump["you"]["body"][0]):
             x = z['x']
             y = z['y']
             board[y][x] = 'H'
-            headPosition=z
+            headPosition = z
         else:
             x = z['x']
             y = z['y']
             board[y][x] = 'S'
-    #to find other snakes
+    # to find other snakes
     for z in dataDump["board"]["snakes"]:
         name = z["id"]
         for a in z["body"]:
-            if (name!=me):
+            if (name != me):
                 if (a == z["body"][0]):
                     x = a['x']
                     y = a['y']
@@ -124,7 +124,7 @@ def boardToArray(dataDump):
                 else:
                     x = a['x']
                     y = a['y']
-                    board[y][x]='S'
+                    board[y][x] = 'S'
     return board
 
 
@@ -137,11 +137,11 @@ def getNearestFood(datadump):
         x = z['x']
         y = z['y']
         food_array.append([x, y])
-    
+
     for i in food_array:
-        move_distance = (abs((snake_x) - i[0])) + (abs((snake_y) - i[1])) 
+        move_distance = (abs((snake_x) - i[0])) + (abs((snake_y) - i[1]))
         distance_array.append(move_distance)
-    
+
     index_of_smallest = distance_array.index(min(distance_array))
     print(food_array[index_of_smallest])
     return food_array[index_of_smallest]
