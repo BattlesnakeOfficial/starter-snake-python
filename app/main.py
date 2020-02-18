@@ -2,6 +2,7 @@ import json
 import os
 import random
 import bottle
+from cheroot import wsgi
 
 from api import ping_response, start_response, move_response, end_response
 
@@ -79,13 +80,20 @@ def end():
     return end_response()
 
 
-# Expose WSGI app (so gunicorn can find it)
-application = bottle.default_app()
+class CherryPyServer(bottle.ServerAdapter):
+    def run(self, handler):
+        server = wsgi.Server((self.host, self.port), handler)
+        
+        try:
+            server.start()
+        finally:
+            server.stop()
+
 
 if __name__ == '__main__':
     bottle.run(
-        application,
         host=os.getenv('IP', '0.0.0.0'),
         port=os.getenv('PORT', '8080'),
-        debug=os.getenv('DEBUG', True)
+        debug=os.getenv('DEBUG', True),
+        server=CherryPyServer
     )
