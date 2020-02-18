@@ -92,7 +92,7 @@ def end():
 def boardToArray(dataDump):
     board_width = dataDump["board"]["width"]
     board_height = dataDump["board"]["height"]
-    board = [[10 for x in range(board_width)] for y in range(board_height)] 
+    board = [[0 for x in range(board_width)] for y in range(board_height)] 
     #label spaces as food
     for z in dataDump["board"]["food"]:
         x = z['x']
