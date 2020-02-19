@@ -10,7 +10,7 @@ This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/inde
 
 ## Prerequisites
 
-- a working Python 3.8 development environment ([getting started guide](http://hackercodex.com/guide/python-development-environment-on-mac-osx/))
+- a working Python 2.7 development environment ([getting started guide](http://hackercodex.com/guide/python-development-environment-on-mac-osx/))
 - [pip](https://pip.pypa.io/en/latest/installing.html) to install Python dependencies
 - experience [deploying Python apps to Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#introduction)
 
@@ -72,4 +72,4 @@ or visit [http://APP_NAME.herokuapp.com](http://APP_NAME.herokuapp.com).
 
 ## Questions?
 
-Email [hello@battlesnake.com](mailto:hello@battlesnake.com), or tweet [@battlesnakeio](http://twitter.com/BattlesnakeOfficial).
+Email [hello@battlesnake.com](mailto:hello@battlesnake.com), or tweet [@battlesnakeio](http://twitter.com/battlesnakeio).
