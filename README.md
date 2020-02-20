@@ -33,7 +33,7 @@ This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/inde
 4. Run local server:
 
     ```shell
-    python app/main.py
+    python run.py
     ```
 
 5. Test your snake by sending a curl to the running snake
