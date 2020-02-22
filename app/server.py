@@ -1,9 +1,9 @@
 import json
 import os
 import random
-import bottle
 
-from api import ping_response, start_response, move_response, end_response
+import bottle
+from bottle import HTTPResponse
 
 
 @bottle.route("/")
@@ -14,55 +14,58 @@ def index():
 @bottle.post("/ping")
 def ping():
     """
-    A keep-alive endpoint used to prevent cloud application platforms,
-    such as Heroku, from sleeping the application instance.
+    Used by the Battlesnake Engine to make sure your snake is still working.
     """
-    return ping_response()
+    return HTTPResponse(status=200)
 
 
 @bottle.post("/start")
 def start():
+    """
+    Called every time a new Battlesnake game starts and your snake is in it.
+    Your response will control how your snake is displayed on the board.
+    """
     data = bottle.request.json
+    print("START:", json.dumps(data))
 
-    """
-    TODO: If you intend to have a stateful Battlesnake,
-    initialize your snake state here using the
-    request's data if necessary.
-    """
-    print(json.dumps(data))
-
-    color = "#00FF00"
-
-    return start_response(color)
+    response = {"color": "#00FF00", "headType": "regular", "tailType": "regular"}
+    return HTTPResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        body=json.dumps(response),
+    )
 
 
 @bottle.post("/move")
 def move():
+    """
+    Called when the Battlesnake Engine needs to know your next move.
+    The data parameter will contain information about the board.
+    Your response must include your move of up, down, left, or right.
+    """
     data = bottle.request.json
+    print("MOVE:", json.dumps(data))
 
-    """
-    TODO: Using the data from the endpoint request object, your
-    Battlesnake must choose a direction to move in.
-    """
-    print(json.dumps(data))
-
+    # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
-    direction = random.choice(directions)
+    move = random.choice(directions)
 
-    return move_response(direction)
+    response = {"move": move}
+    return HTTPResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        body=json.dumps(response),
+    )
 
 
 @bottle.post("/end")
 def end():
+    """
+    Called every time a game with your snake in it ends.
+    """
     data = bottle.request.json
-
-    """
-    TODO: If your Battlesnake is stateful,
-    clean up any stateful objects here.
-    """
-    print(json.dumps(data))
-
-    return end_response()
+    print("END:", json.dumps(data))
+    return HTTPResponse(status=200)
 
 
 def main():
