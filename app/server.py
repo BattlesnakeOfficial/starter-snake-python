@@ -25,9 +25,9 @@ def start():
     data = bottle.request.json
 
     """
-    TODO: If you intend to have a stateful snake AI,
-            initialize your snake state here using the
-            request's data if necessary.
+    TODO: If you intend to have a stateful Battlesnake,
+    initialize your snake state here using the
+    request's data if necessary.
     """
     print(json.dumps(data))
 
@@ -42,7 +42,7 @@ def move():
 
     """
     TODO: Using the data from the endpoint request object, your
-            snake AI must choose a direction to move in.
+    Battlesnake must choose a direction to move in.
     """
     print(json.dumps(data))
 
@@ -57,8 +57,8 @@ def end():
     data = bottle.request.json
 
     """
-    TODO: If your snake AI was stateful,
-        clean up any stateful objects here.
+    TODO: If your Battlesnake is stateful,
+    clean up any stateful objects here.
     """
     print(json.dumps(data))
 
