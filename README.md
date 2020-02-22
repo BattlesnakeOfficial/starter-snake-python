@@ -38,10 +38,10 @@ This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/inde
     python app/server.py
     ```
 
-5. Test your snake by open the index page in your browser
+5. Test your snake by opening your snake server in your browser
 
     ```shell
-    http://localhost:8080/
+    open http://127.0.0.1:8080/
     ```
 
 ## Deploying to Heroku
