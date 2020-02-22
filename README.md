@@ -1,6 +1,6 @@
 # starter-snake-python
 
-A simple [Battlesnake AI](http://play.battlesnake.com) written in Python.
+A simple [Battlesnake](http://play.battlesnake.com) written in Python.
 
 Visit [https://github.com/BattlesnakeOfficial/community/blob/master/starter-snakes.md](https://github.com/BattlesnakeOfficial/community/blob/master/starter-snakes.md) for API documentation and instructions for running your AI.
 
@@ -10,9 +10,11 @@ This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/inde
 
 ## Prerequisites
 
-- a working Python 2.7 development environment ([getting started guide](http://hackercodex.com/guide/python-development-environment-on-mac-osx/))
+- A working [Python 3.7](https://www.python.org/downloads/) development environment
+  - [MacOS](http://hackercodex.com/guide/python-development-environment-on-mac-osx/)
+  - [Windows](https://docs.battlesnake.com/tutorials/python)
 - [pip](https://pip.pypa.io/en/latest/installing.html) to install Python dependencies
-- experience [deploying Python apps to Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#introduction)
+- Experience [deploying Python apps to Heroku](https://devcenter.heroku.com/articles/getting-started-with-python#introduction)
 
 ## Running the Snake Locally
 
@@ -33,13 +35,13 @@ This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/inde
 4. Run local server:
 
     ```shell
-    python app/main.py
+    python app/server.py
     ```
 
-5. Test your snake by sending a curl to the running snake
+5. Test your snake by opening your snake server in your browser
 
     ```shell
-    curl -XPOST -H 'Content-Type: application/json' -d '{ "hello": "world"}' http://localhost:8080/start
+    open http://127.0.0.1:8080/
     ```
 
 ## Deploying to Heroku
