@@ -1,0 +1,367 @@
+Metadata-Version: 2.1
+Name: gevent
+Version: 1.4.0
+Summary: Coroutine-based network library
+Home-page: http://www.gevent.org/
+Author: Denis Bilenko
+Author-email: denis.bilenko@gmail.com
+Maintainer: Jason Madden
+Maintainer-email: jason@nextthought.com
+License: MIT
+Project-URL: Bug Tracker, https://github.com/gevent/gevent/issues
+Project-URL: Source Code, https://github.com/gevent/gevent/
+Project-URL: Documentation, http://www.gevent.org
+Keywords: greenlet coroutine cooperative multitasking light threads monkey
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Topic :: Internet
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Intended Audience :: Developers
+Classifier: Development Status :: 4 - Beta
+Requires-Python: >=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*
+Description-Content-Type: text/x-rst
+Requires-Dist: greenlet (>=0.4.14) ; platform_python_implementation == "CPython"
+Requires-Dist: cffi (>=1.11.5) ; sys_platform == "win32" and platform_python_implementation == "CPython"
+Provides-Extra: dnspython
+Requires-Dist: dnspython ; extra == 'dnspython'
+Requires-Dist: idna ; extra == 'dnspython'
+Provides-Extra: doc
+Requires-Dist: repoze.sphinx.autointerface ; extra == 'doc'
+Provides-Extra: events
+Requires-Dist: zope.event ; extra == 'events'
+Requires-Dist: zope.interface ; extra == 'events'
+Provides-Extra: test
+Requires-Dist: zope.interface ; extra == 'test'
+Requires-Dist: zope.event ; extra == 'test'
+Requires-Dist: requests ; extra == 'test'
+Requires-Dist: objgraph ; extra == 'test'
+Requires-Dist: psutil ; (platform_python_implementation == "CPython" or sys_platform != "win32") and extra == 'test'
+Requires-Dist: futures ; (python_version == "2.7") and extra == 'test'
+Requires-Dist: mock ; (python_version == "2.7") and extra == 'test'
+Requires-Dist: coverage (>=5.0a3) ; (sys_platform != "win32") and extra == 'test'
+Requires-Dist: coveralls (>=1.0) ; (sys_platform != "win32") and extra == 'test'
+
+========
+ gevent
+========
+
+.. image:: https://travis-ci.org/gevent/gevent.svg?branch=master
+   :target: https://travis-ci.org/gevent/gevent
+
+.. image:: https://ci.appveyor.com/api/projects/status/q4kl21ng2yo2ixur?svg=true
+   :target: https://ci.appveyor.com/project/denik/gevent
+
+.. image:: https://coveralls.io/repos/gevent/gevent/badge.svg?branch=master&service=github
+   :target: https://coveralls.io/github/gevent/gevent?branch=master
+
+..
+  This file is included in README.rst from the top-level
+  so it is limited to pure ReST markup, not Sphinx.
+
+
+
+gevent is a coroutine_ -based Python_ networking library that uses
+`greenlet <https://greenlet.readthedocs.io>`_ to provide a high-level synchronous API on top of the `libev`_
+or `libuv`_ event loop.
+
+Features include:
+
+
+* Fast event loop based on `libev`_ or `libuv`_.
+* Lightweight execution units based on greenlets.
+* API that re-uses concepts from the Python standard library (for
+  examples there are `events`_ and
+  `queues`_).
+* `Cooperative sockets with SSL support <http://www.gevent.org/api/index.html#networking>`_
+* `Cooperative DNS queries <http://www.gevent.org/dns.html>`_ performed through a threadpool,
+  dnspython, or c-ares.
+* `Monkey patching utility <http://www.gevent.org/intro.html#monkey-patching>`_ to get 3rd party modules to become cooperative
+* TCP/UDP/HTTP servers
+* Subprocess support (through `gevent.subprocess`_)
+* Thread pools
+
+gevent is `inspired by eventlet`_ but features a more consistent API,
+simpler implementation and better performance. Read why others `use
+gevent`_ and check out the list of the `open source projects based on
+gevent`_.
+
+gevent was written by `Denis Bilenko <http://denisbilenko.com/>`_.
+
+Since version 1.1, gevent is maintained by Jason Madden for
+`NextThought <https://nextthought.com>`_ with help from the
+`contributors <https://github.com/gevent/gevent/graphs/contributors>`_
+and is licensed under the MIT license.
+
+See `what's new`_ in the latest major release.
+
+Check out the detailed changelog_ for this version.
+
+.. _events: http://www.gevent.org/api/gevent.event.html#gevent.event.Event
+.. _queues: http://www.gevent.org/api/gevent.queue.html#gevent.queue.Queue
+.. _gevent.subprocess: http://www.gevent.org/api/gevent.subprocess.html#module-gevent.subprocess
+
+.. _coroutine: https://en.wikipedia.org/wiki/Coroutine
+.. _Python: http://python.org
+.. _libev: http://software.schmorp.de/pkg/libev.html
+.. _libuv: http://libuv.org
+.. _inspired by eventlet: http://blog.gevent.org/2010/02/27/why-gevent/
+.. _use gevent: http://groups.google.com/group/gevent/browse_thread/thread/4de9703e5dca8271
+.. _open source projects based on gevent: https://github.com/gevent/gevent/wiki/Projects
+.. _what's new: http://www.gevent.org/whatsnew_1_3.html
+.. _changelog: http://www.gevent.org/changelog.html
+
+
+Read the documentation online at http://www.gevent.org.
+
+Post feedback and issues on the `bug tracker`_, `mailing list`_, blog_
+and `twitter (@gevent)`_.
+
+
+===============================
+ Installation and Requirements
+===============================
+
+.. _installation:
+
+..
+  This file is included in README.rst so it is limited to plain
+  ReST markup, not Sphinx.
+
+Supported Platforms
+===================
+
+`gevent 1.3`_ runs on Python 2.7 and Python 3. Releases 3.4, 3.5 and
+3.6 of Python 3 are supported. (Users of older versions of Python 2
+need to install gevent 1.0.x (2.5), 1.1.x (2.6) or 1.2.x (<=2.7.8);
+gevent 1.2 can be installed on Python 3.3.) gevent requires the
+`greenlet <https://greenlet.readthedocs.io>`_ library and will install
+the `cffi`_ library by default on Windows.
+
+gevent 1.3 also runs on PyPy 5.5 and above, although 5.9 or above is
+strongly recommended. On PyPy, there are no external dependencies.
+
+gevent is tested on Windows, OS X, and Linux, and should run on most
+other Unix-like operating systems (e.g., FreeBSD, Solaris, etc.)
+
+.. note:: On Windows using the libev backend, gevent is
+          limited to a maximum of 1024 open sockets due to
+          `limitations in libev`_. This limitation should not exist
+          with the default libuv backend.
+
+Installation
+============
+
+.. note::
+
+   This section is about installing released versions of gevent
+   as distributed on the `Python Package Index`_
+
+.. _Python Package Index: http://pypi.org/project/gevent
+
+gevent and greenlet can both be installed with `pip`_, e.g., ``pip
+install gevent``. Installation using `buildout
+<http://docs.buildout.org/en/latest/>`_ is also supported.
+
+On Windows, OS X, and Linux, both gevent and greenlet are
+distributed as binary `wheels`_.
+
+.. tip::
+
+   You need Pip 8.0 or later, or buildout 2.10.0 to install the
+   binary wheels.
+
+.. tip::
+
+   On Linux, you'll need to install gevent from source if you wish to
+   use the libuv loop implementation. This is because the `manylinux1
+   <https://www.python.org/dev/peps/pep-0513/>`_ specification for the
+   distributed wheels does not support libuv. The `cffi`_ library
+   *must* be installed at build time.
+
+
+Installing From Source
+----------------------
+
+If you are unable to use the binary wheels (for platforms where no
+pre-built wheels are available or if wheel installation is disabled,
+e.g., for libuv support on Linux), here are some things you need to know.
+
+- You can install gevent from source with ``pip install --no-binary
+  gevent gevent``.
+
+- You'll need a working C compiler that can build Python extensions.
+  On some platforms, you may need to install Python development
+  packages.
+
+- Installing from source requires ``setuptools``. This is installed
+  automatically in virtual environments and by buildout. However,
+  gevent uses :pep:`496` environment markers in ``setup.py``.
+  Consequently, you'll need a version of setuptools newer than 25
+  (mid 2016) to install gevent from source; a version that's too old
+  will produce a ``ValueError``. Older versions of pipenv may also
+  `have issues installing gevent for this reason
+  <https://github.com/pypa/pipenv/issues/2113>`_.
+
+- To build the libuv backend (which is required on Windows and
+  optional elsewhere), or the CFFI-based libev backend, you must
+  install `cffi`_ before attempting to install gevent on CPython (on
+  PyPy this step is not necessary).
+
+
+Common Installation Issues
+--------------------------
+
+The following are some common installation problems and solutions for
+those compiling gevent from source.
+
+- Some Linux distributions are now mounting their temporary
+  directories with the ``noexec`` option. This can cause a standard
+  ``pip install gevent`` to fail with an error like ``cannot run C
+  compiled programs``. One fix is to mount the temporary directory
+  without that option. Another may be to use the ``--build`` option to
+  ``pip install`` to specify another directory. See `issue #570
+  <https://github.com/gevent/gevent/issues/570>`_ and `issue #612
+  <https://github.com/gevent/gevent/issues/612>`_ for examples.
+
+- Also check for conflicts with environment variables like ``CFLAGS``. For
+  example, see `Library Updates <http://www.gevent.org/whatsnew_1_1.html#library-updates-label>`_.
+
+- Users of a recent SmartOS release may need to customize the
+  ``CPPFLAGS`` (the environment variable containing the default
+  options for the C preprocessor) if they are using the libev shipped
+  with gevent. See `Operating Systems
+  <http://www.gevent.org/whatsnew_1_1.html#operating-systems-label>`_
+  for more information.
+
+- If you see ``ValueError: ("Expected ',' or end-of-list in", "cffi >=
+  1.11.5 ; sys_platform == 'win32' and platform_python_implementation
+  == 'CPython'", 'at', " ; sys_platform == 'win32' and
+  platform_python_implementation == 'CPython'")``, the version of
+  setuptools is too old. Install a more recent version of setuptools.
+
+
+Extra Dependencies
+==================
+
+gevent has no runtime dependencies outside the standard library,
+greenlet and (on some platforms) `cffi`_. However, there are a
+number of additional libraries that extend gevent's functionality and
+will be used if they are available.
+
+The `psutil <https://pypi.org/project/psutil>`_ library is needed to
+monitor memory usage.
+
+`zope.event <https://pypi.org/project/zope.event>`_ is highly
+recommended for configurable event support; it can be installed with
+the ``events`` extra, e.g., ``pip install gevent[events]``.
+
+`dnspython <https://pypi.org/project/dnspython>`_ is required for the
+new pure-Python resolver, and on Python 2, so is `idna
+<https://pypi.org/project/idna>`_. They can be installed with the
+``dnspython`` extra.
+
+
+Development
+===========
+
+To install the latest development version::
+
+  pip install setuptools cffi 'cython>=0.28' git+git://github.com/gevent/gevent.git#egg=gevent
+
+.. note::
+
+   You will not be able to run gevent's test suite using that method.
+
+To hack on gevent (using a virtualenv)::
+
+  $ git clone https://github.com/gevent/gevent.git
+  $ cd gevent
+  $ virtualenv env
+  $ source env/bin/activate
+  (env) $ pip install -r dev-requirements.txt
+
+.. note::
+
+   The notes above about installing from source apply here as well.
+   The ``dev-requirements.txt`` file takes care of the library
+   prerequisites (CFFI, Cython), but having a working C compiler that
+   can create Python extensions is up to you.
+
+
+Running Tests
+-------------
+
+There are a few different ways to run the tests. To simply run the
+tests on one version of Python during development, begin with the
+above instructions to install gevent in a virtual environment and then
+run::
+
+  (env) $ python -mgevent.tests
+
+Before submitting a pull request, it's a good idea to run the tests
+across all supported versions of Python, and to check the code quality
+using prospector. This is what is done on Travis CI. Locally it
+can be done using tox::
+
+  pip install tox
+  tox
+
+The testrunner accepts a ``--coverage`` argument to enable code
+coverage metrics through the `coverage.py`_ package. That would go
+something like this::
+
+  python -m gevent.tests --coverage
+  coverage combine
+  coverage html -i
+  <open htmlcov/index.html>
+
+Continuous integration
+----------------------
+
+A test suite is run for every push and pull request submitted. Travis
+CI is used to test on Linux, and `AppVeyor`_ runs the builds on
+Windows.
+
+.. image:: https://travis-ci.org/gevent/gevent.svg?branch=master
+   :target: https://travis-ci.org/gevent/gevent
+
+.. image:: https://ci.appveyor.com/api/projects/status/q4kl21ng2yo2ixur?svg=true
+   :target: https://ci.appveyor.com/project/denik/gevent
+
+
+Builds on Travis CI automatically submit updates to `coveralls.io`_ to
+monitor test coverage.
+
+.. image:: https://coveralls.io/repos/gevent/gevent/badge.svg?branch=master&service=github
+   :target: https://coveralls.io/github/gevent/gevent?branch=master
+
+.. note:: On Debian, you will probably need ``libpythonX.Y-testsuite``
+          installed to run all the tests.
+
+.. _coverage.py: https://pypi.python.org/pypi/coverage/
+.. _coveralls.io: https://coveralls.io/github/gevent/gevent
+.. _`pip`: https://pip.pypa.io/en/stable/installing/
+.. _`wheels`: http://pythonwheels.com
+.. _`gevent 1.3`: whatsnew_1_3.html
+
+.. _`cffi`: https://cffi.readthedocs.io
+.. _`limitations in libev`: http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#WIN32_PLATFORM_LIMITATIONS_AND_WORKA
+.. _AppVeyor: https://ci.appveyor.com/project/denik/gevent
+
+
+.. _bug tracker: https://github.com/gevent/gevent/wiki/Projects
+.. _mailing list: http://groups.google.com/group/gevent
+.. _blog: http://blog.gevent.org
+.. _twitter (@gevent): http://twitter.com/gevent
+
+
