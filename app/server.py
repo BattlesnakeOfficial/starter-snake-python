@@ -45,15 +45,54 @@ def move():
     """
     data = bottle.request.json
     print("MOVE:", json.dumps(data))
-
+    resp_dict = json.loads(json.dumps(data))
+    maxHeight = resp_dict['board']['height']
+    snakeHeadX = resp_dict['you']['body'][0]['x']
+    snakeHeadY = resp_dict['you']['body'][0]['y']
     # Choose a random direction to move in
     directions = ["up", "down", "left", "right"]
-    move = random.choice(directions)
+    shout = "I am a spaghetti!"
+    #move = random.choice(directions)
+    #conditionally move in a certain direction
+    occupiedSpaces = {}
+    for i in range(len(resp_dict['you']['body'])):
+        currentOccupiedX = resp_dict['you']['body'][i]['x']
+        occupiedSpaces[currentOccupiedX] = resp_dict['you']['body'][i]['y']
+    print("Occupied Spaces: ", occupiedSpaces)
 
+
+
+    if isWallUp(snakeHeadY) and not isOccupiedUp(snakeHeadX, snakeHeadY, occupiedSpaces) :
+        print("isWallUp is: ", isWallUp(snakeHeadY))
+        response = {"move": "up", "shout": shout}
+        return HTTPResponse(
+        status=200,
+        headers={"Content-Type": "application/json"},
+        body=json.dumps(response),
+)
+    elif isWallRight(snakeHeadX, maxHeight):
+        print("isWallRight is: ", isWallRight(snakeHeadX, maxHeight))
+        response = {"move": "right", "shout": shout}
+        return HTTPResponse(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            body=json.dumps(response),
+        )
+    
+    elif isWallDown(snakeHeadY, maxHeight):
+        print("isWallDown is: ", isWallDown(snakeHeadY, maxHeight))
+        move = "down"
+        response = {"move": "down", "shout": shout}
+        return HTTPResponse(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            body=json.dumps(response),
+        )
+
+    else:   
+        move = random.choice(directions)
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.
-    shout = "I am a python snake!"
-
     response = {"move": move, "shout": shout}
     return HTTPResponse(
         status=200,
@@ -79,6 +118,27 @@ def main():
         port=os.getenv("PORT", "8080"),
         debug=os.getenv("DEBUG", True),
     )
+
+#Helper functions 
+
+def isWallUp(currentY):
+    print("isWallUp-","currentY: ", currentY)
+    return currentY-1 >= 0
+
+def isWallDown(currentY, maxHeight):
+    print("isWallDown-","currentY: ", currentY,  "maxHeight: ", maxHeight)
+    return currentY+1 < maxHeight-1
+
+def isWallRight(currentX, maxWidth):
+    print("isWallRight-","currentX: ", currentX, "maxWidth: ", maxWidth)
+    return currentX+1 < maxWidth-1
+
+def isWallLeft(currentX):
+    print("isWallLeft-","currentX: ", currentX)
+    return currentX-1 >= 0
+
+def isOccupiedUp(currentX, currentY, snakes):
+    return currentX, currentY in snakes.items()
 
 
 # Expose WSGI app (so gunicorn can find it)
