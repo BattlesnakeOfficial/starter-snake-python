@@ -58,38 +58,35 @@ def move():
     print("My Spaces: ", getMySpaces(resp_dict))
     print("All Snake Spaces: ", getAllSnakeSpaces(resp_dict))
     print("All Food Spaces: ", getFoodSpaces(resp_dict))
-    print("isOccupied - Up: ",isOccupiedUp(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)))
-    print("isOccupied - Left: ", isOccupiedLeft(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)))
-    print("isOccupied - Right: ", isOccupiedRight(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)))
-    print("isOccupied - Down: ", isOccupiedDown(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)))
-    print("In MOVE - snakeheadXY: ", snakeHeadXY)
+    print("Snakehead Coordinates: ", snakeHeadXY)
+    print("is upSpace Free: ",isUpFree(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)))
+    print("is leftSpace Free: ", isLeftFree(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)))
+    print("is rightSpace Free: ", isRightFree(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)))
+    print("is downSpace Free: ", isDownFree(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)))
 
-    if not isOccupiedUp(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)):
-        print("*** MOVING UP ***")
+    #Needs some sort of shuffling behavior or the snake just goes in circles until starvation
+    if isUpFree(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)):
         response = {"move": "up", "shout": shout}
         return HTTPResponse(
         status=200,
         headers={"Content-Type": "application/json"},
         body=json.dumps(response),
         )
-    elif not isOccupiedLeft(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)):
-        print("*** MOVING LEFT ***")
+    elif isLeftFree(snakeHeadX, snakeHeadY, getAllSnakeSpaces(resp_dict)):
         response = {"move": "left", "shout": shout}
         return HTTPResponse(
         status=200,
         headers={"Content-Type": "application/json"},
         body=json.dumps(response),
         )
-    elif not isOccupiedDown(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)):
-        print("*** MOVING DOWN ***")
+    elif isDownFree(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)):
         response = {"move": "down", "shout": shout}
         return HTTPResponse(
         status=200,
         headers={"Content-Type": "application/json"},
         body=json.dumps(response),
         )
-    elif not isOccupiedRight(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)):
-        print("*** MOVING RIGHT ***")
+    elif isRightFree(snakeHeadX, snakeHeadY, maxHeight, getAllSnakeSpaces(resp_dict)):
         response = {"move": "right", "shout": shout}
         return HTTPResponse(
         status=200,
@@ -97,7 +94,6 @@ def move():
         body=json.dumps(response),
         )
     else:   
-        print("*** RANDOM ***")
         move = random.choice(directions)
     # Shouts are messages sent to all the other snakes in the game.
     # Shouts are not displayed on the game board.
@@ -129,82 +125,49 @@ def main():
 
 #Helper functions 
 
-def isWallUp(currentY):
-    print("isWallUp-","currentY: ", currentY)
-    return currentY-1 >= 0
-
-def isWallDown(currentY, maxHeight):
-    print("isWallDown-","currentY: ", currentY,  "maxHeight: ", maxHeight)
-    return currentY + 1 < maxHeight-1
-
-def isWallRight(currentX, maxWidth):
-    print("isWallRight-","currentX: ", currentX, "maxWidth: ", maxWidth)
-    return currentX+1 < maxWidth-1
-
-def isWallLeft(currentX):
-    print("isWallLeft-","currentX: ", currentX)
-    return currentX-1 >= 0
-
-def getAllSnakesY(boardData):
-    allSnakeYSpaces = {}
-    totalSnakeSpaces = 0
-    for snake in range(len(boardData['board']['snakes'])):
-        for snakeSpace in range(len(boardData['board']['snakes'][snake]['body'])):
-            currentTotalSnakeSpacespace = {}
-            currentYvalue = boardData['board']['snakes'][snake]['body'][snakeSpace]['y']
-            snakeSpace = snakeSpace + 1
-            allSnakeYSpaces[totalSnakeSpaces] = currentYvalue
-            totalSnakeSpaces = totalSnakeSpaces + 1
-        snake = snake + 1
-    return allSnakeYSpaces
-
-def isOccupiedUp(currentX, currentY, totalSnakeSpaces):
+def isUpFree(currentX, currentY, totalSnakeSpaces):
     upSpace = currentY - 1
     upCoordinate = currentX, upSpace
-    print("upCoordinate: ", upCoordinate)
-    if upSpace == 0: #Top of board Wall
+    if upSpace == -1: #Top of board Wall
         print("upspace is a wall")
-        return True
+        return False
     elif upCoordinate in totalSnakeSpaces.values():  #Represents the up Space containing a snake
         print("upSpace is a snake")
-        return True
-    return False
+        return False
+    return True
 
-def isOccupiedDown(currentX, currentY, maxHeight, totalSnakeSpaces):
+def isDownFree(currentX, currentY, maxHeight, totalSnakeSpaces):
     downSpace = currentY + 1
     downCoordinate = currentX, downSpace
-    print("downCoordinate: ", downCoordinate)
     if downSpace == maxHeight: #Bottom of board Wall
         print("downspace is a wall")
-        return True
+        return False
     elif downCoordinate in totalSnakeSpaces.values():  # Represents the up Space containing a snake
         print("downspace is a snake")
-        return True
-    return False
+        return False
+    return True
 
-def isOccupiedLeft(currentX, currentY, totalSnakeSpaces):
+def isLeftFree(currentX, currentY, totalSnakeSpaces):
     leftSpace = currentX - 1
     leftCoordinate = leftSpace, currentY
-    print("leftCoordinate: ", leftCoordinate)
-    if leftSpace == 0: #Left of board Wall
+    if leftSpace == -1: #Left of board Wall
         print("leftspace is a wall")
-        return True
+        return False
     elif leftCoordinate in totalSnakeSpaces.values():  # BROKEN -  Represents the up Space containing a snake
         print("leftspace is a snake")
-        return True
-    return False
+        return False
+    return True
 
-def isOccupiedRight(currentX, currentY, maxWidth, totalSnakeSpaces):
+def isRightFree(currentX, currentY, maxWidth, totalSnakeSpaces):
     rightSpace = currentX + 1
     rightCoordinate = rightSpace, currentY
-    print("rightCoordinate: ", rightCoordinate)
     if rightSpace == maxWidth: #Right of board Wall
         print("rightspace is a wall")
-        return True
+        return False
     elif rightCoordinate in totalSnakeSpaces.values():  # BROKEN - Represents the up Space containing a snake
         print("rightSpace is a snake")
-        return True
-    return False
+        return False
+    return True
 
 def getMySpaces(boardData):
     occupiedSpaces = {}
@@ -234,14 +197,6 @@ def getFoodSpaces(boardData):
         currentY = boardData['board']['food'][food]['y']
         allFoodSpaces[food] = currentX, currentY
     return allFoodSpaces
-
-def getYValues(array):
-    yValues = {}
-    for x in len(array):
-        yValues[x] = array[x][1]
-        x = x + 1
-    return yValues
-
 
 # Expose WSGI app (so gunicorn can find it)
 application = bottle.default_app()
