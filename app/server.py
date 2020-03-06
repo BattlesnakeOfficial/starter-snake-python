@@ -73,7 +73,7 @@ def move():
             game_board[b["y"]][b["x"]] = "s"
             t = t+1
         game_board[a["body"][0]["y"]][a["body"][0]["x"]] = "S"
-        game_board[a["body"][t-1]["y"]][a["body"][t-1]["x"]] = "t"
+        game_board[a["body"][t-1]["y"]][a["body"][t-1]["x"]] = "T"
 
     for x in game_board:
         for y in x:
