@@ -1,6 +1,4 @@
-# starter-snake-python
-
-A simple [Battlesnake](http://play.battlesnake.com) written in Python.
+# A simple [Battlesnake](http://play.battlesnake.com) written in Python.
 
 Visit [https://github.com/BattlesnakeOfficial/community/blob/master/starter-snakes.md](https://github.com/BattlesnakeOfficial/community/blob/master/starter-snakes.md) for API documentation and instructions for running your AI.
 
