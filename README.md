@@ -86,7 +86,7 @@ This Battlesnake uses [Python 3.7](https://www.python.org/) and [CherryPy](https
 
 Now you're ready to start making your Battlesnake your own. By default, your Battlesnake won't be unique looking, nor very smart. Let's change that!
 
-### Customize your Battlesnake's appearance
+### Changing Appearance
 
 When the game engine tells your Battlesnake that a new game is starting, you can optionally reply with what color you want to Battlesnake to be, and what you want your head and tail to look like.
 
@@ -97,9 +97,9 @@ return {"color": "#888888", "headType": "regular", "tailType": "regular"}
 
 See the [Battlesnake Documentation - Customizing Your Battlesnake](https://docs.battlesnake.com/snake-customization) for how to customize your Battlesnake's appearance using these values.
 
-### Change Your Battlesnake's Behaviour
+### Changing Behavior
 
-On every turn of the game, your Battlesnake receives information about the game board and has to respond with its next move.
+On every turn of the game your Battlesnake receives information about the game board and has to respond with its next move.
 
 Locate the `move` function inside server.py. You should see a line that looks like this:
 ```python
@@ -112,14 +112,14 @@ See the [Battlesnake Documentation - Battlesnake Rules](https://docs.battlesnake
 
 ### Updating Your Battlesnake
 
-Once you've made your changes, commit them using git and deploy your changes to Heroku.
+After you've made your changes, commit them using git and deploy your changes to Heroku.
 ```shell
 git add .
 git commit -m "update my battlesnake's appearance"
 git push heroku master
 ```
 
-Once heroku has been updated, you can [start a new game](https://play.battlesnake.com/account/games/create/) with your Battlesnake to view your new changes!
+Once heroku has updated you can [start a new game](https://play.battlesnake.com/account/games/create/) with your Battlesnake to view your latest changes in action.
 
 **At this point you should feel comfortable making changes to your code and deploying those changes to Heroku!**
 
