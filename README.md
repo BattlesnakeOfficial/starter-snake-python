@@ -4,7 +4,7 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 
 ## Technologies
 
-This Battlesnake uses [Python 3.7.6](https://www.python.org/) and [CherryPy](https://cherrypy.org/).
+This Battlesnake uses [Python 3.7](https://www.python.org/) and [CherryPy](https://cherrypy.org/).
 
 ## Prerequisites
 
