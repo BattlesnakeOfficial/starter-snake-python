@@ -39,7 +39,7 @@ class Battlesnake(object):
         # TODO: Use the information in cherrypy.request.json to decide your next move.
         print("MOVE")
         data = cherrypy.request.json
-        return {"move": "down"}
+        return {"move": "up"}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
