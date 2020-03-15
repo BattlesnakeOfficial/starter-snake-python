@@ -1,10 +1,10 @@
 # A simple [Battlesnake](http://play.battlesnake.com) written in Python.
 
-Visit [https://github.com/BattlesnakeOfficial/community/blob/master/starter-snakes.md](https://github.com/BattlesnakeOfficial/community/blob/master/starter-snakes.md) for API documentation and instructions for running your AI.
+This is a basic implementation of the [Battlesnake API](https://docs.battlesnake.com/snake-api). It's a great starting point for anyone wanting to program their first Battlesnake using Python. It's setup to be easily deployed to [Heroku](https://heroku.com), but you can use other cloud providers if you'd like.
 
-This AI client uses the [bottle web framework](http://bottlepy.org/docs/dev/index.html) to serve requests and the [gunicorn web server](http://gunicorn.org/) for running bottle on Heroku. Dependencies are listed in [requirements.txt](requirements.txt).
+## Technologies
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+This Battlesnake uses [Python 3.7.6](https://www.python.org/) and [CherryPy](https://cherrypy.org/).
 
 ## Prerequisites
 
