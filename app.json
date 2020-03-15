@@ -1,6 +1,6 @@
 {
-  "name": "BattleSnake Python",
-  "description": "A simple BattleSnake written in Python.",
+  "name": "Python Starter Snake",
+  "description": "A simple Battlesnake written in Python.",
   "repository": "https://github.com/BattlesnakeOfficial/starter-snake-python",
   "website": "https://play.battlesnake.com",
   "keywords": [
