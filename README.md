@@ -72,7 +72,7 @@ Now you're ready to start customizing your Battlesnake and improving its algorit
 
 ### Changing Appearance
 
-Locate the `start` function inside server.py. You should see a line that looks like this:
+Locate the `start` function inside [server.py](server.py#L26). You should see a line that looks like this:
 ```python
 return {"color": "#888888", "headType": "regular", "tailType": "regular"}
 ```
@@ -83,7 +83,7 @@ This function is called every time a new game starts. Your response determines w
 
 On every turn of each game your Battlesnake receives information about the game board and must decide its next move.
 
-Locate the `move` function inside server.py. You should see code that looks like this:
+Locate the `move` function inside [server.py](server.py#L37). You should see code that looks like this:
 ```python
 data = cherrypy.request.json
 # Choose a random direction to move in
