@@ -24,12 +24,10 @@ class Battlesnake(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def start(self):
-        # This function is called everytime your snake is entered into a game.
-        # cherrypy.request.json contains information about the game that's about to be played.
-        # TODO: Use this function to decide how your snake is going to look on the board.
         data = cherrypy.request.json
-        print("START")
-        return {"color": "#888888", "headType": "regular", "tailType": "regular"}
+        print(f"~~  START NEW GAME ~~~{data['game']['id'])}")
+
+        return {"color": "#736CCB", "headType": "pixel", "tailType": "pixel"}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -39,13 +37,15 @@ class Battlesnake(object):
         # Valid moves are "up", "down", "left", or "right".
         # TODO: Use the information in cherrypy.request.json to decide your next move.
         data = cherrypy.request.json
+        print(f"Data in move is: {data}")
 
         # Choose a random direction to move in
         possible_moves = ["up", "down", "left", "right"]
         move = random.choice(possible_moves)
 
         print(f"MOVE: {move}")
-        return {"move": move}
+
+        return {"move": move, "shout": "Urrah!"}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -60,8 +60,6 @@ class Battlesnake(object):
 if __name__ == "__main__":
     server = Battlesnake()
     cherrypy.config.update({"server.socket_host": "0.0.0.0"})
-    cherrypy.config.update(
-        {"server.socket_port": int(os.environ.get("PORT", "8080")),}
-    )
+    cherrypy.config.update({"server.socket_port": int(os.environ.get("PORT", "8080"))})
     print("Starting Battlesnake Server...")
     cherrypy.quickstart(server)
