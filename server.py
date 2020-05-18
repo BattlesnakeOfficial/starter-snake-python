@@ -19,9 +19,9 @@ class Battlesnake(object):
         return {
             "apiversion": "1",
             "author": "",  # TODO: Your Battlesnake Username
-            "color": "#399AF2",  # TODO: Personalize
-            "head": "tongue",  # TODO: Personalize
-            "tail": "curled",  # TODO: Personalize
+            "color": "#888888",  # TODO: Personalize
+            "head": "default",  # TODO: Personalize
+            "tail": "default",  # TODO: Personalize
         }
 
     @cherrypy.expose
