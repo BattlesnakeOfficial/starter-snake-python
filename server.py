@@ -11,7 +11,7 @@ For instructions see https://github.com/BattlesnakeOfficial/starter-snake-python
 
 class Battlesnake(object):
     @cherrypy.expose
-    @cherrypy.tools.json_out
+    @cherrypy.tools.json_out()
     def index(self):
         # This function is called when you register your Battlesnake on play.battlesnake.com
         # It controls your Battlesnake appearance and author permissions.
@@ -25,7 +25,7 @@ class Battlesnake(object):
         }
 
     @cherrypy.expose
-    @cherrypy.tools.json_in
+    @cherrypy.tools.json_in()
     def start(self):
         # This function is called everytime your snake is entered into a game.
         # cherrypy.request.json contains information about the game that's about to be played.
@@ -36,8 +36,8 @@ class Battlesnake(object):
         return "ok"
 
     @cherrypy.expose
-    @cherrypy.tools.json_in
-    @cherrypy.tools.json_out
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def move(self):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
@@ -52,7 +52,7 @@ class Battlesnake(object):
         return {"move": move}
 
     @cherrypy.expose
-    @cherrypy.tools.json_in
+    @cherrypy.tools.json_in()
     def end(self):
         # This function is called when a game your snake was in ends.
         # It's purely for informational purposes, you don't have to make any decisions here.
