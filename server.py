@@ -11,29 +11,33 @@ For instructions see https://github.com/BattlesnakeOfficial/starter-snake-python
 
 class Battlesnake(object):
     @cherrypy.expose
+    @cherrypy.tools.json_out
     def index(self):
-        # If you open your snake URL in a browser you should see this message.
-        return "Your Battlesnake is alive!"
+        # This function is called when you register your Battlesnake on play.battlesnake.com
+        # It controls your Battlesnake appearance and author permissions.
+        # TIP: If you open your Battlesnake URL in browser you should see this data
+        return {
+            "apiversion": "1",
+            "author": "",  # TODO: Your Battlesnake Username
+            "color": "#399AF2",  # TODO: Personalize
+            "head": "tongue",  # TODO: Personalize
+            "tail": "curled",  # TODO: Personalize
+        }
 
     @cherrypy.expose
-    def ping(self):
-        # The Battlesnake engine calls this function to make sure your snake is working.
-        return "pong"
-
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in
     def start(self):
         # This function is called everytime your snake is entered into a game.
         # cherrypy.request.json contains information about the game that's about to be played.
         # TODO: Use this function to decide how your snake is going to look on the board.
         data = cherrypy.request.json
+
         print("START")
-        return {"color": "#888888", "headType": "regular", "tailType": "regular"}
+        return "ok"
 
     @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in
+    @cherrypy.tools.json_out
     def move(self):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
@@ -48,11 +52,12 @@ class Battlesnake(object):
         return {"move": move}
 
     @cherrypy.expose
-    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_in
     def end(self):
         # This function is called when a game your snake was in ends.
         # It's purely for informational purposes, you don't have to make any decisions here.
         data = cherrypy.request.json
+
         print("END")
         return "ok"
 
