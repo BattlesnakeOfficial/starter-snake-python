@@ -1,6 +1,6 @@
 # A simple [Battlesnake](http://play.battlesnake.com) written in Python.
 
-This is a basic implementation of the [Battlesnake API](https://docs.battlesnake.com/snake-api). It's a great starting point for anyone wanting to program their first Battlesnake using Python. It comes ready to deploy to [Heroku](https://heroku.com), although you can use other cloud providers if you'd like.
+This is a basic implementation of the [Battlesnake API](https://docs.battlesnake.com/references/api). It's a great starting point for anyone wanting to program their first Battlesnake using Python. It comes ready to deploy to [Heroku](https://heroku.com), although you can use other cloud providers if you'd like.
 
 ### Technologies
 
@@ -39,7 +39,7 @@ This Battlesnake uses [Python 3.7](https://www.python.org/), [CherryPy](https://
     ```
     If everything was successful, you should see the following text:
     ```
-    Your Battlesnake is alive!
+    {"apiversion": "1", "author": "", "color": "#888888", "head": "default", "tail": "default"}
     ```
 
 6. Optionally, you can view your server logs using the [Heroku logs command](https://devcenter.heroku.com/articles/logging#log-retrieval) `heroku logs --tail`. The `--tail` option will show a live feed of your logs in real-time.
@@ -72,12 +72,18 @@ Now you're ready to start customizing your Battlesnake and improving its algorit
 
 ### Changing Appearance
 
-Locate the `start` function inside [server.py](server.py#L26). You should see a line that looks like this:
+Locate the `index` function inside [server.py](server.py#L15). You should see a line that looks like this:
 ```python
-return {"color": "#888888", "headType": "regular", "tailType": "regular"}
+return {
+    "apiversion": "1",
+    "author": "",
+    "color": "#888888",
+    "head": "default",
+    "tail": "default",
+}
 ```
 
-This function is called every time a new game starts. Your response determines what your Battlesnake will look like in that game. See [Customizing Your Battlesnake](https://docs.battlesnake.com/snake-customization) for how to customize your Battlesnake's appearance using these values.
+This function is called by the game engine to make sure your Battlesnake is healthy and responding correctly. Your response determines what your Battlesnake will look like in that game. See [Battlesnake Personalization](https://docs.battlesnake.com/references/personalization) for how to customize your Battlesnake's appearance using these values.
 
 ### Changing Behavior
 
@@ -92,9 +98,9 @@ move = random.choice(possible_moves)
 return {"move": move}
 ```
 
-Possible moves are "up", "down", "left", or "right". To start your Battlesnake will choose a move randomly. Your goal as a developer is to read information sent to you about the board (available in the `data` variable) and make an intelligent decision about where your Battlesnake should move next. 
+Possible moves are "up", "down", "left", or "right". To start your Battlesnake will choose a move randomly. Your goal as a developer is to read information sent to you about the board (available in the `data` variable) and make an intelligent decision about where your Battlesnake should move next.
 
-See the [Battlesnake Rules](https://docs.battlesnake.com/rules) for more information on playing the game, moving around the board, and improving your algorithm.
+See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) for more information on playing the game, moving around the board, and improving your algorithm.
 
 ### Updating Your Battlesnake
 
@@ -119,7 +125,7 @@ Now you have everything you need to start making your Battlesnake super smart! H
 
 * You can use the Python [print function](https://docs.python.org/3.7/library/functions.html#print) to output information to your server logs. This is very useful for debugging logic in your code during Battlesnake games.
 
-* Review the [Battlesnake API Docs](https://docs.battlesnake.com/snake-api) to learn what information is provided with each command. You can also output the data to your logs:
+* Review the [Battlesnake API Docs](https://docs.battlesnake.com/references/api) to learn what information is provided with each command. You can also output the data to your logs:
     ```python
     def move(self):
         data = cherrypy.request.json
