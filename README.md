@@ -89,16 +89,7 @@ This function is called by the game engine to make sure your Battlesnake is heal
 
 On every turn of each game your Battlesnake receives information about the game board and must decide its next move.
 
-Locate the `move` function inside [server.py](server.py#L37). You should see code that looks like this:
-```python
-data = cherrypy.request.json
-# Choose a random direction to move in
-possible_moves = ["up", "down", "left", "right"]
-move = random.choice(possible_moves)
-return {"move": move}
-```
-
-Possible moves are "up", "down", "left", or "right". To start your Battlesnake will choose a move randomly. Your goal as a developer is to read information sent to you about the board (available in the `data` variable) and make an intelligent decision about where your Battlesnake should move next.
+Locate the `move` function inside [server.py](server.py#L37). Possible moves are "up", "down", "left", or "right". To start your Battlesnake will choose a move randomly. Your goal as a developer is to read information sent to you about the board (available in the `data` variable) and make an intelligent decision about where your Battlesnake should move next.
 
 See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) for more information on playing the game, moving around the board, and improving your algorithm.
 
@@ -125,13 +116,7 @@ Now you have everything you need to start making your Battlesnake super smart! H
 
 * You can use the Python [print function](https://docs.python.org/3.7/library/functions.html#print) to output information to your server logs. This is very useful for debugging logic in your code during Battlesnake games.
 
-* Review the [Battlesnake API Docs](https://docs.battlesnake.com/references/api) to learn what information is provided with each command. You can also output the data to your logs:
-    ```python
-    def move(self):
-        data = cherrypy.request.json
-        print(data)
-        return {"move": "up"}
-    ```
+* Review the [Battlesnake API Docs](https://docs.battlesnake.com/references/api) to learn what information is provided with each command.
 
 * When viewing a Battlesnake game you can pause playback and step forward/backward one frame at a time. If you review your logs at the same time, you can see what decision your Battlesnake made on each turn.
 
