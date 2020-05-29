@@ -135,7 +135,7 @@ class MyBattlesnakeHeuristics:
             old_action = action # For logging
             
             # Pick one lower q-value instead
-            sort = np.argsort(action)[0]
+            sort = np.argsort(actions)
             action = sort[-num_redirected]
 
             num_redirected -= 1
@@ -148,7 +148,7 @@ class MyBattlesnakeHeuristics:
             old_action = action # For logging
             
             # Pick one lower q-value instead
-            sort = np.argsort(action)[0]
+            sort = np.argsort(actions)
             action = sort[-num_redirected]
 
             num_redirected -= 1
@@ -160,7 +160,7 @@ class MyBattlesnakeHeuristics:
             old_action = action
             
             # Pick one lower q-value instead
-            sort = np.argsort(action)[0]
+            sort = np.argsort(actions)
             action = sort[-num_redirected]
             
             num_redirected -= 1

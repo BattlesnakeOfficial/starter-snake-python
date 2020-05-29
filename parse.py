@@ -1,4 +1,5 @@
 import json
+import numpy as np
 
 if __name__ == '__main__':
     with open('data.json') as json_file:
@@ -24,3 +25,14 @@ if __name__ == '__main__':
     x, y = my_head["x"], my_head["y"]
     
     my_length = json["you"]["length"]
+    
+    print('-----------')
+    num_redirected = 2
+    actions = np.random.rand(4) # Walmart Q-values
+    print(actions)
+    action = int(np.argmax(actions))
+    print(action)
+    sort = np.argsort(actions)
+    print(sort)
+    action = sort[-num_redirected]
+    print(action)
