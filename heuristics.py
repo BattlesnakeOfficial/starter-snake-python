@@ -201,7 +201,7 @@ class MyBattlesnakeHeuristics:
             # Don't lose a head-to-head
             if self.about_to_go_head_to_head(action):
                 bad_actions.append(action)
-                log_string.append("{} could lose a head-to-head".format(action_names[action]))
+                log_strings.append("{} could lose a head-to-head".format(action_names[action]))
 
         legal_actions = [a for a in actions if a not in bad_actions]
         
