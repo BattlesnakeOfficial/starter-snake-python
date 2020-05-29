@@ -97,7 +97,7 @@ class MyBattlesnakeHeuristics:
                     continue
                 
                 x, y = head["x"], head["y"]
-                if x == i_new and y == j_new and snake["health"] > self.my_health: # Exact match
+                if x == i_new and y == j_new and snake["health"] >= self.my_health: # Exact match
                     return True
         
         return False
