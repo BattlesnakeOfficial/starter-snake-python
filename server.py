@@ -39,19 +39,21 @@ class Battlesnake(object):
         # Valid moves are "up", "down", "left", or "right".
 
         json = cherrypy.request.json
-        print('JSON:\n', json)
 
         possible_moves = ["up", "down", "left", "right"]
 
         # Choose an action through heuristics
         heur = MyBattlesnakeHeuristics(json)
-        action_index, log_string = heur.run()
+        action_index, log_strings = heur.run()
         
         action = possible_moves[action_index]
         
+        # Print move
         print("MOVE: ", action)
-        if len(log_string) > 0:
-            print("LOG: ", log_string)
+        
+        # Check logs
+        if len(log_strings) > 0:
+            for msg in log_strings: print(msg)
         
         return {"move": action}
 

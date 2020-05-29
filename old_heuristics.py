@@ -121,46 +121,60 @@ class MyBattlesnakeHeuristics:
         
         log_string = ""
         
-        # Check to see which actions kill us
-        action_names = ['UP', 'DOWN', 'LEFT', 'RIGHT']
-        actions = [0, 1, 2, 3]
-        bad_actions = []
-        log_strings = []
+        actions = np.random.rand(4) # Walmart Q-values
+        action = int(np.argmax(actions))
+    
+        num_redirected = 2 # If we ignore action, choose second highest and continue decrementing.
         
-        for action in actions:
-            
-            # Don't do a forbidden move
-            if self.did_try_to_kill_self(action):
-                bad_actions.append(action)
-                log_strings.append("{} is forbidden".format(action_names[action]))
-
-            # Don't exit the map
-            if self.did_try_to_escape(action):
-                bad_actions.append(action)
-                log_strings.append("{} tries to escape".format(action_names[action]))
-
-            # Don't hit another snake
-            if self.did_try_to_hit_snake(action):
-                bad_actions.append(action)
-                log_strings.append("{} tries to hit a snake".format(action_names[action]))
-
-        legal_actions = [a for a in actions if a not in bad_actions]
-        
-        # Now choose random action
-        if len(legal_actions) > 0:
-            action = random.choice(legal_actions)
-        else:
-            action = 0 # Just go die!
-            log_strings.append("Guess I'll just die!")
-        
-        # Overwrite action if there's food that we are close to
-        # This will never kill us based on current heuristics
-        if self.my_health < 30:
+        # Example heuristics to eat food that you are close to.
+        if self.my_health < 50:
             food_direction = self.go_to_food_if_close()
             if food_direction:
                 action = food_direction
-                log_strings.append("Went {} to food if close".format(action_names[action]))
+                log_string = "Went to food if close."
+        
+        # Don't do a forbidden move
+        if self.did_try_to_kill_self(action):
+            
+            old_action = action # For logging
+            
+            # Pick one lower q-value instead
+            sort = np.argsort(actions)
+            action = sort[-num_redirected]
 
+            num_redirected -= 1
+            
+            log_string = "Forbidden. Changed {} to {}".format(old_action, action)
+
+        # Don't exit the map
+        if self.did_try_to_escape(action):
+
+            old_action = action # For logging
+            
+            # Pick one lower q-value instead
+            sort = np.argsort(actions)
+            action = sort[-num_redirected]
+
+            num_redirected -= 1
+            
+            log_string = "Tried to escape. Changed {} to {}".format(old_action, action)
+
+        # Don't hit another snake
+        if self.did_try_to_hit_snake(action):
+            old_action = action
+            
+            # Pick one lower q-value instead
+            sort = np.argsort(actions)
+            action = sort[-num_redirected]
+            
+            num_redirected -= 1
+            
+            log_string = "About to hit a snake. Changed {} to {}".format(old_action, action)
+
+        # Somehow, every action is bad! Pick the highest q-value and die lmao
+        if action not in [0, 1, 2, 3]:
+        	action = int(np.argmax(action))
+        	log_string = "Guess I'll die!"
 
         assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
         
