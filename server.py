@@ -2,7 +2,7 @@ import os
 import random
 import cherrypy
 
-from heuristics import MyBattlesnakeHeuristics
+# from heuristics import MyBattlesnakeHeuristics
 import json
 
 class Battlesnake(object):
