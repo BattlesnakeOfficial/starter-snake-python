@@ -39,7 +39,7 @@ class MyBattlesnakeHeuristics:
         
         return food_direction
     
-    def did_try_to_kill_self(self, best_action):
+    def did_try_to_kill_self(self, action):
         
         # Return if our body is smol (1 piece only)
         if len(self.my_body) == 1:
@@ -54,21 +54,21 @@ class MyBattlesnakeHeuristics:
         diff_vert, diff_horiz = i_head - i_body, j_head - j_body
         
         if diff_vert == -1 and diff_horiz == 0: # Up
-            if best_action == 1: # Down = death
+            if action == 1: # Down = death
                 return True
         elif diff_vert == 1 and diff_horiz == 0: # Down
-            if best_action == 0: # Up = death
+            if action == 0: # Up = death
                 return True 
         elif diff_vert == 0 and diff_horiz == -1: # Left
-            if best_action == 3: # Right = death
+            if action == 3: # Right = death
                 return True
         elif diff_vert == 0 and diff_horiz == 1: # Right
-            if best_action == 2: # Left = death
+            if action == 2: # Left = death
                 return True
             
         return False
 
-    def did_try_to_escape(self, best_action):
+    def did_try_to_escape(self, action):
 
         # Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
@@ -79,28 +79,28 @@ class MyBattlesnakeHeuristics:
         UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
 
         # Top, bottom, left, right layer respectively
-        if i_head == height_min and best_action == UP \
-        or i_head == height_max and best_action == DOWN \
-        or j_head == width_min and best_action == LEFT \
-        or j_head == width_max and best_action == RIGHT:
+        if i_head == height_min and action == UP \
+        or i_head == height_max and action == DOWN \
+        or j_head == width_min and action == LEFT \
+        or j_head == width_max and action == RIGHT:
             return True
 
         return False
 
-    def did_try_to_hit_snake(self, json, state, best_action):
+    def did_try_to_hit_snake(self, json, state, action):
 
     	# Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
         
-        # Compute the next location of snake head with best_action
+        # Compute the next location of snake head with action
         UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
-        if best_action == UP:
+        if action == UP:
         	i_head -= 1
-       	elif best_action == DOWN:
+       	elif action == DOWN:
        		i_head += 1
-       	elif best_action == LEFT:
+       	elif action == LEFT:
        		j_head -= 1
-       	elif best_action == RIGHT:
+       	elif action == RIGHT:
        		j_head += 1
         
         # Loop through snakes to see if we're about to collide
