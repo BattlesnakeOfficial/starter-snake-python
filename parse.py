@@ -12,6 +12,7 @@ if __name__ == '__main__':
     snakes = json["board"]["snakes"]
     me = json["you"]
     my_health = json["you"]["health"]
+    print(my_health)
     
     my_body = json["you"]["body"]
     print('BODY: ', my_body)

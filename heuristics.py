@@ -6,7 +6,8 @@ class MyBattlesnakeHeuristics:
     The BattlesnakeHeuristics class allows you to define handcrafted rules of the snake.
     '''
     
-    FOOD_INDEX = 0
+    UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
+    
     def __init__(self, json):
         self.height = json["board"]["height"]
         self.width = json["board"]["width"]
@@ -18,6 +19,8 @@ class MyBattlesnakeHeuristics:
         self.my_head = json["you"]["head"]
         self.my_length = json["you"]["length"]
     
+    # ------------------------------------------------------------------------
+    
     
     def go_to_food_if_close(self):
         '''
@@ -28,7 +31,6 @@ class MyBattlesnakeHeuristics:
         
         # Get the position of the snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
-        UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
         
         # Check if we are surrounded by food
         if {'x': i_head-1, 'y': j_head} in self.foods:
@@ -41,6 +43,65 @@ class MyBattlesnakeHeuristics:
             food_direction = UP
         
         return food_direction
+    
+    # ------------------------------------------------------------------------
+    
+    def update_coords(self, i, j, action):
+        
+        if action == UP:
+            j += 1
+        elif action == DOWN:
+            j -= 1
+        elif action == LEFT:
+            i -= 1
+        elif action == RIGHT:
+            i += 1
+        
+        return i, j
+    
+    # ------------------------------------------------------------------------
+
+    def about_to_go_head_to_head(self, action):
+        
+        # Check direction we're currently going in
+        i_head, j_head = self.my_head["x"], self.my_head["y"]           # Head
+        # i_body, j_body = self.my_body[1]["x"], self.my_body[1]["y"]     # Second piece (body)
+
+        # diff_horiz, diff_vert = i_head - i_body, j_head - j_body
+        # UP, DOWN, LEFT, RIGHT = 0, 1, 2 ,3
+        # valid_actions = [UP, DOWN, LEFT, RIGHT]
+        
+        # # Delete the illegal action
+        # if diff_horiz == -1 and diff_vert == 0: # Left
+        #     del(valid_actions[RIGHT])
+        # elif diff_horiz == 1 and diff_vert == 0: # Right
+        #     del(valid_actions[LEFT])
+        # elif diff_horiz == 0 and diff_vert == 1: # Up
+        #     del(valid_actions[DOWN])
+        # elif diff_horiz == 0 and diff_vert == -1: # Down
+        #     del(valid_actions[UP])
+
+        # Get new coordinate of where head will be if we move there
+        i_head, j_head = self.update_coords(i_head, j_head, action)
+            
+        # Loop through snakes to see if there's potential to collide
+        for a in [UP, DOWN, LEFT, RIGHT]:
+                
+            # Get new coordinate of where head would be //on turn after next// if we move there
+            i_new, j_new = self.update_coords(i_head, j_head, a)
+                
+            for snake in self.snakes:
+                for piece in snake["body"]:
+                    if piece is self.my_head: # Skip our own head (or else it would return True each time)
+                        continue
+                    x, y = piece["x"], piece["y"]
+                    if x == i_new and y == j_new and snake["health"] > self.my_health: # Exact match
+                        return True
+        
+        return False
+        
+
+    # ------------------------------------------------------------------------
     
     def did_try_to_kill_self(self, action):
         
@@ -55,7 +116,6 @@ class MyBattlesnakeHeuristics:
 
         # Calculate the facing direction with the head and the next location
         diff_horiz, diff_vert = i_head - i_body, j_head - j_body
-        UP, DOWN, LEFT, RIGHT = 0, 1, 2 ,3
         
         if diff_horiz == -1 and diff_vert == 0: # Left
             if action == RIGHT:
@@ -71,6 +131,8 @@ class MyBattlesnakeHeuristics:
                 return True
             
         return False
+    
+    # ------------------------------------------------------------------------
 
     def did_try_to_escape(self, action):
 
@@ -79,8 +141,6 @@ class MyBattlesnakeHeuristics:
 
         # Get dimensions
         height_min, width_min, height_max, width_max = 0, 0, self.height-1, self.width-1
-
-        UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
 
         # Top, bottom, left, right layer respectively
         if j_head == height_min and action == DOWN \
@@ -91,21 +151,15 @@ class MyBattlesnakeHeuristics:
 
         return False
     
+    # ------------------------------------------------------------------------
+    
     def did_try_to_hit_snake(self, action):
         # Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
         
         # Compute the next location of snake head with action
-        UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
-        if action == UP:
-        	j_head += 1
-       	elif action == DOWN:
-       		j_head -= 1
-       	elif action == LEFT:
-       		i_head -= 1
-       	elif action == RIGHT:
-       		i_head += 1
-         
+        i_head, j_head = self.update_coords(i_head, j_head, action)
+
         # Loop through snakes to see if we're about to collide
         i = 0
         for snake in self.snakes:
@@ -113,8 +167,9 @@ class MyBattlesnakeHeuristics:
                 x, y = piece["x"], piece["y"]
                 if x == i_head and y == j_head: # Exact match
                     return True
-
         return False
+    
+    # ------------------------------------------------------------------------
     
     def run(self):
         
@@ -142,6 +197,11 @@ class MyBattlesnakeHeuristics:
             if self.did_try_to_hit_snake(action):
                 bad_actions.append(action)
                 log_strings.append("{} tries to hit a snake".format(action_names[action]))
+            
+            # Don't lose a head-to-head
+            if self.about_to_go_head_to_head(action):
+                bad_actions.append(action)
+                log_string.append("{} could lose a head-to-head".format(action_names[action]))
 
         legal_actions = [a for a in actions if a not in bad_actions]
         
