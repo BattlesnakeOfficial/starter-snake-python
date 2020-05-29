@@ -24,6 +24,8 @@ class MyBattlesnakeHeuristics:
         Example heuristic to move towards food if it's close to you.
         '''
         
+        food_direction = None
+        
         # Get the position of the snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
         UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
