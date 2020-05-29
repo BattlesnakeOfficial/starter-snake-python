@@ -26,16 +26,17 @@ class MyBattlesnakeHeuristics:
         
         # Get the position of the snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
+        UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
         
         # Check if we are surrounded by food
         if {'x': i_head-1, 'y': j_head} in self.foods:
-            food_direction = 0
+            food_direction = LEFT
         if {'x': i_head+1, 'y': j_head} in self.foods:
-            food_direction = 1
+            food_direction = RIGHT
         if {'x': i_head, 'y': j_head-1} in self.foods:
-            food_direction = 2
+            food_direction = DOWN
         if {'x': i_head, 'y': j_head+1} in self.foods:
-            food_direction = 3
+            food_direction = UP
         
         return food_direction
     
@@ -51,19 +52,20 @@ class MyBattlesnakeHeuristics:
         i_body, j_body = self.my_body[1]["x"], self.my_body[1]["y"]
 
         # Calculate the facing direction with the head and the next location
-        diff_vert, diff_horiz = i_head - i_body, j_head - j_body
+        diff_horiz, diff_vert = i_head - i_body, j_head - j_body
+        UP, DOWN, LEFT, RIGHT = 0, 1, 2 ,3
         
-        if diff_vert == -1 and diff_horiz == 0: # Up
-            if action == 1: # Down = death
+        if diff_horiz == -1 and diff_vert == 0: # Left
+            if action == RIGHT:
                 return True
-        elif diff_vert == 1 and diff_horiz == 0: # Down
-            if action == 0: # Up = death
+        elif diff_horiz == 1 and diff_vert == 0: # Right
+            if action == LEFT:
                 return True 
-        elif diff_vert == 0 and diff_horiz == -1: # Left
-            if action == 3: # Right = death
+        elif diff_horiz == 0 and diff_vert == 1: # Up
+            if action == DOWN:
                 return True
-        elif diff_vert == 0 and diff_horiz == 1: # Right
-            if action == 2: # Left = death
+        elif diff_horiz == 0 and diff_vert == -1: # Down
+            if action == UP:
                 return True
             
         return False
@@ -79,10 +81,10 @@ class MyBattlesnakeHeuristics:
         UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
 
         # Top, bottom, left, right layer respectively
-        if i_head == height_min and action == UP \
-            or i_head == height_max and action == DOWN \
-            or j_head == width_min and action == LEFT \
-            or j_head == width_max and action == RIGHT:
+        if j_head == height_min and action == DOWN \
+            or j_head == height_max and action == UP \
+            or i_head == width_min and action == LEFT \
+            or i_head == width_max and action == RIGHT:
             return True
 
         return False
@@ -94,13 +96,13 @@ class MyBattlesnakeHeuristics:
         # Compute the next location of snake head with action
         UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
         if action == UP:
-        	i_head -= 1
+        	j_head += 1
        	elif action == DOWN:
-       		i_head += 1
-       	elif action == LEFT:
        		j_head -= 1
+       	elif action == LEFT:
+       		i_head -= 1
        	elif action == RIGHT:
-       		j_head += 1
+       		i_head += 1
          
         # Loop through snakes to see if we're about to collide
         i = 0
