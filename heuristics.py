@@ -126,52 +126,52 @@ class MyBattlesnakeHeuristics:
         if self.my_health < 50:
             food_direction = self.go_to_food_if_close()
             if food_direction:
-                best_action = food_direction
+                action = food_direction
                 log_string = "Went to food if close."
         
         # Don't do a forbidden move
         if self.did_try_to_kill_self(action):
             
-            old_action = best_action # For logging
+            old_action = action # For logging
             
             # Pick one lower q-value instead
             sort = np.argsort(action)[0]
-            best_action = sort[-num_redirected]
+            action = sort[-num_redirected]
 
             num_redirected -= 1
             
-            log_string = "Forbidden. Changed {} to {}".format(old_action, best_action)
+            log_string = "Forbidden. Changed {} to {}".format(old_action, action)
 
         # Don't exit the map
         if self.did_try_to_escape(action):
 
-            old_action = best_action # For logging
+            old_action = action # For logging
             
             # Pick one lower q-value instead
             sort = np.argsort(action)[0]
-            best_action = sort[-num_redirected]
+            action = sort[-num_redirected]
 
             num_redirected -= 1
             
-            log_string = "Tried to escape. Changed {} to {}".format(old_action, best_action)
+            log_string = "Tried to escape. Changed {} to {}".format(old_action, action)
 
         # Don't hit another snake
         if self.did_try_to_hit_snake(action):
-            old_action = best_action
+            old_action = action
             
             # Pick one lower q-value instead
             sort = np.argsort(action)[0]
-            best_action = sort[-num_redirected]
+            action = sort[-num_redirected]
             
             num_redirected -= 1
             
-            log_string = "About to hit a snake. Changed {} to {}".format(old_action, best_action)
+            log_string = "About to hit a snake. Changed {} to {}".format(old_action, action)
 
         # Somehow, every action is bad! Pick the highest q-value and die lmao
-        if best_action not in [0, 1, 2, 3]:
-        	best_action = int(np.argmax(action))
+        if action not in [0, 1, 2, 3]:
+        	action = int(np.argmax(action))
         	log_string = "Guess I'll die!"
 
-        assert best_action in [0, 1, 2, 3], "{} is not a valid action.".format(best_action)
+        assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
         
-        return best_action, log_string
+        return action, log_string
