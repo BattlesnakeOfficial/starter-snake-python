@@ -89,14 +89,16 @@ class MyBattlesnakeHeuristics:
                 
             # Get new coordinate of where head would be //on turn after next// if we move there
             i_new, j_new = self.update_coords(i_head, j_head, a)
-                
+            
             for snake in self.snakes:
-                for piece in snake["body"]:
-                    if piece is self.my_head: # Skip our own head (or else it would return True each time)
-                        continue
-                    x, y = piece["x"], piece["y"]
-                    if x == i_new and y == j_new and snake["health"] > self.my_health: # Exact match
-                        return True
+                head = snake["head"]
+                
+                if head is self.my_head: # Skip our own head (or else it would return True each time)
+                    continue
+                
+                x, y = head["x"], head["y"]
+                if x == i_new and y == j_new and snake["health"] > self.my_health: # Exact match
+                    return True
         
         return False
         
