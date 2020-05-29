@@ -87,7 +87,7 @@ class MyBattlesnakeHeuristics:
 
         return False
 
-    def did_try_to_hit_snake(self, json, state, action):
+    def did_try_to_hit_snake(self, action):
 
     	# Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
