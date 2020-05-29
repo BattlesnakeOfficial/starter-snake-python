@@ -11,7 +11,7 @@ class MyBattlesnakeHeuristics:
         self.height = json["board"]["height"]
         self.width = json["board"]["width"]
         self.foods = json["board"]["food"]
-        self.snakes = json["snakes"]
+        self.snakes = json["board"]["snakes"]
         self.me = json["you"]
         self.my_health = json["you"]["health"]
         self.my_body = json["you"]["body"]
