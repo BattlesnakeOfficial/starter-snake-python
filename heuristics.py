@@ -107,9 +107,6 @@ class MyBattlesnakeHeuristics:
         # Loop through snakes to see if we're about to collide
         i = 0
         for snake in self.snakes:
-            i += 1
-            if i == 1: # Ignore our own body for now
-                continue
             for piece in snake["body"]:
                 x, y = piece["x"], piece["y"]
                 if x == i_head or y == j_head:
@@ -164,4 +161,4 @@ class MyBattlesnakeHeuristics:
 
         assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
         
-        return action, log_string
+        return action, log_strings

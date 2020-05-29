@@ -53,7 +53,8 @@ class Battlesnake(object):
         
         # Check logs
         if len(log_strings) > 0:
-            for msg in log_strings: print(msg)
+            for msg in log_strings: 
+                print(msg)
         
         return {"move": action}
 
