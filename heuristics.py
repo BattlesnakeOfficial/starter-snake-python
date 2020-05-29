@@ -109,7 +109,7 @@ class MyBattlesnakeHeuristics:
         for snake in self.snakes:
             for piece in snake["body"]:
                 x, y = piece["x"], piece["y"]
-                if x == i_head or y == j_head:
+                if x == i_head and y == j_head: # Exact match
                     return True
 
         return False
