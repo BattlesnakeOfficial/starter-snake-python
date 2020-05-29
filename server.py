@@ -1,12 +1,8 @@
 import os
 import random
-
 import cherrypy
 
-"""
-This is a simple Battlesnake server written in Python.
-For instructions see https://github.com/BattlesnakeOfficial/starter-snake-python/README.md
-"""
+from heuristics import MyBattlesnakeHeuristics
 import json
 
 class Battlesnake(object):
@@ -45,15 +41,19 @@ class Battlesnake(object):
         data = cherrypy.request.json
 
         # Save the json file to get an idea of what's in it
-        with open("data.json", "w") as write_file:
-            json.dump(data, write_file)
+        # with open("data.json", "w") as write_file:
+        #     json.dump(data, write_file)
+
+        print('PRINTING DATA')
+        print(data)
 
         # Choose a random direction to move in
         possible_moves = ["up", "down", "left", "right"]
         move = random.choice(possible_moves)
 
         # Pass it through heuristics
-        
+        # h = MyBattlesnakeHeuristics
+
 
         print(f"MOVE: {move}")
         return {"move": move}
