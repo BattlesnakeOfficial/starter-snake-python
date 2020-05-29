@@ -1,12 +1,12 @@
 import numpy as np
 import random
 
+UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
+
 class MyBattlesnakeHeuristics:
     '''
     The BattlesnakeHeuristics class allows you to define handcrafted rules of the snake.
     '''
-    
-    UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
     
     def __init__(self, json):
         self.height = json["board"]["height"]
