@@ -74,15 +74,15 @@ class MyBattlesnakeHeuristics:
         i_head, j_head = self.my_head["x"], self.my_head["y"]
 
         # Get dimensions
-        height_min, width_min, height_max, width_max = 0, 0, self.height, self.width
+        height_min, width_min, height_max, width_max = 0, 0, self.height-1, self.width-1
 
         UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
 
         # Top, bottom, left, right layer respectively
         if i_head == height_min and action == UP \
-        or i_head == height_max and action == DOWN \
-        or j_head == width_min and action == LEFT \
-        or j_head == width_max and action == RIGHT:
+            or i_head == height_max and action == DOWN \
+            or j_head == width_min and action == LEFT \
+            or j_head == width_max and action == RIGHT:
             return True
 
         return False
@@ -109,7 +109,7 @@ class MyBattlesnakeHeuristics:
             if i == 0: # Ignore our own body for now
                 i += 1
                 continue
-        	for piece in snake["body"]:
+            for piece in snake["body"]:
         		x, y = piece["x"], piece["y"]
 
         		if x == i_head or y == j_head:
