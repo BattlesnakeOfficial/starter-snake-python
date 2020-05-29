@@ -68,7 +68,7 @@ class MyBattlesnakeHeuristics:
             
         return False
 
-    def did_try_to_escape(self, json, state, best_action):
+    def did_try_to_escape(self, best_action):
 
         # Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
