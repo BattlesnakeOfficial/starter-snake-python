@@ -63,23 +63,7 @@ class MyBattlesnakeHeuristics:
 
     def about_to_go_head_to_head(self, action):
         
-        # Check direction we're currently going in
-        i_head, j_head = self.my_head["x"], self.my_head["y"]           # Head
-        # i_body, j_body = self.my_body[1]["x"], self.my_body[1]["y"]     # Second piece (body)
-
-        # diff_horiz, diff_vert = i_head - i_body, j_head - j_body
-        # UP, DOWN, LEFT, RIGHT = 0, 1, 2 ,3
-        # valid_actions = [UP, DOWN, LEFT, RIGHT]
-        
-        # # Delete the illegal action
-        # if diff_horiz == -1 and diff_vert == 0: # Left
-        #     del(valid_actions[RIGHT])
-        # elif diff_horiz == 1 and diff_vert == 0: # Right
-        #     del(valid_actions[LEFT])
-        # elif diff_horiz == 0 and diff_vert == 1: # Up
-        #     del(valid_actions[DOWN])
-        # elif diff_horiz == 0 and diff_vert == -1: # Down
-        #     del(valid_actions[UP])
+        i_head, j_head = self.my_head["x"], self.my_head["y"]
 
         # Get new coordinate of where head will be if we move there
         i_head, j_head = self.update_coords(i_head, j_head, action)
@@ -95,9 +79,9 @@ class MyBattlesnakeHeuristics:
                 
                 if head is self.my_head: # Skip our own head (or else it would return True each time)
                     continue
-                
                 x, y = head["x"], head["y"]
-                if x == i_new and y == j_new and snake["health"] >= self.my_health: # Exact match
+                
+                if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
                     return True
         
         return False
