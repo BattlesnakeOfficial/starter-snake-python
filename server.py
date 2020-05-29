@@ -2,7 +2,7 @@ import os
 import random
 import cherrypy
 
-# from heuristics import MyBattlesnakeHeuristics
+from heuristics import MyBattlesnakeHeuristics
 import json
 
 class Battlesnake(object):
@@ -37,26 +37,22 @@ class Battlesnake(object):
     def move(self):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
-        # TODO: Use the information in cherrypy.request.json to decide your next move.
-        data = cherrypy.request.json
 
-        # Save the json file to get an idea of what's in it
-        # with open("data.json", "w") as write_file:
-        #     json.dump(data, write_file)
+        json = cherrypy.request.json
 
-        print('PRINTING DATA')
-        print(data)
-
-        # Choose a random direction to move in
         possible_moves = ["up", "down", "left", "right"]
-        move = random.choice(possible_moves)
 
-        # Pass it through heuristics
-        # h = MyBattlesnakeHeuristics
-
-
-        print(f"MOVE: {move}")
-        return {"move": move}
+        # Choose an action through heuristics
+        heur = MyBattlesnakeHeuristics(json)
+        action_index, log_string = heur.run()
+        
+        action = possible_moves[action_index]
+        
+        print("MOVE: ", action)
+        if len(log_string) > 0:
+            print("LOG: ", log_string)
+        
+        return {"move": action}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
