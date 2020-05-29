@@ -104,7 +104,11 @@ class MyBattlesnakeHeuristics:
        		j_head += 1
         
         # Loop through snakes to see if we're about to collide
+        i = 0
         for snake in self.snakes:
+            if i == 0: # Ignore our own body for now
+                i += 1
+                continue
         	for piece in snake["body"]:
         		x, y = piece["x"], piece["y"]
 

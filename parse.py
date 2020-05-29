@@ -26,7 +26,7 @@ if __name__ == '__main__':
     
     my_length = json["you"]["length"]
     
-    print('-----------')
+    print('----- Other stuff ------')
     num_redirected = 2
     actions = np.random.rand(4) # Walmart Q-values
     print(actions)

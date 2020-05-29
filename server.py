@@ -39,6 +39,7 @@ class Battlesnake(object):
         # Valid moves are "up", "down", "left", or "right".
 
         json = cherrypy.request.json
+        print('JSON:\n', json)
 
         possible_moves = ["up", "down", "left", "right"]
 
