@@ -77,12 +77,19 @@ class MyBattlesnakeHeuristics:
             for snake in self.snakes:
                 head = snake["head"]
                 
-                if head is self.my_head: # Skip our own head (or else it would return True each time)
+                if head == self.my_head: # Skip our own head (or else it would return True each time)
                     continue
                 x, y = head["x"], head["y"]
                 
                 if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
                     return True
+                
+        for snake in self.snakes:
+            for piece in snake["body"]:
+                x, y = piece["x"], piece["y"]
+                if x == i_head and y == j_head: # Exact match
+                    return True
+        return False
         
         return False
         
@@ -147,7 +154,6 @@ class MyBattlesnakeHeuristics:
         i_head, j_head = self.update_coords(i_head, j_head, action)
 
         # Loop through snakes to see if we're about to collide
-        i = 0
         for snake in self.snakes:
             for piece in snake["body"]:
                 x, y = piece["x"], piece["y"]
