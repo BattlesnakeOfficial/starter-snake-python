@@ -86,10 +86,9 @@ class MyBattlesnakeHeuristics:
             return True
 
         return False
-
+    
     def did_try_to_hit_snake(self, action):
-
-    	# Get the position of snake head
+        # Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
         
         # Compute the next location of snake head with action
@@ -102,18 +101,17 @@ class MyBattlesnakeHeuristics:
        		j_head -= 1
        	elif action == RIGHT:
        		j_head += 1
-        
+         
         # Loop through snakes to see if we're about to collide
         i = 0
         for snake in self.snakes:
-            if i == 0: # Ignore our own body for now
-                i += 1
+            i += 1
+            if i == 1: # Ignore our own body for now
                 continue
             for piece in snake["body"]:
-        		x, y = piece["x"], piece["y"]
-
-        		if x == i_head or y == j_head:
-        			return True
+                x, y = piece["x"], piece["y"]
+                if x == i_head or y == j_head:
+                    return True
 
         return False
     
