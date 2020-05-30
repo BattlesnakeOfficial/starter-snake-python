@@ -66,6 +66,8 @@ class Battlesnake(object):
         data = cherrypy.request.json
 
         print("END")
+        
+        print('FINAL DATA: ', data)
         return "ok"
 
 
