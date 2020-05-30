@@ -276,19 +276,19 @@ class Heuristics:
             if self.did_try_to_escape(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} tries to escape".format(action_names[action]))
-                continue
+                # continue
 
             # Don't hit another snake (including self)
             if self.did_try_to_hit_snake(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} tries to hit a snake/self".format(action_names[action]))
-                continue
+                # continue
             
             # Don't go where we will die
             if self.will_die_on_next_move(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} will die on next move".format(action_names[action]))
-                continue
+                # continue
             
             # Don't lose a head-to-head
             if self.about_to_go_head_to_head(action):
