@@ -16,8 +16,8 @@ class Battlesnake(object):
             "apiversion": "1",
             "author": "jpulmano",
             "color": "#ff8f00", # Princeton orange bih
-            "head": "beluga",
-            "tail": "fat-rattle",
+            "head": "bendr",
+            "tail": "freckled",
         }
 
     @cherrypy.expose
