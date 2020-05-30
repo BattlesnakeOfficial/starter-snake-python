@@ -67,7 +67,8 @@ class Heuristics:
     
     # ------------------------------------------------------------------------
     
-    # Check if surrounding block to our head has any enemy heads
+    # Check if surrounding block to our head (after action) is 
+    # surrounded by any enemy heads
 
     def about_to_go_head_to_head(self, action):
         
@@ -77,6 +78,8 @@ class Heuristics:
         i_head, j_head = self.update_coords(i_head, j_head, action)
             
         # Loop through snakes to see if there's potential to collide
+        action_names = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+        
         for a in [UP, DOWN, LEFT, RIGHT]:
                 
             # Get new coordinate of where head would be //on turn after next// if we move there
@@ -93,7 +96,8 @@ class Heuristics:
                 if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
                     return True
                 else:
-                    print('{} {} does not hit a snake'.format(action, a))
+                    print('{} {} does not hit snake {}'.format(action_names[action], action_names[action], snake["id"]))
+                    print('x, y of snake {}: {}, {}'.format(snake["id"], x, y))
 
         print('Returning false from head-to-head')
         return False
