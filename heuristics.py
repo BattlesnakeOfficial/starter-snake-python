@@ -174,6 +174,24 @@ class MyBattlesnakeHeuristics:
     
     def will_die_on_next_move(self, action):
         
+        def check_for_death(i_head, j_head, action):
+            # Duplicate code to see if we're about to escape // TODO: Avoid duplicate code
+            if j_head == height_min and action == DOWN \
+                or j_head == height_max and action == UP \
+                or i_head == width_min and action == LEFT \
+                or i_head == width_max and action == RIGHT:
+                return True
+                
+            # Don't hit another snake
+            # Loop through snakes to see if we're about to collide // TODO: Avoid duplicate code
+            for snake in self.snakes:
+                for piece in snake["body"]:
+                    x, y = piece["x"], piece["y"]
+                    if x == i_head and y == j_head: # Exact match
+                        return True
+                    
+            return False
+            
          # Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
         
@@ -187,21 +205,15 @@ class MyBattlesnakeHeuristics:
         height_min, width_min, height_max, width_max = 0, 0, self.height-1, self.width-1
         
         for action in [UP, DOWN, LEFT, RIGHT]:
-
-            # Duplicate code to see if we're about to escape // TODO: Avoid duplicate code
-            if j_head == height_min and action == DOWN \
-                or j_head == height_max and action == UP \
-                or i_head == width_min and action == LEFT \
-                or i_head == width_max and action == RIGHT:
+            
+            if check_for_death(i_head, j_head, action):
                 bad_moves += 1
+            
+            for action in [UP, DOWN, LEFT, RIGHT]:
+                i_new, j_new = self.update_coords(i_head, j_head, action)
                 
-            # Don't hit another snake
-            # Loop through snakes to see if we're about to collide // TODO: Avoid duplicate code
-            for snake in self.snakes:
-                for piece in snake["body"]:
-                    x, y = piece["x"], piece["y"]
-                    if x == i_head and y == j_head: # Exact match
-                        bad_moves += 1
+                if check_for_death(i_new, j_new, action):
+                    bad_moves += 1
         
         return bad_moves >= 4
     
