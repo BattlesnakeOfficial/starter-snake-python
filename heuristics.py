@@ -96,8 +96,8 @@ class Heuristics:
                 if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
                     return True
                 else:
-                    print('{} {} does not hit snake {}'.format(action_names[action], action_names[action], snake["id"]))
-                    print('x, y of snake {}: {}, {}'.format(snake["id"], x, y))
+                    print('{} {} does not hit snake {}'.format(action_names[action], action_names[action], snake["name"]))
+                    print('x, y of snake {}''s head: {}, {}'.format(snake["name"], x, y))
 
         print('Returning false from head-to-head')
         return False
