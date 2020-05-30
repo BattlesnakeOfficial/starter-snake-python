@@ -78,8 +78,6 @@ class Heuristics:
         i_head, j_head = self.update_coords(i_head, j_head, action)
             
         # Loop through snakes to see if there's potential to collide
-        action_names = ['UP', 'DOWN', 'LEFT', 'RIGHT']
-        
         for a in [UP, DOWN, LEFT, RIGHT]:
                 
             # Get new coordinate of where head would be //on turn after next// if we move there
@@ -266,6 +264,12 @@ class Heuristics:
         
         # Check to see which actions kill us
         for action in [UP, DOWN, LEFT, RIGHT]:
+            
+            # Don't lose a head-to-head
+            if self.about_to_go_head_to_head(action):
+                certain_death_actions.append(action)
+                might_die_actions.append(action)
+                log_strings.append("{} could lose a head-to-head".format(action_names[action]))
 
             # Don't exit the map
             if self.did_try_to_escape(action):
@@ -284,13 +288,6 @@ class Heuristics:
                 certain_death_actions.append(action)
                 log_strings.append("{} will die on next move".format(action_names[action]))
                 # continue
-            
-            # Don't lose a head-to-head
-            if self.about_to_go_head_to_head(action):
-                certain_death_actions.append(action)
-                might_die_actions.append(action)
-                log_strings.append("{} could lose a head-to-head".format(action_names[action]))
-            
         
         legal_actions = [a for a in actions if a not in certain_death_actions]
         

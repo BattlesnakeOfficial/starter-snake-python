@@ -41,6 +41,6 @@ if __name__ == '__main__':
     for i in range(0, 5):
         print(i)
         for j in range(10,15):
-            if j == 11: continue
-            print(j)
+            if j != 11:
+                print(j)
             
