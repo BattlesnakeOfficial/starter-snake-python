@@ -88,10 +88,10 @@ class Heuristics:
                     x, y = head["x"], head["y"]
                     if (x == i_new and y == j_new) and (snake["health"] >= self.my_health):
                         return True
-                    else:
-                        print('Moving {} {} does not hit snake {}'.format(action_names[action], action_names[a], snake["name"]))
-                        print('My health: ', self.my_health)
-                        print('{}''s health: {}'.format(snake["name"], snake["health"]))
+                    # else:
+                    #     print('Moving {} {} does not hit snake {}'.format(action_names[action], action_names[a], snake["name"]))
+                    #     print('My health: ', self.my_health)
+                    #     print('{}''s health: {}'.format(snake["name"], snake["health"]))
         return False
         
 

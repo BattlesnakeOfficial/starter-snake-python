@@ -52,9 +52,9 @@ class Battlesnake(object):
         print("Step {}... Move: {}".format(json['turn'], action))
         
         # Check logs
-        if len(log_strings) > 0:
-            for msg in log_strings: 
-                print(msg)
+        # if len(log_strings) > 0:
+        #     for msg in log_strings: 
+        #         print(msg)
         
         return {"move": action}
 
