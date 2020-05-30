@@ -78,19 +78,20 @@ class Heuristics:
         i_head, j_head = self.update_coords(i_head, j_head, action)
             
         # Loop through snakes to see if there's potential to collide
+        action_names = ['up', 'down', 'left', 'right']
         for a in [UP, DOWN, LEFT, RIGHT]:
-                
             # Get new coordinate of where head would be //on turn after next// if we move there
             i_new, j_new = self.update_coords(i_head, j_head, a)
-            
             for snake in self.snakes:
                 head = snake["head"]
-                
                 if head != self.my_head: # Skip our own head (or else it would return True each time)
                     x, y = head["x"], head["y"]
-                    if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
+                    if (x == i_new and y == j_new) and (snake["health"] >= self.my_health):
                         return True
-
+                    else:
+                        print('Moving {} {} does not hit snake {}'.format(action_names[action], action_names[a], snake["name"]))
+                        print('My health: ', self.my_health)
+                        print('{}''s health: {}'.format(snake["name"], snake["health"]))
         return False
         
 
@@ -265,29 +266,29 @@ class Heuristics:
         # Check to see which actions kill us
         for action in [UP, DOWN, LEFT, RIGHT]:
             
-            # Don't lose a head-to-head
-            if self.about_to_go_head_to_head(action):
+            # Don't hit another snake (including self)
+            if self.did_try_to_hit_snake(action):
                 certain_death_actions.append(action)
-                might_die_actions.append(action)
-                log_strings.append("{} could lose a head-to-head".format(action_names[action]))
+                log_strings.append("{} tries to hit a snake/self".format(action_names[action]))
+                continue
 
             # Don't exit the map
             if self.did_try_to_escape(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} tries to escape".format(action_names[action]))
-                # continue
-
-            # Don't hit another snake (including self)
-            if self.did_try_to_hit_snake(action):
-                certain_death_actions.append(action)
-                log_strings.append("{} tries to hit a snake/self".format(action_names[action]))
-                # continue
+                continue
             
             # Don't go where we will die
             if self.will_die_on_next_move(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} will die on next move".format(action_names[action]))
-                # continue
+                continue
+            
+            # Don't lose a head-to-head
+            if self.about_to_go_head_to_head(action):
+                certain_death_actions.append(action)
+                might_die_actions.append(action)
+                log_strings.append("{} could lose a head-to-head".format(action_names[action]))
         
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
