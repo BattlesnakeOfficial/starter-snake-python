@@ -276,11 +276,9 @@ class Heuristics:
             action = random.choice(might_die_actions)
             log_strings.append("Let's go for a head-to-head")
         else:
-            action = 0 # Just go die!
+            action = random.choice(actions) # Just go die!
             log_strings.append("Guess I'll just die!")
         
-        
-
 
         assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
         
