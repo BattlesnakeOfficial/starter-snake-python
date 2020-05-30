@@ -170,36 +170,41 @@ class MyBattlesnakeHeuristics:
         # Check to see which actions kill us
         action_names = ['UP', 'DOWN', 'LEFT', 'RIGHT']
         actions = [0, 1, 2, 3]
-        bad_actions = []
+        certain_death_actions = []
+        might_die_actions = []
         log_strings = []
         
         for action in actions:
             
             # Don't do a forbidden move
             if self.did_try_to_kill_self(action):
-                bad_actions.append(action)
+                certain_death_actions.append(action)
                 log_strings.append("{} is forbidden".format(action_names[action]))
 
             # Don't exit the map
             if self.did_try_to_escape(action):
-                bad_actions.append(action)
+                certain_death_actions.append(action)
                 log_strings.append("{} tries to escape".format(action_names[action]))
 
             # Don't hit another snake
             if self.did_try_to_hit_snake(action):
-                bad_actions.append(action)
+                certain_death_actions.append(action)
                 log_strings.append("{} tries to hit a snake".format(action_names[action]))
             
             # Don't lose a head-to-head
             if self.about_to_go_head_to_head(action):
-                bad_actions.append(action)
+                certain_death_actions.append(action)
+                might_die_actions.append(action)
                 log_strings.append("{} could lose a head-to-head".format(action_names[action]))
 
-        legal_actions = [a for a in actions if a not in bad_actions]
+        legal_actions = [a for a in actions if a not in certain_death_actions]
         
         # Now choose random action
         if len(legal_actions) > 0:
             action = random.choice(legal_actions)
+        elif len(legal_actions) == 0 and len(might_die_actions) > 0:
+            action = random.choice(might_die_actions)
+            log_strings.append("Let's go for a head-to-head")
         else:
             action = 0 # Just go die!
             log_strings.append("Guess I'll just die!")
