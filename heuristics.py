@@ -219,15 +219,21 @@ class MyBattlesnakeHeuristics:
     
     def run(self):
         
-        log_string = ""
-        
-        # Check to see which actions kill us
+        log_strings = []
         action_names = ['UP', 'DOWN', 'LEFT', 'RIGHT']
         actions = [0, 1, 2, 3]
         certain_death_actions = []
         might_die_actions = []
-        log_strings = []
         
+        # Choose to eat food
+        food_direction = None
+        if self.my_health < 50:
+            food_direction = self.go_to_food_if_close()
+            if food_direction:
+                action = food_direction
+                log_strings.append("Went {} to food if close".format(action_names[action]))
+        
+        # Check to see which actions kill us
         for action in actions:
             
             # Don't do a forbidden move
@@ -244,7 +250,7 @@ class MyBattlesnakeHeuristics:
             # Don't hit another snake (including self)
             if self.did_try_to_hit_snake(action):
                 certain_death_actions.append(action)
-                log_strings.append("{} tries to hit a snake".format(action_names[action]))
+                log_strings.append("{} tries to hit a snake/self".format(action_names[action]))
                 continue
             
             # Don't go where we will die
@@ -262,7 +268,7 @@ class MyBattlesnakeHeuristics:
 
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
-        # Now choose random action
+        # Now choose to go to food if safe OR random action
         if len(legal_actions) > 0:
             action = random.choice(legal_actions)
         elif len(legal_actions) == 0 and len(might_die_actions) > 0:
@@ -272,13 +278,7 @@ class MyBattlesnakeHeuristics:
             action = 0 # Just go die!
             log_strings.append("Guess I'll just die!")
         
-        # Overwrite action if there's food that we are close to
-        # This will never kill us based on current heuristics
-        if self.my_health < 30:
-            food_direction = self.go_to_food_if_close()
-            if food_direction:
-                action = food_direction
-                log_strings.append("Went {} to food if close".format(action_names[action]))
+        
 
 
         assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
