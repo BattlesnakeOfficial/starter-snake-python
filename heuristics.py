@@ -21,30 +21,7 @@ class MyBattlesnakeHeuristics:
     
     # ------------------------------------------------------------------------
     
-    
-    def go_to_food_if_close(self):
-        '''
-        Example heuristic to move towards food if it's close to you.
-        '''
-        
-        food_direction = None
-        
-        # Get the position of the snake head
-        i_head, j_head = self.my_head["x"], self.my_head["y"]
-        
-        # Check if we are surrounded by food
-        if {'x': i_head-1, 'y': j_head} in self.foods:
-            food_direction = LEFT
-        if {'x': i_head+1, 'y': j_head} in self.foods:
-            food_direction = RIGHT
-        if {'x': i_head, 'y': j_head-1} in self.foods:
-            food_direction = DOWN
-        if {'x': i_head, 'y': j_head+1} in self.foods:
-            food_direction = UP
-        
-        return food_direction
-    
-    # ------------------------------------------------------------------------
+    # Helper function to update coordinates
     
     def update_coords(self, i, j, action):
         
@@ -60,6 +37,35 @@ class MyBattlesnakeHeuristics:
         return i, j
     
     # ------------------------------------------------------------------------
+    
+    # Check if food is one or two blocks next to our head
+    
+    def go_to_food_if_close(self):
+        '''
+        Example heuristic to move towards food if it's close to you.
+        '''
+        
+        food_direction = None
+        
+        # Get the position of the snake head
+        i_head, j_head = self.my_head["x"], self.my_head["y"]
+        
+        # Check if we are surrounded by food
+        if {'x': i_head-1, 'y': j_head} in self.foods or {'x': i_head-2, 'y': j_head} in self.foods:
+            food_direction = LEFT
+        if {'x': i_head+1, 'y': j_head} in self.foods or {'x': i_head+2, 'y': j_head} in self.foods:
+            food_direction = RIGHT
+        if {'x': i_head, 'y': j_head-1} in self.foods or {'x': i_head, 'y': j_head-2} in self.foods:
+            food_direction = DOWN
+        if {'x': i_head, 'y': j_head+1} in self.foods or {'x': i_head, 'y': j_head+2} in self.foods:
+            food_direction = UP
+        
+        return food_direction
+    
+    
+    # ------------------------------------------------------------------------
+    
+    # Check if surrounding block to our head has any enemy heads
 
     def about_to_go_head_to_head(self, action):
         
@@ -88,6 +94,8 @@ class MyBattlesnakeHeuristics:
         
 
     # ------------------------------------------------------------------------
+    
+    # Check for a forbidden move (e.g. going right, move left)
     
     def did_try_to_kill_self(self, action):
         
@@ -119,11 +127,12 @@ class MyBattlesnakeHeuristics:
         return False
     
     # ------------------------------------------------------------------------
+    
+    # Check if we're leaving the map
 
     def did_try_to_escape(self, action):
-
-        # Get the position of snake head
-        i_head, j_head = self.my_head["x"], self.my_head["y"]
+        
+        i_head = self.my_head["x"], j_head = self.my_head["y"]
 
         # Get dimensions
         height_min, width_min, height_max, width_max = 0, 0, self.height-1, self.width-1
@@ -139,7 +148,10 @@ class MyBattlesnakeHeuristics:
     
     # ------------------------------------------------------------------------
     
+    # Check if we're about to hit another snake
+    
     def did_try_to_hit_snake(self, action):
+        
         # Get the position of snake head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
         
@@ -153,6 +165,43 @@ class MyBattlesnakeHeuristics:
                 if x == i_head and y == j_head: # Exact match
                     return True
         return False
+
+    # ------------------------------------------------------------------------
+    
+    # Check if we die on the next move
+    
+    def will_die_on_next_move(self, action):
+        
+         # Get the position of snake head
+        i_head, j_head = self.my_head["x"], self.my_head["y"]
+        
+        # Compute the next location of snake head with action
+        i_head, j_head = self.update_coords(i_head, j_head, action)
+        
+        bad_moves = 0
+        
+         # Get dimensions
+        height_min, width_min, height_max, width_max = 0, 0, self.height-1, self.width-1
+        
+        for action in [UP, DOWN, LEFT, RIGHT]:
+
+            # Duplicate code to see if we're about to escape // TODO: Avoid duplicate code
+            if j_head == height_min and action == DOWN \
+                or j_head == height_max and action == UP \
+                or i_head == width_min and action == LEFT \
+                or i_head == width_max and action == RIGHT:
+                bad_moves += 1
+                
+            # Don't hit another snake
+            # Loop through snakes to see if we're about to collide // TODO: Avoid duplicate code
+            for snake in self.snakes:
+                for piece in snake["body"]:
+                    x, y = piece["x"], piece["y"]
+                    if x == i_head and y == j_head: # Exact match
+                        bad_moves += 1
+        
+        return bad_moves >= 4
+    
     
     # ------------------------------------------------------------------------
     
@@ -170,16 +219,16 @@ class MyBattlesnakeHeuristics:
         for action in actions:
             
             # Don't do a forbidden move
-            if self.did_try_to_kill_self(action):
-                certain_death_actions.append(action)
-                log_strings.append("{} is forbidden".format(action_names[action]))
+            # if self.did_try_to_kill_self(action):
+            #     certain_death_actions.append(action)
+            #     log_strings.append("{} is forbidden".format(action_names[action]))
 
             # Don't exit the map
             if self.did_try_to_escape(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} tries to escape".format(action_names[action]))
 
-            # Don't hit another snake
+            # Don't hit another snake (including self)
             if self.did_try_to_hit_snake(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} tries to hit a snake".format(action_names[action]))
@@ -189,6 +238,11 @@ class MyBattlesnakeHeuristics:
                 certain_death_actions.append(action)
                 might_die_actions.append(action)
                 log_strings.append("{} could lose a head-to-head".format(action_names[action]))
+            
+            # Don't go where we will die
+            if self.will_die_on_next_move(action):
+                certain_death_actions.append(action)
+                log_strings.append("{} will die on next move".format(action_names[action]))
 
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
