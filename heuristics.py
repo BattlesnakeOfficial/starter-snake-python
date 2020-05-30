@@ -307,11 +307,12 @@ class Heuristics:
             action = food_direction
             log_strings.append("Went {} to food if close".format(action_names[action]))
         elif len(legal_actions) > 0:
-            
             if len(legal_actions) == 1:
                 action = legal_actions[0]
-            else:
+            elif len(legal_actions) == 2:
                 action = self.get_action_based_on_dist(legal_actions)
+            else: 
+                action = random.choice(legal_actions)
         elif len(legal_actions) == 0 and len(might_die_actions) > 0:
             action = random.choice(might_die_actions)
             log_strings.append("Let's go for a head-to-head")
