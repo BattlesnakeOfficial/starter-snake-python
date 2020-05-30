@@ -208,15 +208,8 @@ class MyBattlesnakeHeuristics:
             
             if check_for_death(i_head, j_head, action):
                 bad_moves += 1
-            
-            for action in [UP, DOWN, LEFT, RIGHT]:
-                i_new, j_new = self.update_coords(i_head, j_head, action)
-                
-                if check_for_death(i_new, j_new, action):
-                    bad_moves += 1
         
-        return bad_moves >= 4
-    
+        return bad_moves == 4
     
     # ------------------------------------------------------------------------
     
