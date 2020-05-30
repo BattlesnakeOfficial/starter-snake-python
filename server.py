@@ -67,7 +67,11 @@ class Battlesnake(object):
 
         print("END")
         
-        print('FINAL DATA: ', data)
+        if data["you"] not in data["board"]["snakes"]:
+            print("you lost bruh")
+        else:
+            print("you won bruh!")
+            
         return "ok"
 
 
