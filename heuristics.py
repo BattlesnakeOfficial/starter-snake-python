@@ -204,7 +204,7 @@ class MyBattlesnakeHeuristics:
         
         # Overwrite action if there's food that we are close to
         # This will never kill us based on current heuristics
-        if self.my_health < 50:
+        if self.my_health < 30:
             food_direction = self.go_to_food_if_close()
             if food_direction:
                 action = food_direction
