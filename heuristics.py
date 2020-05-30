@@ -92,7 +92,10 @@ class Heuristics:
                 
                 if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
                     return True
-        
+                else:
+                    print('{} {} does not hit a snake'.format(action, a))
+
+        print('Returning false from head-to-head')
         return False
         
 
@@ -265,12 +268,7 @@ class Heuristics:
             food_direction = self.go_to_food_if_close()
         
         # Check to see which actions kill us
-        for action in actions:
-            
-            # Don't do a forbidden move
-            # if self.did_try_to_kill_self(action):
-            #     certain_death_actions.append(action)
-            #     log_strings.append("{} is forbidden".format(action_names[action]))
+        for action in [UP, DOWN, LEFT, RIGHT]:
 
             # Don't exit the map
             if self.did_try_to_escape(action):
@@ -296,7 +294,7 @@ class Heuristics:
                 might_die_actions.append(action)
                 log_strings.append("{} could lose a head-to-head".format(action_names[action]))
             
-
+        
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
         # 1) Now choose to go to food if safe 
