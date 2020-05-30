@@ -49,12 +49,12 @@ class Battlesnake(object):
         action = possible_moves[action_index]
         
         # Print move
-        print("Step {}... Move: {}".format(json['turn'], action))
+        # print("Step {}... Move: {}".format(json['turn'], action))
         
         # Check logs
-        if len(log_strings) > 0:
-            for msg in log_strings: 
-                print(msg)
+        # if len(log_strings) > 0:
+        #     for msg in log_strings: 
+        #         print(msg)
         
         return {"move": action}
 
@@ -64,8 +64,6 @@ class Battlesnake(object):
         # This function is called when a game your snake was in ends.
         # It's purely for informational purposes, you don't have to make any decisions here.
         data = cherrypy.request.json
-        
-        print(data)
 
         print("END")
         return "ok"

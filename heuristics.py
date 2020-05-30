@@ -83,13 +83,6 @@ class MyBattlesnakeHeuristics:
                 
                 if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
                     return True
-                
-        for snake in self.snakes:
-            for piece in snake["body"]:
-                x, y = piece["x"], piece["y"]
-                if x == i_head and y == j_head: # Exact match
-                    return True
-        return False
         
         return False
         
