@@ -2,7 +2,7 @@ import os
 import random
 import cherrypy
 
-from heuristics import MyBattlesnakeHeuristics
+from heuristics import Heuristics
 import json
 
 class Battlesnake(object):
@@ -43,8 +43,8 @@ class Battlesnake(object):
         possible_moves = ["up", "down", "left", "right"]
 
         # Choose an action through heuristics
-        heur = MyBattlesnakeHeuristics(json)
-        action_index, log_strings = heur.run()
+        heuristics = Heuristics(json)
+        action_index, log_strings = heuristics.run()
         
         action = possible_moves[action_index]
         

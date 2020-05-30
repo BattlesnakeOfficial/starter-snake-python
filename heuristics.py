@@ -3,9 +3,10 @@ import random
 
 UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
 
-class MyBattlesnakeHeuristics:
+class Heuristics:
+    
     '''
-    The BattlesnakeHeuristics class allows you to define handcrafted rules of the snake.
+    The BattlesnakeHeuristics class defines handcrafted rules for the snake.
     '''
     
     def __init__(self, json):
@@ -98,34 +99,36 @@ class MyBattlesnakeHeuristics:
     
     # Check for a forbidden move (e.g. going right, move left)
     
-    def did_try_to_kill_self(self, action):
+    # Deprecated by did_try_to_hit_snake
+    
+    # def did_try_to_kill_self(self, action):
         
-        # Return if our body is smol (1 piece only)
-        if len(self.my_body) == 1:
-            return False
+    #     # Return if our body is smol (1 piece only)
+    #     if len(self.my_body) == 1:
+    #         return False
         
-        i_head, j_head = self.my_head["x"], self.my_head["y"]
+    #     i_head, j_head = self.my_head["x"], self.my_head["y"]
         
-        # Get the position of the second piece (body)
-        i_body, j_body = self.my_body[1]["x"], self.my_body[1]["y"]
+    #     # Get the position of the second piece (body)
+    #     i_body, j_body = self.my_body[1]["x"], self.my_body[1]["y"]
 
-        # Calculate the facing direction with the head and the next location
-        diff_horiz, diff_vert = i_head - i_body, j_head - j_body
+    #     # Calculate the facing direction with the head and the next location
+    #     diff_horiz, diff_vert = i_head - i_body, j_head - j_body
         
-        if diff_horiz == -1 and diff_vert == 0: # Left
-            if action == RIGHT:
-                return True
-        elif diff_horiz == 1 and diff_vert == 0: # Right
-            if action == LEFT:
-                return True 
-        elif diff_horiz == 0 and diff_vert == 1: # Up
-            if action == DOWN:
-                return True
-        elif diff_horiz == 0 and diff_vert == -1: # Down
-            if action == UP:
-                return True
+    #     if diff_horiz == -1 and diff_vert == 0: # Left
+    #         if action == RIGHT:
+    #             return True
+    #     elif diff_horiz == 1 and diff_vert == 0: # Right
+    #         if action == LEFT:
+    #             return True 
+    #     elif diff_horiz == 0 and diff_vert == 1: # Up
+    #         if action == DOWN:
+    #             return True
+    #     elif diff_horiz == 0 and diff_vert == -1: # Down
+    #         if action == UP:
+    #             return True
             
-        return False
+    #     return False
     
     # ------------------------------------------------------------------------
     
