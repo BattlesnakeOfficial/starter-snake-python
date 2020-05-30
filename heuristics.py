@@ -88,13 +88,10 @@ class Heuristics:
             for snake in self.snakes:
                 head = snake["head"]
                 
-                if head == self.my_head: # Skip our own head (or else it would return True each time)
-                    continue
-                
-                x, y = head["x"], head["y"]
-                
-                if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
-                    return True
+                if head != self.my_head: # Skip our own head (or else it would return True each time)
+                    x, y = head["x"], head["y"]
+                    if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
+                        return True
 
         return False
         

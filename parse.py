@@ -10,20 +10,19 @@ if __name__ == '__main__':
     foods = json["board"]["food"]
     
     snakes = json["board"]["snakes"]
+    
+    print('Snake heads:')
+    for snake in snakes:
+        print(snake["head"])
+    
+    
     me = json["you"]
+    
     my_health = json["you"]["health"]
-    print(my_health)
     
     my_body = json["you"]["body"]
-    print('BODY: ', my_body)
-    print(len(my_body))
-    x, y = my_body[1]["x"], my_body[1]["y"]
-    print(x, y)
-    
     
     my_head = json["you"]["head"]
-    
-    x, y = my_head["x"], my_head["y"]
     
     my_length = json["you"]["length"]
     
@@ -37,3 +36,11 @@ if __name__ == '__main__':
     print(sort)
     action = sort[-num_redirected]
     print(action)
+    
+    print('For loop testing\n')
+    for i in range(0, 5):
+        print(i)
+        for j in range(10,15):
+            if j == 11: continue
+            print(j)
+            
