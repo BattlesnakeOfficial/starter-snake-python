@@ -85,6 +85,7 @@ class MyBattlesnakeHeuristics:
                 
                 if head == self.my_head: # Skip our own head (or else it would return True each time)
                     continue
+                
                 x, y = head["x"], head["y"]
                 
                 if x == i_new and y == j_new and snake["health"] >= self.my_health: # Match and greater health
@@ -132,7 +133,8 @@ class MyBattlesnakeHeuristics:
 
     def did_try_to_escape(self, action):
         
-        i_head = self.my_head["x"], j_head = self.my_head["y"]
+        # Get head
+        i_head, j_head = self.my_head["x"], self.my_head["y"]
 
         # Get dimensions
         height_min, width_min, height_max, width_max = 0, 0, self.height-1, self.width-1
@@ -178,6 +180,7 @@ class MyBattlesnakeHeuristics:
         # Compute the next location of snake head with action
         i_head, j_head = self.update_coords(i_head, j_head, action)
         
+        # Counter
         bad_moves = 0
         
          # Get dimensions
