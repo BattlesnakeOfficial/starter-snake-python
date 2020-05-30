@@ -281,6 +281,7 @@ class Heuristics:
             # Don't go where we will die
             if self.will_die_on_next_move(action):
                 certain_death_actions.append(action)
+                might_die_actions.append(action)
                 log_strings.append("{} will die on next move".format(action_names[action]))
                 continue
             
@@ -308,7 +309,7 @@ class Heuristics:
                 action = random.choice(legal_actions)
         elif len(legal_actions) == 0 and len(might_die_actions) > 0:
             action = random.choice(might_die_actions)
-            log_strings.append("Let's go for a head-to-head")
+            log_strings.append("Let's go for a head-to-head to a will-die action")
         else:
             action = random.choice(actions) # Just go die!
             log_strings.append("Guess I'll just die!")
