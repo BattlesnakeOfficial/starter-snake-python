@@ -178,12 +178,12 @@ class Heuristics:
     def will_die_on_next_move(self, action):
         
         # Helper function to see if we're dead
-        def dies(i_head, j_head, a):
+        def dies(i, j, a):
             # Duplicate code to see if we're about to escape // TODO: Avoid duplicate code
-            if j_head == height_min and a == DOWN \
-                or j_head == height_max and a == UP \
-                or i_head == width_min and a == LEFT \
-                or i_head == width_max and a == RIGHT:
+            if j == height_min and a == DOWN \
+                or j == height_max and a == UP \
+                or i == width_min and a == LEFT \
+                or i == width_max and a == RIGHT:
                 return True
                 
             # Don't hit another snake
@@ -191,9 +191,8 @@ class Heuristics:
             for snake in self.snakes:
                 for piece in snake["body"]:
                     x, y = piece["x"], piece["y"]
-                    if x == i_head and y == j_head: # Exact match
+                    if x == i and y == j: # Exact match
                         return True
-                    
             return False
             
         # Get the position of snake head
@@ -208,7 +207,7 @@ class Heuristics:
          # Get dimensions
         height_min, width_min, height_max, width_max = 0, 0, self.height-1, self.width-1
         
-        for a in [UP, DOWN, LEFT, RIGHT]: # Note to self: don't confuse 'action' with 'a'
+        for a in [UP, DOWN, LEFT, RIGHT]: # Note to self: don't confuse 'action' with 'a' and CHANGE VARIABLE NAMES
             
             i_new, j_new = self.update_coords(i_head, j_head, a)
             
