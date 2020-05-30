@@ -226,13 +226,10 @@ class Heuristics:
         certain_death_actions = []
         might_die_actions = []
         
-        # Choose to eat food
+        # See if we can eat food
         food_direction = None
         if self.my_health < 50:
             food_direction = self.go_to_food_if_close()
-            if food_direction:
-                action = food_direction
-                log_strings.append("Went {} to food if close".format(action_names[action]))
         
         # Check to see which actions kill us
         for action in actions:
@@ -269,8 +266,14 @@ class Heuristics:
 
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
-        # Now choose to go to food if safe OR random action
-        if len(legal_actions) > 0:
+        # 1) Now choose to go to food if safe 
+        # 2) If no food, choose random action
+        # 3) If no legal actions, choose an action where we might die (head-to-head)
+        # 4) Just go die lmao
+        if food_direction and food_direction in legal_actions:
+            action = food_direction
+            log_strings.append("Went {} to food if close".format(action_names[action]))
+        elif len(legal_actions) > 0:   
             action = random.choice(legal_actions)
         elif len(legal_actions) == 0 and len(might_die_actions) > 0:
             action = random.choice(might_die_actions)
@@ -279,7 +282,6 @@ class Heuristics:
             action = random.choice(actions) # Just go die!
             log_strings.append("Guess I'll just die!")
         
-
         assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
         
         return action, log_strings
