@@ -219,6 +219,8 @@ class Heuristics:
     
     # ------------------------------------------------------------------------
     
+    # Choose the action which has the smallest distance 
+    
     def get_action_based_on_dist(self, legal_actions):
         
         # To get the action corresponding to smallest dist.
@@ -227,7 +229,6 @@ class Heuristics:
 
         # Head
         i_head, j_head = self.my_head["x"], self.my_head["y"]
-        i_head, j_head = self.update_coords(i_head, j_head, action)
         
         center_x, center_y = self.height/2, self.width/2
         
@@ -235,8 +236,11 @@ class Heuristics:
             return math.sqrt((center_x - i)**2 + (center_y - j)**2)
             
         for a in legal_actions:
+            
+            # Update head
             i_new, j_new = self.update_coords(i_head, j_head, a)
             
+            # Check dist
             dist = calculate_dist(i_new, j_new)
             
             if dist < smallest_dist:
@@ -303,7 +307,11 @@ class Heuristics:
             action = food_direction
             log_strings.append("Went {} to food if close".format(action_names[action]))
         elif len(legal_actions) > 0:
-            action = self.get_action_based_on_dist(legal_actions)
+            
+            if len(legal_actions) == 1:
+                action = legal_actions[0]
+            else:
+                action = self.get_action_based_on_dist(legal_actions)
         elif len(legal_actions) == 0 and len(might_die_actions) > 0:
             action = random.choice(might_die_actions)
             log_strings.append("Let's go for a head-to-head")
