@@ -15,9 +15,9 @@ class Battlesnake(object):
         return {
             "apiversion": "1",
             "author": "jpulmano",
-            "color": "#800001", 
-            "head": "pixel",
-            "tail": "pixel",
+            "color": "#ff8f00", # Princeton orange bih
+            "head": "beluga",
+            "tail": "fat-rattle",
         }
 
     @cherrypy.expose
@@ -64,6 +64,8 @@ class Battlesnake(object):
         # This function is called when a game your snake was in ends.
         # It's purely for informational purposes, you don't have to make any decisions here.
         data = cherrypy.request.json
+        
+        print(data)
 
         print("END")
         return "ok"
