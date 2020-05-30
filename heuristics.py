@@ -174,7 +174,9 @@ class MyBattlesnakeHeuristics:
     
     def will_die_on_next_move(self, action):
         
-        def check_for_death(i_head, j_head, action):
+        # Helper function to see if we're dead
+        
+        def dies(i_head, j_head, action):
             # Duplicate code to see if we're about to escape // TODO: Avoid duplicate code
             if j_head == height_min and action == DOWN \
                 or j_head == height_max and action == UP \
@@ -206,7 +208,9 @@ class MyBattlesnakeHeuristics:
         
         for action in [UP, DOWN, LEFT, RIGHT]:
             
-            if check_for_death(i_head, j_head, action):
+            i_new, j_new = self.update_coords(i_head, j_head, action)
+            
+            if dies(i_new, j_new, action):
                 bad_moves += 1
         
         return bad_moves == 4
@@ -235,11 +239,19 @@ class MyBattlesnakeHeuristics:
             if self.did_try_to_escape(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} tries to escape".format(action_names[action]))
+                continue
 
             # Don't hit another snake (including self)
             if self.did_try_to_hit_snake(action):
                 certain_death_actions.append(action)
                 log_strings.append("{} tries to hit a snake".format(action_names[action]))
+                continue
+            
+            # Don't go where we will die
+            if self.will_die_on_next_move(action):
+                certain_death_actions.append(action)
+                log_strings.append("{} will die on next move".format(action_names[action]))
+                continue
             
             # Don't lose a head-to-head
             if self.about_to_go_head_to_head(action):
@@ -247,10 +259,6 @@ class MyBattlesnakeHeuristics:
                 might_die_actions.append(action)
                 log_strings.append("{} could lose a head-to-head".format(action_names[action]))
             
-            # Don't go where we will die
-            if self.will_die_on_next_move(action):
-                certain_death_actions.append(action)
-                log_strings.append("{} will die on next move".format(action_names[action]))
 
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
