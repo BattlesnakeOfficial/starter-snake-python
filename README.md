@@ -101,7 +101,7 @@ See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) 
 
 ### Updating Your Battlesnake
 
-After making changes to your Battlesnake, you can stop and restart your Repl to have the change take effect.
+After making changes to your Battlesnake, you can stop and restart your Repl to have the change take effect (or in many cases your Repl will restart automatically).
 
 Once the Repl has restarted, you can [create a new game](https://play.battlesnake.com/account/games/create/) with your Battlesnake to watch your latest changes in action.
 
@@ -115,10 +115,10 @@ Now you have everything you need to start making your Battlesnake super smart!
 
 ### Early Development Goals
 
-[ ] Avoid colliding with yourself
-[ ] Avoid colliding with walls
-[ ] Avoid colliding with other snakes
-[ ] Try to move towards food
+- [ ] Avoid colliding with yourself
+- [ ] Avoid colliding with walls
+- [ ] Try to move towards food
+- [ ] Avoid colliding with other snakes
 
 Once you have completed those steps, you'll be ready to compete live against other Battlesnakes, and start implementing more complex strategies to surive.
 
@@ -143,7 +143,7 @@ Arenas will regularly create new games and rank Battlesnakes based on their resu
 
 
 
-## (Optioanl) Using a Cloud Provider
+## (Optional) Using a Cloud Provider
 
 As your Battlesnake gets more complex, it might make sense to move it to a dedicated hosting provider such as Heroku or AWS. We suggest choosing a platform you're familiar with, or one you'd be interested in learning more about.
 
