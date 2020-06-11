@@ -14,7 +14,7 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 * [Repl.it Account](https://repl.it)
 * [GitHub Account](https://github.com) (Optional)
 
-## Running your Battlesnake on [Repl.it](https://repl.it)
+## Running Your Battlesnake on [Repl.it](https://repl.it)
 
 1. Login to your [Repl.it](https://repl.it) account.
 
@@ -47,7 +47,7 @@ This means your Battlesnake is running correctly on Repl.it.
 
 
 
-## Registering your Battlesnake and creating your first game
+## Registering Your Battlesnake and Creating Your First Game
 
 1. Sign in to [play.battlesnake.com](https://play.battlesnake.com/login/).
 
