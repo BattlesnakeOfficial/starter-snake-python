@@ -1,0 +1,161 @@
+[[package]]
+category = "main"
+description = "Highly-optimized, pure-python HTTP server"
+name = "cheroot"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
+version = "8.3.0"
+
+[package.dependencies]
+"jaraco.functools" = "*"
+more-itertools = ">=2.6"
+six = ">=1.11.0"
+
+[[package]]
+category = "main"
+description = "Object-Oriented HTTP framework"
+name = "cherrypy"
+optional = false
+python-versions = ">=3.5"
+version = "18.6.0"
+
+[package.dependencies]
+cheroot = ">=8.2.1"
+"jaraco.collections" = "*"
+more-itertools = "*"
+portend = ">=2.1.1"
+pywin32 = "*"
+"zc.lockfile" = "*"
+
+[[package]]
+category = "main"
+description = "Utility functions for Python class constructs"
+name = "jaraco.classes"
+optional = false
+python-versions = ">=3.6"
+version = "3.1.0"
+
+[package.dependencies]
+more-itertools = "*"
+
+[[package]]
+category = "main"
+description = "Collection objects similar to those in stdlib by jaraco"
+name = "jaraco.collections"
+optional = false
+python-versions = ">=3.6"
+version = "3.0.0"
+
+[package.dependencies]
+"jaraco.classes" = "*"
+"jaraco.text" = "*"
+six = ">=1.7.0"
+
+[[package]]
+category = "main"
+description = "Functools like those found in stdlib"
+name = "jaraco.functools"
+optional = false
+python-versions = ">=3.6"
+version = "3.0.1"
+
+[package.dependencies]
+more-itertools = "*"
+
+[[package]]
+category = "main"
+description = "Module for text manipulation"
+name = "jaraco.text"
+optional = false
+python-versions = ">=2.7"
+version = "3.2.0"
+
+[package.dependencies]
+"jaraco.functools" = "*"
+six = "*"
+
+[[package]]
+category = "main"
+description = "More routines for operating on iterables, beyond itertools"
+name = "more-itertools"
+optional = false
+python-versions = ">=3.5"
+version = "8.3.0"
+
+[[package]]
+category = "main"
+description = "TCP port monitoring and discovery"
+name = "portend"
+optional = false
+python-versions = ">=2.7"
+version = "2.6"
+
+[package.dependencies]
+tempora = ">=1.8"
+
+[[package]]
+category = "main"
+description = "World timezone definitions, modern and historical"
+name = "pytz"
+optional = false
+python-versions = "*"
+version = "2020.1"
+
+[[package]]
+category = "main"
+description = "Python for Window Extensions"
+marker = "sys_platform == \"win32\""
+name = "pywin32"
+optional = false
+python-versions = "*"
+version = "227"
+
+[[package]]
+category = "main"
+description = "Python 2 and 3 compatibility utilities"
+name = "six"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "1.15.0"
+
+[[package]]
+category = "main"
+description = "Objects and routines pertaining to date and time (tempora)"
+name = "tempora"
+optional = false
+python-versions = ">=3.6"
+version = "3.0.0"
+
+[package.dependencies]
+"jaraco.functools" = ">=1.20"
+pytz = "*"
+
+[[package]]
+category = "main"
+description = "Basic inter-process locks"
+name = "zc.lockfile"
+optional = false
+python-versions = "*"
+version = "2.0"
+
+[package.dependencies]
+setuptools = "*"
+
+[metadata]
+content-hash = "4525054609701dd3baffd13f86cbea41801fb80b658a5de84dcccb8eaee13401"
+python-versions = "^3.8"
+
+[metadata.hashes]
+cheroot = ["2b48c88959b5b80a79aca627ae5212acb398becaa70b576b8b89bec1ad0d1367", "a0577e1f28661727d472671a7cc4e0c12ea0cbc5220265e70f00a8b8cb628931"]
+cherrypy = ["56608edd831ad00991ae585625e0206ed61cf1a0850e4b2cc48489fb2308c499", "c0a7283f02a384c112a0a18404fd3abd849fc7fd4bec19378067150a2573d2e4"]
+"jaraco.classes" = ["116429c2047953f525afdcae165475c4589c7b14870e78b2d068ecb01018827e", "c38698ff8ef932eb33d91c0e8fc192ad7c44ecee03f7f585afd4f35aeaef7aab"]
+"jaraco.collections" = ["a7889f28c80c4875bd6256d9924e8526dacfef22cd7b80ff8469b4d312f9f144", "be570ef4f2e7290b757449395238fa63d70a9255574624e73c5ff9f1ee554721"]
+"jaraco.functools" = ["9fedc4be3117512ca3e03e1b2ffa7a6a6ffa589bfb7d02bfb324e55d493b94f4", "d3dc9f6c1a1d45d7f59682a3bf77aceb685c1a60891606c7e4161e72ecc399ad"]
+"jaraco.text" = ["c87569c9afae14f71b2e1c57f316770ab6981ab675d9c602be1c7981161bacdd", "e5078b1126cc0f166c7859aa75103a56c0d0f39ebcafc21695615472e0f810ec"]
+more-itertools = ["558bb897a2232f5e4f8e2399089e35aecb746e1f9191b6584a151647e89267be", "7818f596b1e87be009031c7653d01acc46ed422e6656b394b0f765ce66ed4982"]
+portend = ["600dd54175e17e9347e5f3d4217aa8bcf4bf4fa5ffbc4df034e5ec1ba7cdaff5", "62dd00b94a6a55fbf0320365fbdeba37f0d1fe14d613841037dc4780bedfda8f"]
+pytz = ["a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed", "c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"]
+pywin32 = ["300a2db938e98c3e7e2093e4491439e62287d0d493fe07cce110db070b54c0be", "31f88a89139cb2adc40f8f0e65ee56a8c585f629974f9e07622ba80199057511", "371fcc39416d736401f0274dd64c2302728c9e034808e37381b5e1b22be4a6b0", "47a3c7551376a865dd8d095a98deba954a98f326c6fe3c72d8726ca6e6b15507", "4cdad3e84191194ea6d0dd1b1b9bdda574ff563177d2adf2b4efec2a244fa116", "7c1ae32c489dc012930787f06244426f8356e129184a02c25aef163917ce158e", "7f18199fbf29ca99dff10e1f09451582ae9e372a892ff03a28528a24d55875bc", "9b31e009564fb95db160f154e2aa195ed66bcc4c058ed72850d047141b36f3a2", "a929a4af626e530383a579431b70e512e736e9588106715215bf685a3ea508d4", "c054c52ba46e7eb6b7d7dfae4dbd987a1bb48ee86debe3f245a2884ece46e295", "f27cec5e7f588c3d1051651830ecc00294f90728d19c3bf6916e6dba93ea357c", "f4c5be1a293bae0076d93c88f37ee8da68136744588bc5e2be2f299a34ceb7aa"]
+six = ["30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259", "8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"]
+tempora = ["70503a3a10fb341f49e7919d193f0b6362bbfddffb560fac47df3e977414c0c6", "e370d822cf48f5356aab0734ea45807250f5120e291c76712a1d766b49ae34f8"]
+"zc.lockfile" = ["307ad78227e48be260e64896ec8886edc7eae22d8ec53e4d528ab5537a83203b", "cc33599b549f0c8a248cb72f3bf32d77712de1ff7ee8814312eb6456b42c015f"]

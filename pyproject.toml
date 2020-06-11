@@ -1,0 +1,9 @@
+[tool.poetry]
+name = "starter-snake-python"
+version = "1.0.0"
+description = "A simple Battlesnake written in Python"
+authors = ["Battlesnake Developers <developers@battlesnake.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+cherrypy = "^18.6"
