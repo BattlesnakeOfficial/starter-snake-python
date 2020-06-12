@@ -113,8 +113,8 @@ Now you have everything you need to start making your Battlesnake super smart!
 
 Here are some simple goals to help you develop your Battlesnake early on. Completing these will make your Battlesnake competitive against other Battlesnakes in multi-player games.
 
-- [ ] Avoid colliding with yourself
 - [ ] Avoid colliding with walls
+- [ ] Avoid colliding with yourself
 - [ ] Try to move towards food
 - [ ] Avoid colliding with other snakes
 
