@@ -16,17 +16,13 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 
 ## Running Your Battlesnake on [Repl.it](https://repl.it)
 
+[![Run on Repl.it](https://repl.it/badge/github/BattlesnakeOfficial/starter-snake-python)](https://repl.it/github/BattlesnakeOfficial/starter-snake-python)
+
 1. Login to your [Repl.it](https://repl.it) account.
 
-2. Create a new Repl and select `Import From GitHub`.
+2. Click the 'Run on Repl.it' button above, or visit the following URL: https://repl.it/github/BattlesnakeOfficial/starter-snake-python.
 
-3. Paste the URL for this GitHub repo into the text field.
-
-    ```
-    https://github.com/BattlesnakeOfficial/starter-snake-python
-    ```
-
-4. Click "Import from GitHub" to finish creating your new Repl. You should see your Repl being initialized - this might take a few moments to complete.
+3. You should see your Repl being initialized - this might take a few moments to complete.
 
 4. Once your Repl is ready to run, click `Run ▶️` at the top of the screen. You should see CherryPy (and any other dependencies) being installed. Once installation is complete, your Battlesnake server will start and you should see the following:
 
