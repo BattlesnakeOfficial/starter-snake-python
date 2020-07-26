@@ -47,11 +47,11 @@ class Battlesnake(object):
         
         possible_moves = ["up", "down", "left", "right"]
 
-
         # Choose an action through our ML model
         agent, policy = make_agent()
         gen = GameGenerator(17, json["board"]["width"], json["board"]["height"])
         
+        # Convert the json to format needed by agent/policy
         converted_input = torch.tensor(agent.gen.make_input(data), dtype=torch.float32)
     
         # Get action
@@ -60,7 +60,6 @@ class Battlesnake(object):
             action_index, value = policy.predict(converted_input, deterministic=True)
         end = time.time()
         
-
         # Check action with heuristics
         # heuristics = Heuristics(json)
         # action_index, log_strings = heuristics.run()

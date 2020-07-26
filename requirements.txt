@@ -8,6 +8,9 @@ PyYAML==5.3.1
 stable-baselines==2.10.0
 tqdm==4.46.1
 
+# Probably too big
+tensorflow==1.14
+
 # pytorch is too big, use CPU stuff
 # torch==1.2.0
 https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
