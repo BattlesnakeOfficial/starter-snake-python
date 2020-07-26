@@ -1,9 +1,12 @@
 import os
 import random
 import cherrypy
+import torch
+import time
 
 from src.heuristics import Heuristics
 from src.my_model import make_agent
+from src.generator import GameGenerator
 
 import json
 
@@ -40,23 +43,33 @@ class Battlesnake(object):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
 
-        json = cherrypy.request.json
-
+        data = cherrypy.request.json
+        
         possible_moves = ["up", "down", "left", "right"]
 
-        # Choose an action through heuristics
-        heuristics = Heuristics(json)
-        action_index, log_strings = heuristics.run()
+
+        # Choose an action through our ML model
+        agent, policy = make_agent()
+        gen = GameGenerator(17, json["board"]["width"], json["board"]["height"])
+        
+        converted_input = torch.tensor(agent.gen.make_input(data), dtype=torch.float32)
+    
+        # Get action
+        start = time.time()
+        with torch.no_grad():
+            action_index, value = policy.predict(converted_input, deterministic=True)
+        end = time.time()
+        
+
+        # Check action with heuristics
+        # heuristics = Heuristics(json)
+        # action_index, log_strings = heuristics.run()
         
         action = possible_moves[action_index]
         
         # Print move
         print("Step {}... Move: {}".format(json['turn'], action))
-        
-        # Check logs
-        # if len(log_strings) > 0:
-        #     for msg in log_strings: 
-        #         print(msg)
+        print("Duration: {}".format(end-start))
         
         return {"move": action}
 
@@ -83,7 +96,6 @@ class Battlesnake(object):
         print(policy)
         print("good!")
         
-
 
 if __name__ == "__main__":
     server = Battlesnake()

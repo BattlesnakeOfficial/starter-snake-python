@@ -6,6 +6,7 @@ numpy==1.18.4
 gym==0.17.2
 PyYAML==5.3.1
 stable-baselines==2.10.0
+tqdm==4.46.1
 
 # pytorch is too big, use CPU stuff
 # torch==1.2.0
