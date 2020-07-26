@@ -1,2 +1,5 @@
+# Base
 CherryPy==18.5.0
 numpy==1.18.4
+
+# Machine learning stuff

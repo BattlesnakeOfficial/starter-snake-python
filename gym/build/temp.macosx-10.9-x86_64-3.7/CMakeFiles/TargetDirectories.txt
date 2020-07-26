@@ -1,3 +1,0 @@
-/Users/jeremypulmano/Documents/snake/gym-battlesnake-master/build/temp.macosx-10.9-x86_64-3.7/CMakeFiles/rebuild_cache.dir
-/Users/jeremypulmano/Documents/snake/gym-battlesnake-master/build/temp.macosx-10.9-x86_64-3.7/CMakeFiles/edit_cache.dir
-/Users/jeremypulmano/Documents/snake/gym-battlesnake-master/build/temp.macosx-10.9-x86_64-3.7/CMakeFiles/gymbattlesnake.dir
