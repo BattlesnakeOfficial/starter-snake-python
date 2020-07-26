@@ -9,10 +9,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
+from collections import deque
+
 from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
 from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
 from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.storage import RolloutStorage
-from collections import deque
 from content.gym_battlesnake.gym_battlesnake.gymbattlesnake import BattlesnakeEnv
 
 device = torch.device('cpu')
@@ -93,8 +94,9 @@ def create_policy(obs_space, act_space, base):
     """ Returns a wrapped policy for use in the gym """
     return PredictionPolicy(obs_space, act_space, base=base)
 
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+# ------------------------------------------------------------------------
+
+# Functions specific to the game
 
 def make_agent():
     
@@ -159,6 +161,6 @@ def get_action(obs):
     
 if __name__ == "__main__":
     make_agent()
-    action = get_action()
+    action = get_action(1)
     print(action.cpu().squeeze())
     print(action.item())
