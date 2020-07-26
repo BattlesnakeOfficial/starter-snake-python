@@ -2,4 +2,12 @@
 CherryPy==18.5.0
 numpy==1.18.4
 
-# Machine learning stuff
+# Other stuff
+gym==0.17.2
+PyYAML==5.3.1
+stable-baselines==2.10.0
+
+# pytorch is too big, use CPU stuff
+# torch==1.2.0
+https://download.pytorch.org/whl/cpu/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
+https://download.pytorch.org/whl/cpu/torchvision-0.3.0-cp37-cp37m-linux_x86_64.whl

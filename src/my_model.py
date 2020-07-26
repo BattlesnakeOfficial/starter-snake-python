@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 
 from collections import deque
 
-from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
-from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
-from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.storage import RolloutStorage
-from content.gym_battlesnake.gym_battlesnake.gymbattlesnake import BattlesnakeEnv
+from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
+from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
+from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.storage import RolloutStorage
+from src.content.gym_battlesnake.gym_battlesnake.gymbattlesnake import BattlesnakeEnv
 
 device = torch.device('cpu')
 

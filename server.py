@@ -2,7 +2,9 @@ import os
 import random
 import cherrypy
 
-from heuristics import Heuristics
+from src.heuristics import Heuristics
+from src.my_model import make_agent
+
 import json
 
 class Battlesnake(object):
@@ -73,10 +75,22 @@ class Battlesnake(object):
             print("you won bruh!")
             
         return "ok"
+    
+    # Testing
+    def test(self):
+        agent, policy = make_agent()
+        print(agent)
+        print(policy)
+        print("good!")
+        
 
 
 if __name__ == "__main__":
     server = Battlesnake()
+    
+    # Added unit test
+    server.test()
+    
     cherrypy.config.update({"server.socket_host": "0.0.0.0"})
     cherrypy.config.update(
         {"server.socket_port": int(os.environ.get("PORT", "8080")),}
