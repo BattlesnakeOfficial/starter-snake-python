@@ -1,0 +1,10 @@
+README.md
+setup.py
+gym_battlesnake/__init__.py
+gym_battlesnake/gymbattlesnake.py
+gym_battlesnake.egg-info/PKG-INFO
+gym_battlesnake.egg-info/SOURCES.txt
+gym_battlesnake.egg-info/dependency_links.txt
+gym_battlesnake.egg-info/not-zip-safe
+gym_battlesnake.egg-info/requires.txt
+gym_battlesnake.egg-info/top_level.txt
