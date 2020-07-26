@@ -10,8 +10,9 @@ tqdm==4.46.1
 matplotlib==3.2.2
 opencv-python==4.2.0.34
 
-# Probably too big
+# tensorflow
 tensorflow==1.14
+setuptools==41.0.0
 
 # pytorch is too big, use CPU stuff
 # torch==1.2.0
