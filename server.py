@@ -54,7 +54,7 @@ class Battlesnake(object):
         WIDTH, HEIGHT = data["board"]["width"], data["board"]["height"]
         
         # Make our policy from previous weights
-        policy = make_policy(17, WIDTH, HEIGHT, "weights/battlesnakeWeights.pt")
+        policy = make_policy(17, WIDTH, HEIGHT, "weights/weights-200iter.pt")
         
         # Convert the json to a format needed by agent/policy
         generator = GameGenerator(17, WIDTH, HEIGHT)
