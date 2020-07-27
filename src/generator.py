@@ -5,12 +5,14 @@ import gym
 import torch
 
 class GameGenerator():
+    
     def __init__(self, layers, width, height, color='#FFFFFF', use_symmetry=False):
         self.NUM_LAYERS = layers
         self.LAYER_WIDTH = width
         self.LAYER_HEIGHT = height
         self.color = color
         self.use_symmetry = use_symmetry
+        
     def get_action(self, data, action):
         if self.use_symmetry == False:
             return action
@@ -89,6 +91,7 @@ class GameGenerator():
         s_y = self.get_y(head, flip_y, transpose, transpose_rotate, x, y)
         if s_x >= 0 and s_x < self.LAYER_WIDTH and s_y >= 0 and s_y < self.LAYER_HEIGHT:
             obs[l*self.LAYER_WIDTH*self.LAYER_HEIGHT + s_x * self.LAYER_HEIGHT + s_y] += v
+            
     def make_input(self, data):
         """ Method to transform the starter snake input into the correct format for our trained model """
         obs = np.zeros((self.LAYER_WIDTH * self.LAYER_HEIGHT * self.NUM_LAYERS), dtype=np.uint8)

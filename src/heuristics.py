@@ -291,29 +291,32 @@ class Heuristics:
                 might_die_actions.append(action)
                 log_strings.append("{} could lose a head-to-head".format(action_names[action]))
         
-        legal_actions = [a for a in actions if a not in certain_death_actions]
+        # legal_actions = [a for a in actions if a not in certain_death_actions]
         
-        # 1) Now choose to go to food if safe 
-        # 2) If no food, choose random action TODO: Prioritize bigger "free box"
-        # 3) If no legal actions, choose an action where we might die (head-to-head)
-        # 4) Just go die lmao
-        if food_direction and food_direction in legal_actions:
-            action = food_direction
-            log_strings.append("Went {} to food if close".format(action_names[action]))
-        elif len(legal_actions) > 0:
-            if len(legal_actions) == 1:
-                action = legal_actions[0]
-            elif len(legal_actions) == 2:
-                action = self.get_action_based_on_dist(legal_actions)
-            else: 
-                action = random.choice(legal_actions)
-        elif len(legal_actions) == 0 and len(might_die_actions) > 0:
-            action = random.choice(might_die_actions)
-            log_strings.append("Let's go for a head-to-head to a will-die action")
-        else:
-            action = random.choice(actions) # Just go die!
-            log_strings.append("Guess I'll just die!")
+        return certain_death_actions, might_die_actions
         
-        assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
+
+        # # 1) Now choose to go to food if safe 
+        # # 2) If no food, choose random action TODO: Prioritize bigger "free box"
+        # # 3) If no legal actions, choose an action where we might die (head-to-head)
+        # # 4) Just go die lmao
+        # if food_direction and food_direction in legal_actions:
+        #     action = food_direction
+        #     log_strings.append("Went {} to food if close".format(action_names[action]))
+        # elif len(legal_actions) > 0:
+        #     if len(legal_actions) == 1:
+        #         action = legal_actions[0]
+        #     elif len(legal_actions) == 2:
+        #         action = self.get_action_based_on_dist(legal_actions)
+        #     else: 
+        #         action = random.choice(legal_actions)
+        # elif len(legal_actions) == 0 and len(might_die_actions) > 0:
+        #     action = random.choice(might_die_actions)
+        #     log_strings.append("Let's go for a head-to-head to a will-die action")
+        # else:
+        #     action = random.choice(actions) # Just go die!
+        #     log_strings.append("Guess I'll just die!")
         
-        return action, log_strings
+        # assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
+        
+        # return action, log_strings

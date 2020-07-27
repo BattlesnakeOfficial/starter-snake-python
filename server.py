@@ -46,6 +46,7 @@ class Battlesnake(object):
         
         data = cherrypy.request.json
         
+        actions = [0, 1, 2, 3]
         possible_moves = ["up", "down", "left", "right"]
 
         # Grab constants
@@ -56,25 +57,39 @@ class Battlesnake(object):
         policy = make_policy(17, WIDTH, HEIGHT, "weights/battlesnakeWeights.pt")
         
         # Convert the json to a format needed by agent/policy
-        gen = GameGenerator(17, WIDTH, HEIGHT)
-        converted_input = torch.tensor(gen.make_input(data), dtype=torch.float32) # .to(device)?
+        generator = GameGenerator(17, WIDTH, HEIGHT)
+        converted_input = torch.tensor(generator.make_input(data), dtype=torch.float32)
     
-        # Get action
+        # Get action from our model
         start = time.time()
         with torch.no_grad():
             action_index, value = policy.predict(converted_input, deterministic=True)
+        
+        # Check model action with heuristics
+        heuristics = Heuristics(data)
+        certain_death_actions, might_die_actions = heuristics.run()
+        legal_actions = [a for a in actions if a not in certain_death_actions]
+        
+        # If our model tried to kill us, print and choose a new action
+        if action_index in certain_death_actions:
+            print("Oh no! Our model tried to kill us by going {}".format(possible_moves[action_index.item()]))
+            
+            if legal_actions:
+                action_index = random.choice(legal_actions)
+            elif might_die_actions:
+                action_index = random.choice(might_die_actions)
+            else:
+                action_index = 0 # Just go and die then!
+                
         end = time.time()
-        
-        # Check action with heuristics
-        # heuristics = Heuristics(json)
-        # action_index, log_strings = heuristics.run()
-        
+         
         # Get string name corresponding to action
         action = possible_moves[action_index.item()]
         
         # Print move
         print("Step {}... Move: {}".format(data['turn'], action))
         print("Duration: {}".format(end-start))
+        print("Value: {}".format(value[0].item()))
         
         return {"move": action}
 
