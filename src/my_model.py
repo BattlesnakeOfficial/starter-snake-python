@@ -17,8 +17,6 @@ from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, N
 
 device = torch.device('cpu')
 
-import json
-
 def init_cnn(m):
     if getattr(m, 'bias', None) is not None: nn.init.constant_(m.bias, 0)
     if isinstance(m, (nn.Conv2d,nn.Linear)): nn.init.kaiming_normal_(m.weight)
