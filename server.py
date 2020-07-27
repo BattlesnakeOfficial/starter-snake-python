@@ -64,6 +64,7 @@ class Battlesnake(object):
         start = time.time()
         with torch.no_grad():
             action_index, value = policy.predict(converted_input, deterministic=True)
+            action_index = action_index.item()
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
@@ -72,7 +73,7 @@ class Battlesnake(object):
         
         # If our model tried to kill us, print and choose a new action
         if action_index in certain_death_actions:
-            print("Oh no! Our model tried to kill us by going {}".format(possible_moves[action_index.item()]))
+            print("Oh no! Our model tried to kill us by going {}".format(possible_moves[action_index]))
             
             if legal_actions:
                 action_index = random.choice(legal_actions)
@@ -84,7 +85,7 @@ class Battlesnake(object):
         end = time.time()
          
         # Get string name corresponding to action
-        action = possible_moves[action_index.item()]
+        action = possible_moves[action_index]
         
         # Print move
         print("Step {}... Move: {}".format(data['turn'], action))
