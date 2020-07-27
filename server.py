@@ -5,12 +5,13 @@ import torch
 import time
 
 from src.heuristics import Heuristics
-from src.my_model import make_agent
+from src.my_model import make_policy
 from src.generator import GameGenerator
 
 import json
 
 class Battlesnake(object):
+    
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def index(self):
@@ -42,17 +43,21 @@ class Battlesnake(object):
     def move(self):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
-
+        
         data = cherrypy.request.json
         
         possible_moves = ["up", "down", "left", "right"]
 
-        # Choose an action through our ML model
-        agent, policy = make_agent()
-        gen = GameGenerator(17, json["board"]["width"], json["board"]["height"])
+        # Grab constants
+        NUM_LAYERS = 17
+        WIDTH, HEIGHT = data["board"]["width"], data["board"]["height"]
         
-        # Convert the json to format needed by agent/policy
-        converted_input = torch.tensor(agent.gen.make_input(data), dtype=torch.float32)
+        # Make our policy from previous weights
+        policy = make_policy(17, WIDTH, HEIGHT, "weights/battlesnakeWeights.pt")
+        
+        # Convert the json to a format needed by agent/policy
+        gen = GameGenerator(17, WIDTH, HEIGHT)
+        converted_input = torch.tensor(gen.make_input(data), dtype=torch.float32) # .to(device)?
     
         # Get action
         start = time.time()
@@ -64,10 +69,11 @@ class Battlesnake(object):
         # heuristics = Heuristics(json)
         # action_index, log_strings = heuristics.run()
         
-        action = possible_moves[action_index]
+        # Get string name corresponding to action
+        action = possible_moves[action_index.item()]
         
         # Print move
-        print("Step {}... Move: {}".format(json['turn'], action))
+        print("Step {}... Move: {}".format(data['turn'], action))
         print("Duration: {}".format(end-start))
         
         return {"move": action}
@@ -87,20 +93,42 @@ class Battlesnake(object):
             print("you won bruh!")
             
         return "ok"
+
+    # ----------------------
     
-    # Testing
+    # Some unit testing
     def test(self):
-        agent, policy = make_agent()
-        print(agent)
-        print(policy)
-        print("good!")
+        
+        # Dummy json
+        with open('src/data.json') as json_file:
+            data = json.load(json_file)
+        
+        possible_moves = ["up", "down", "left", "right"]
+
+        # Choose an action through our ML model
+        NUM_LAYERS = 17
+        WIDTH, HEIGHT = 12, 12
+        
+        policy = make_policy(17, WIDTH, HEIGHT, "weights/battlesnakeWeights.pt")
+        gen = GameGenerator(17, WIDTH, HEIGHT)
+        
+        # Convert the json to format needed by agent/policy
+        import numpy as np
+        converted_input = torch.tensor(gen.make_input(data), dtype=torch.float32).to(torch.device('cpu'))
+    
+        # Get action
+        start = time.time()
+        with torch.no_grad():
+            action_index, value = policy.predict(converted_input, deterministic=True)
+        end = time.time()
+        
+        action = possible_moves[action_index.item()]
+        
+        return action
         
 
 if __name__ == "__main__":
     server = Battlesnake()
-    
-    # Added unit test
-    server.test()
     
     cherrypy.config.update({"server.socket_host": "0.0.0.0"})
     cherrypy.config.update(

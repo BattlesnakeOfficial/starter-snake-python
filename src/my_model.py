@@ -1,4 +1,3 @@
-# Load up our dependencies
 import numpy as np
 import math
 import random
@@ -9,12 +8,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
+from gym import spaces
+
 from collections import deque
 
 from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
 from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
-from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.storage import RolloutStorage
-from src.content.gym_battlesnake.gym_battlesnake.gymbattlesnake import BattlesnakeEnv
 
 device = torch.device('cpu')
 
@@ -98,69 +97,26 @@ def create_policy(obs_space, act_space, base):
 
 # Functions specific to the game
 
-def make_agent():
+def make_policy(layers, width, height, weightsPath):
     
-    # Make the device
-    device = torch.device('cpu')
-    
-    # Number of parallel environments to generate games in
-    n_envs = 50
-    
-    # Number of steps per environment to simulate
-    n_steps = 400
+    observation_space = spaces.Box(low=0,high=255, shape=(layers, width, height), dtype=np.uint8)
+    action_space = spaces.Discrete(4)
 
-    # The gym environment
-    env = BattlesnakeEnv(n_threads=1, n_envs=n_envs)
-
-    # Storage for rollouts (game turns played and the rewards)
-    rollouts = RolloutStorage(n_steps,
-                            n_envs,
-                            env.observation_space.shape,
-                            env.action_space,
-                            n_steps)
-    env.close()
-
-    # Create our policy as defined above
-    policy = create_policy(env.observation_space.shape, env.action_space, SnakePolicyBase)
+    policy = create_policy(observation_space.shape, action_space, SnakePolicyBase)
     
-    # Load old state dictionary from training
-    policy.load_state_dict(torch.load("weights/battlesnakeWeights.pt", map_location = device))
+    # Load state dictionary from weightsPath
+    policy.load_state_dict(torch.load(weightsPath, map_location=device))
     policy.eval()
     
-    best_old_policy = create_policy(env.observation_space.shape, env.action_space, SnakePolicyBase)
+    return policy
 
-    # Lets make the old policy the same as the current one
-    best_old_policy.load_state_dict(policy.state_dict())
-        
-    agent = PPO(policy,
-                value_loss_coef=0.5,
-                entropy_coef=0.01,
-                max_grad_norm=0.5,
-                clip_param=0.2,
-                ppo_epoch=4,
-                num_mini_batch=32,
-                eps=1e-5,
-                lr=1e-3)
-    
-    return agent, policy
-
-# Take observation as input and return action
-def get_action(obs):
-    
-    # Create the agent
-    agent, policy = make_agent()
-    
-    device = torch.device('cpu')
-    
-    # Get the action our policy should take
-    
-    _, action, _, _ = policy.act(torch.tensor(obs, dtype=torch.float32).to(device), None, None)
-
-    return action
-
-    
 if __name__ == "__main__":
-    make_agent()
-    action = get_action(1)
-    print(action.cpu().squeeze())
-    print(action.item())
+    policy = make_policy(17, 11, 11)
+    
+    action_index, value = policy.predict(np.zeros((1, 17, 23, 23)), deterministic=True)
+    
+    print(action_index)
+    print(value)
+    
+    print(action_index.cpu().squeeze())
+    print(action_index.item())
