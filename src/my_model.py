@@ -12,8 +12,8 @@ from gym import spaces
 
 from collections import deque
 
-from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
-from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
+from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
+from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
 
 def init_cnn(m):
     if getattr(m, 'bias', None) is not None: nn.init.constant_(m.bias, 0)
@@ -77,7 +77,7 @@ class PredictionPolicy(Policy):
         
         device = torch.device('cpu')
         
-        inputs = torch.tensor(inputs, dtype=torch.float32).to(device)
+        inputs = torch.tensor(inputs, dtype=torch.float32) # .to(device)
         value, actor_features, rnn_hxs = self.base(inputs, None, None)
         dist = self.dist(actor_features)
 
@@ -105,6 +105,7 @@ def make_policy(layers, width, height, weightsPath):
     
     # Load state dictionary from weightsPath
     policy.load_state_dict(torch.load(weightsPath, map_location='cpu'))
+    policy.eval()
     
     return policy
 

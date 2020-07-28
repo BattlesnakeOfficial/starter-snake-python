@@ -61,6 +61,7 @@ class GameGenerator():
             if action == 'down':
                 return 'up'
         return action
+    
     def get_x(self, head, flip_y, transpose, transpose_rotate, x, y):
         s_x = x - head['x']
         s_y = y - head['y']
@@ -71,6 +72,7 @@ class GameGenerator():
         if transpose_rotate:
             return s_y
         return s_x
+    
     def get_y(self, head, flip_y, transpose, transpose_rotate, x, y):
         s_x = x - head['x']
         s_y = y - head['y']
@@ -83,6 +85,7 @@ class GameGenerator():
         if flip_y:
             return self.LAYER_HEIGHT - s_y - 1
         return s_y
+    
     def assign(self, obs, head, neck, x, y, l, v, params):
         flip_y = params['flip_y']
         transpose = params['transpose']
@@ -100,7 +103,7 @@ class GameGenerator():
         neck = player_snake['body'][1]
         params = {}
         flip_y = False
-        transpose = False
+        transpose = True
         transpose_rotate = False
         diff_x = head['x'] - neck['x']
         diff_y = head['y'] - neck['y']
