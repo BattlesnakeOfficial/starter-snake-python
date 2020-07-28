@@ -21,9 +21,9 @@ class Battlesnake(object):
         return {
             "apiversion": "1",
             "author": "jpulmano",
-            "color": "#ff8f00", # Princeton orange bih
-            "head": "bendr",
-            "tail": "freckled",
+            "color": "#800000",
+            "head": "shac-gamer",
+            "tail": "shac-coffee"
         }
 
     @cherrypy.expose
