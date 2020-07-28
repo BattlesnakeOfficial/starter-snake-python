@@ -20,7 +20,7 @@ class GameGenerator():
         head = player_snake['body'][0]
         neck = player_snake['body'][1]
         flip_y = False
-        transpose = True
+        transpose = False
         transpose_rotate = False
         diff_x = head['x'] - neck['x']
         diff_y = head['y'] - neck['y']
@@ -103,7 +103,7 @@ class GameGenerator():
         neck = player_snake['body'][1]
         params = {}
         flip_y = False
-        transpose = True
+        transpose = False
         transpose_rotate = False
         diff_x = head['x'] - neck['x']
         diff_y = head['y'] - neck['y']
@@ -116,6 +116,10 @@ class GameGenerator():
                     transpose_rotate = True
                 if diff_x == -1:
                     transpose = True
+                    
+        print("transpose rotate: ", transpose_rotate)
+        print("transpose: ", transpose)
+        
         params['flip_y'] = flip_y
         params['transpose'] = transpose
         params['transpose_rotate'] = transpose_rotate

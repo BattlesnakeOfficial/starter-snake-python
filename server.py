@@ -45,7 +45,8 @@ class Battlesnake(object):
         self.policy = make_policy(self.layers, self.width, self.height, "weights/weights-50iter.pt")
         self.policy.eval()
         
-        self.generator = GameGenerator(self.layers, self.width, self.height)
+        # Try using symmetry
+        self.generator = GameGenerator(self.layers, self.width, self.height, "#FFFFFF", True)
 
         print("Made policy and generator!")
         
