@@ -89,14 +89,14 @@ class Battlesnake(object):
         # layer10-16: alive count mask
         
         # (1, 17, 23, 23)
-        print("Game board")
-        print(obs[0, 5, :, :])
+        # print("Game board")
+        # print(obs[0, 5, :, :])
         
-        print("Snake bodies")
-        print(obs[0, 1, :, :])
+        print("Body segment numbers")
+        print(obs[0, 2, :, :])
         
-        print("Food layer")
-        print(obs[0, 4, :, :])
+        # print("Food layer")
+        # print(obs[0, 4, :, :])
         
         converted_input = torch.tensor(obs, dtype=torch.float32)
     
