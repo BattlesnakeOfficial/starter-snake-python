@@ -104,7 +104,7 @@ class GameGenerator():
         params = {}
         flip_y = False
         transpose = False
-        transpose_rotate = True
+        transpose_rotate = False
         diff_x = head['x'] - neck['x']
         diff_y = head['y'] - neck['y']
         if self.use_symmetry:

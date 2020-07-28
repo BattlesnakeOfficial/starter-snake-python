@@ -115,11 +115,6 @@ class Battlesnake(object):
         # Get the name of the action
         action = self.generator.get_action(data, possible_moves[action_index[0]])
         
-        if action == 'up':
-            action = 'left'
-        elif action == 'left':
-            action = 'up'
-        
         # Return to the index
         action_index = possible_moves.index(action)
         
@@ -131,7 +126,7 @@ class Battlesnake(object):
         # If our model tried to kill us, print and choose a new action
         if action_index in certain_death_actions:
             move = possible_moves[action_index]
-            print("MODEL TRIED TO KILL US BY GOING {}".format(move))
+            print("BAD MOVE: {}".format(move))
             self.deaths += 1
             if move == 'up':
                 self.ups += 1
