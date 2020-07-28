@@ -36,9 +36,10 @@ class Battlesnake(object):
         
         print("START")
         
-        # Constants
+        # Constants pertaining to u/cbinners implementation of the gym
         self.layers = 17
-        self.width, self.height = data["board"]["width"], data["board"]["height"]
+        self.width = 23
+        self.height = 23
         
         # Make our policy from previous weights
         self.policy = make_policy(self.layers, self.width, self.height, "weights/weights-200iter.pt")
