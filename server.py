@@ -46,7 +46,7 @@ class Battlesnake(object):
         self.policy.eval()
         
         # Try using symmetry
-        self.generator = GameGenerator(self.layers, self.width, self.height, "#FFFFFF", True)
+        self.generator = GameGenerator(self.layers, self.width, self.height)
 
         print("Made policy and generator!")
         
@@ -73,7 +73,32 @@ class Battlesnake(object):
         possible_moves = ["up", "down", "left", "right"]
         
         # Convert the JSON to a format needed by agent/policy
-        converted_input = torch.tensor(self.generator.make_input(data), dtype=torch.float32)
+        obs = self.generator.make_input(data)
+        
+        # Print some stuff   
+        # layer0: snake health on heads {0,...,100}        
+        # layer1: snake bodies {0,1}        
+        # layer2: body segment numbers {0,...,255}        
+        # layer3: snake length >= player {0,1}        
+        # layer4: food {0,1}        
+        # layer5: gameboard area {0,1}        
+        # layer6: head_mask {0,1}        
+        # layer7: double_tail_mask {0,1}        
+        # layer8: snake bodies >= us {0,1}        
+        # layer9: snake bodies < us {0,1}        
+        # layer10-16: alive count mask
+        
+        # (1, 17, 23, 23)
+        print("Game board")
+        print(obs[0, 5, :, :])
+        
+        print("Snake bodies")
+        print(obs[0, 1, :, :])
+        
+        print("Food layer")
+        print(obs[0, 4, :, :])
+        
+        converted_input = torch.tensor(obs, dtype=torch.float32)
     
         # Get action from our model
         with torch.no_grad():

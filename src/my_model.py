@@ -119,3 +119,10 @@ if __name__ == "__main__":
     
     print(action_index.cpu().squeeze())
     print(action_index.item())
+    # obs = np.zeros((1, 17, 23, 23))
+    
+    # print("Snake bodies")
+    # print(obs[0, 1, :, :])
+        
+    # print("Food layer")
+    # print(obs[0, 4, :, :])
