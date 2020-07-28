@@ -79,7 +79,7 @@ class Battlesnake(object):
             action_index, value = self.policy.predict(converted_input, deterministic=True)
         
         # Get the name of the action
-        action = generator.get_action(data, possible_moves[action_index[0]])
+        action = self.generator.get_action(data, possible_moves[action_index[0]])
         
         # Return to the index
         action_index = possible_moves.index(action)
