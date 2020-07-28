@@ -115,6 +115,12 @@ class Battlesnake(object):
         # Get the name of the action
         action = self.generator.get_action(data, possible_moves[action_index[0]])
         
+        # Do some whacky conversion
+        if action == 'up':
+            action = 'down'
+        elif action == 'down':
+            action = 'up'
+        
         # Return to the index
         action_index = possible_moves.index(action)
         
