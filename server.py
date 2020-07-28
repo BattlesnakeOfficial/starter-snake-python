@@ -75,7 +75,8 @@ class Battlesnake(object):
         start = time.time()
         with torch.no_grad():
             action_index, value = self.policy.predict(converted_input, deterministic=True)
-            action_index = action_index.item()
+        
+        action_index = action_index.item()
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
@@ -104,8 +105,8 @@ class Battlesnake(object):
         
         # Print move
         print("Step {}... Move: {}".format(data['turn'], action))
-        print("Duration: {}".format(end-start))
-        print("Value: {}".format(value[0].item()))
+        print("Duration: {:.2f}s".format(end-start))
+        print("Value: {:.2f}".format(value[0].item()))
         
         return {"move": action}
 
@@ -124,7 +125,7 @@ class Battlesnake(object):
             print("you won bruh!")
             
         print("You chose a dying move {} out of {} times".format(self.deaths, self.total_moves))
-        print("That's {}!".format(self.deaths/self.total_moves))
+        print("That's {:.2f}!".format(self.deaths/self.total_moves))
         
         return "ok"
         

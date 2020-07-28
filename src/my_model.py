@@ -12,10 +12,8 @@ from gym import spaces
 
 from collections import deque
 
-from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
-from src.content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
-
-device = torch.device('cpu')
+from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.algo.ppo import PPO
+from content.pytorch_a2c_ppo_acktr_gail.a2c_ppo_acktr.model import Policy, NNBase
 
 def init_cnn(m):
     if getattr(m, 'bias', None) is not None: nn.init.constant_(m.bias, 0)
@@ -76,6 +74,9 @@ class PredictionPolicy(Policy):
     def predict(self, inputs, deterministic=False):
         # Since this called from our gym environment
         # (and passed as a numpy array), we need to convert it to a tensor
+        
+        device = torch.device('cpu')
+        
         inputs = torch.tensor(inputs, dtype=torch.float32).to(device)
         value, actor_features, rnn_hxs = self.base(inputs, None, None)
         dist = self.dist(actor_features)
@@ -103,12 +104,12 @@ def make_policy(layers, width, height, weightsPath):
     policy = create_policy(observation_space.shape, action_space, SnakePolicyBase)
     
     # Load state dictionary from weightsPath
-    policy.load_state_dict(torch.load(weightsPath, map_location=device))
+    policy.load_state_dict(torch.load(weightsPath, map_location='cpu'))
     
     return policy
 
 if __name__ == "__main__":
-    policy = make_policy(17, 23, 23)
+    policy = make_policy(17, 23, 23, "weights/weights-200iter.pt")
     
     action_index, value = policy.predict(np.zeros((1, 17, 23, 23)), deterministic=True)
     
