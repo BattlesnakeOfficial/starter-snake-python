@@ -62,21 +62,27 @@ class Battlesnake(object):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
         
-        data = cherrypy.request.json
-        self.total_moves += 1
+        start = time.time() # Start timer
+        
+        data = cherrypy.request.json # Get game JSON
+        
+        self.total_moves += 1 # Increment
         
         actions = [0, 1, 2, 3]
         possible_moves = ["up", "down", "left", "right"]
         
-        # Convert the json to a format needed by agent/policy
+        # Convert the JSON to a format needed by agent/policy
         converted_input = torch.tensor(self.generator.make_input(data), dtype=torch.float32)
     
         # Get action from our model
-        start = time.time()
         with torch.no_grad():
             action_index, value = self.policy.predict(converted_input, deterministic=True)
         
-        action_index = action_index.item()
+        # Get the name of the action
+        action = generator.get_action(data, possible_moves[action[0]])
+        
+        # Return to the index
+        action_index = possible_moves.index(action)
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
