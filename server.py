@@ -53,6 +53,10 @@ class Battlesnake(object):
         # Trackers
         self.deaths = 0
         self.total_moves = 0
+        self.ups = 0
+        self.downs = 0
+        self.rights = 0
+        self.lefts = 0
         
         return "ok"
 
@@ -89,11 +93,15 @@ class Battlesnake(object):
         # layer10-16: alive count mask
         
         # (1, 17, 23, 23)
+        
+        print("Game board + bodies")
+        print(obs[0, 5, :, :] + obs[0, 1, :, :])
+        
         # print("Game board")
         # print(obs[0, 5, :, :])
         
-        print("Body segment numbers")
-        print(obs[0, 2, :, :])
+        # print("Snake bodies")
+        # print(obs[0, 1, :, :])
         
         # print("Food layer")
         # print(obs[0, 4, :, :])
@@ -117,9 +125,18 @@ class Battlesnake(object):
         
         # If our model tried to kill us, print and choose a new action
         if action_index in certain_death_actions:
-            print("MODEL TRIED TO KILL US BY GOING {}".format(possible_moves[action_index]))
+            move = possible_moves[action_index]
+            print("MODEL TRIED TO KILL US BY GOING {}".format(move))
             self.deaths += 1
-            
+            if move == 'up':
+                self.ups += 1
+            elif move == 'down':
+                self.downs += 1
+            elif move == 'right':
+                self.rights += 1
+            elif move == 'left':
+                self.lefts += 1
+                
             if legal_actions:
                 print("Choosing another legal action")
                 action_index = random.choice(legal_actions)
@@ -157,6 +174,10 @@ class Battlesnake(object):
             print("you won bruh!")
             
         print("You chose a dying move {} out of {} times".format(self.deaths, self.total_moves))
+        print("Ups: ", self.ups)
+        print("Downs: ", self.downs)
+        print("Rights: ", self.rights)
+        print("Lefts: ", self.lefts)
         print("That's {:.2f}!".format(self.deaths/self.total_moves))
         
         return "ok"
