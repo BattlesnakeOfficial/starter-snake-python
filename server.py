@@ -33,8 +33,23 @@ class Battlesnake(object):
         # cherrypy.request.json contains information about the game that's about to be played.
         # TODO: Use this function to decide how your snake is going to look on the board.
         data = cherrypy.request.json
-
+        
         print("START")
+        
+        # Constants
+        self.layers = 17
+        self.width, self.height = data["board"]["width"], data["board"]["height"]
+        
+        # Make our policy from previous weights
+        self.policy = make_policy(self.layers, self.width, self.height, "weights/weights-200iter.pt")
+        self.generator = GameGenerator(self.layers, self.width, self.height)
+
+        print("Made policy and generator!")
+        
+        # Trackers
+        self.deaths = 0
+        self.total_moves = 0
+        
         return "ok"
 
     @cherrypy.expose
@@ -45,25 +60,18 @@ class Battlesnake(object):
         # Valid moves are "up", "down", "left", or "right".
         
         data = cherrypy.request.json
+        self.total_moves += 1
         
         actions = [0, 1, 2, 3]
         possible_moves = ["up", "down", "left", "right"]
-
-        # Grab constants
-        NUM_LAYERS = 17
-        WIDTH, HEIGHT = data["board"]["width"], data["board"]["height"]
-        
-        # Make our policy from previous weights
-        policy = make_policy(17, WIDTH, HEIGHT, "weights/weights-200iter.pt")
         
         # Convert the json to a format needed by agent/policy
-        generator = GameGenerator(17, WIDTH, HEIGHT)
-        converted_input = torch.tensor(generator.make_input(data), dtype=torch.float32)
+        converted_input = torch.tensor(self.generator.make_input(data), dtype=torch.float32)
     
         # Get action from our model
         start = time.time()
         with torch.no_grad():
-            action_index, value = policy.predict(converted_input, deterministic=True)
+            action_index, value = self.policy.predict(converted_input, deterministic=True)
             action_index = action_index.item()
         
         # Check model action with heuristics
@@ -73,7 +81,8 @@ class Battlesnake(object):
         
         # If our model tried to kill us, print and choose a new action
         if action_index in certain_death_actions:
-            print("Oh no! Our model tried to kill us by going {}".format(possible_moves[action_index]))
+            print("MODEL TRIED TO KILL US BY GOING {}".format(possible_moves[action_index]))
+            self.deaths += 1
             
             if legal_actions:
                 action_index = random.choice(legal_actions)
@@ -107,6 +116,9 @@ class Battlesnake(object):
             print("you lost bruh")
         else:
             print("you won bruh!")
+            
+        print("You chose a dying move {} out of {} times".format(self.deaths, self.total_moves))
+        print("That's {}!".format(self.deaths/self.total_moves))
             
         return "ok"
 

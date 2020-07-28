@@ -290,11 +290,11 @@ class Heuristics:
                 certain_death_actions.append(action)
                 might_die_actions.append(action)
                 log_strings.append("{} could lose a head-to-head".format(action_names[action]))
-        
-        # legal_actions = [a for a in actions if a not in certain_death_actions]
-        
+
         return certain_death_actions, might_die_actions
         
+        # legal_actions = [a for a in actions if a not in certain_death_actions]
+
 
         # # 1) Now choose to go to food if safe 
         # # 2) If no food, choose random action TODO: Prioritize bigger "free box"
