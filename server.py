@@ -42,7 +42,9 @@ class Battlesnake(object):
         self.height = 23
         
         # Make our policy from previous weights
-        self.policy = make_policy(self.layers, self.width, self.height, "weights/weights-200iter.pt")
+        self.policy = make_policy(self.layers, self.width, self.height, "weights/weights-50iter.pt")
+        self.policy.eval()
+        
         self.generator = GameGenerator(self.layers, self.width, self.height)
 
         print("Made policy and generator!")
@@ -125,38 +127,6 @@ class Battlesnake(object):
         print("That's {}!".format(self.deaths/self.total_moves))
         
         return "ok"
-
-    # ----------------------
-    
-    # Some unit testing
-    def test(self):
-        
-        # Dummy json
-        with open('src/data.json') as json_file:
-            data = json.load(json_file)
-        
-        possible_moves = ["up", "down", "left", "right"]
-
-        # Choose an action through our ML model
-        NUM_LAYERS = 17
-        WIDTH, HEIGHT = 12, 12
-        
-        policy = make_policy(17, WIDTH, HEIGHT, "weights/battlesnakeWeights.pt")
-        gen = GameGenerator(17, WIDTH, HEIGHT)
-        
-        # Convert the json to format needed by agent/policy
-        import numpy as np
-        converted_input = torch.tensor(gen.make_input(data), dtype=torch.float32).to(torch.device('cpu'))
-    
-        # Get action
-        start = time.time()
-        with torch.no_grad():
-            action_index, value = policy.predict(converted_input, deterministic=True)
-        end = time.time()
-        
-        action = possible_moves[action_index.item()]
-        
-        return action
         
 
 if __name__ == "__main__":

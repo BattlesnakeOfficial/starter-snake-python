@@ -104,7 +104,6 @@ def make_policy(layers, width, height, weightsPath):
     
     # Load state dictionary from weightsPath
     policy.load_state_dict(torch.load(weightsPath, map_location=device))
-    print(policy.eval())
     
     return policy
 
