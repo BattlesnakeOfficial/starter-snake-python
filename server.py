@@ -85,10 +85,13 @@ class Battlesnake(object):
             self.deaths += 1
             
             if legal_actions:
+                print("Choosing another legal action")
                 action_index = random.choice(legal_actions)
             elif might_die_actions:
+                print("Choosing an action where we might die")
                 action_index = random.choice(might_die_actions)
             else:
+                print("Just going to die now!")
                 action_index = 0 # Just go and die then!
                 
         end = time.time()
@@ -119,7 +122,7 @@ class Battlesnake(object):
             
         print("You chose a dying move {} out of {} times".format(self.deaths, self.total_moves))
         print("That's {}!".format(self.deaths/self.total_moves))
-            
+        
         return "ok"
 
     # ----------------------
