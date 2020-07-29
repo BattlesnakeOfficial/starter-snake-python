@@ -91,6 +91,9 @@ class Battlesnake(object):
         
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
+        print("Model action: {}".format(action_index))
+        print("Certain death: ", certain_death_actions.keys())
+        
         # If our model tried to kill us, print and choose a new action
         if action_index in certain_death_actions:
             move = possible_moves[action_index]
