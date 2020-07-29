@@ -71,28 +71,14 @@ class Battlesnake(object):
         
         data = cherrypy.request.json # Get game JSON
         
-        self.total_moves += 1 # Increment
-        
+        self.total_moves += 1
         actions = [0, 1, 2, 3]
         possible_moves = ["up", "down", "left", "right"]
         
         # Convert the JSON to a format needed by agent/policy
         obs = self.generator.make_input(data)
         
-        # Print some stuff   
-        # layer0: snake health on heads {0,...,100}        
-        # layer1: snake bodies {0,1}        
-        # layer2: body segment numbers {0,...,255}        
-        # layer3: snake length >= player {0,1}        
-        # layer4: food {0,1}        
-        # layer5: gameboard area {0,1}        
-        # layer6: head_mask {0,1}        
-        # layer7: double_tail_mask {0,1}        
-        # layer8: snake bodies >= us {0,1}        
-        # layer9: snake bodies < us {0,1}        
-        # layer10-16: alive count mask
-        
-        # (1, 17, 23, 23)
+        # Print out observations for debugging purposes
         
         print("Game board + bodies")
         print(obs[0, 5, :, :] + obs[0, 1, :, :])
@@ -116,10 +102,10 @@ class Battlesnake(object):
         action = self.generator.get_action(data, possible_moves[action_index[0]])
         
         # Do some whacky conversion
-        if action == 'up':
-            action = 'down'
-        elif action == 'down':
-            action = 'up'
+        # if action == 'up':
+        #     action = 'down'
+        # elif action == 'down':
+        #     action = 'up'
         
         # Return to the index
         action_index = possible_moves.index(action)
@@ -144,13 +130,10 @@ class Battlesnake(object):
                 self.lefts += 1
                 
             if legal_actions:
-                print("Choosing another legal action")
                 action_index = random.choice(legal_actions)
             elif might_die_actions:
-                print("Choosing an action where we might die")
                 action_index = random.choice(might_die_actions)
             else:
-                print("Just going to die now!")
                 action_index = 0 # Just go and die then!
                 
         end = time.time()

@@ -4,6 +4,7 @@ import yaml
 import gym
 import torch
 
+# Game generator file provided by cbinners (https://github.com/cbinners/)
 class GameGenerator():
     
     def __init__(self, layers, width, height, color='#FFFFFF', use_symmetry=False):
@@ -102,9 +103,11 @@ class GameGenerator():
         head = player_snake['body'][0]
         neck = player_snake['body'][1]
         params = {}
-        flip_y = False
+        
+        flip_y = True # This needs to be enabled
         transpose = False
         transpose_rotate = False
+        
         diff_x = head['x'] - neck['x']
         diff_y = head['y'] - neck['y']
         if self.use_symmetry:
