@@ -83,7 +83,7 @@ class Battlesnake(object):
         with torch.no_grad():
             action_index, value = self.policy.predict(converted_input, deterministic=True)
             
-        action_index = action_index[0]
+        action_index = action_index.item()
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
