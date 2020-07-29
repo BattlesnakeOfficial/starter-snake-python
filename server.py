@@ -77,48 +77,26 @@ class Battlesnake(object):
         
         # Convert the JSON to a format needed by agent/policy
         obs = self.generator.make_input(data)
-        
-        # Print out observations for debugging purposes
-        
-        print("Game board + bodies")
-        print(obs[0, 5, :, :] + obs[0, 1, :, :])
-        
-        # print("Game board")
-        # print(obs[0, 5, :, :])
-        
-        # print("Snake bodies")
-        # print(obs[0, 1, :, :])
-        
-        # print("Food layer")
-        # print(obs[0, 4, :, :])
-        
         converted_input = torch.tensor(obs, dtype=torch.float32)
     
         # Get action from our model
         with torch.no_grad():
             action_index, value = self.policy.predict(converted_input, deterministic=True)
-        
-        # Get the name of the action
-        action = self.generator.get_action(data, possible_moves[action_index[0]])
-        
-        # Do some whacky conversion
-        # if action == 'up':
-        #     action = 'down'
-        # elif action == 'down':
-        #     action = 'up'
-        
-        # Return to the index
-        action_index = possible_moves.index(action)
+            
+        action_index = action_index[0]
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
-        certain_death_actions, might_die_actions = heuristics.run()
+        certain_death_actions, head_to_head_actions = heuristics.run()
+        
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
         # If our model tried to kill us, print and choose a new action
         if action_index in certain_death_actions:
             move = possible_moves[action_index]
-            print("BAD MOVE: {}".format(move))
+            log_message = certain_death_actions[action_index]
+            print("BAD MOVE: {}, {}".format(move, log_message))
+            
             self.deaths += 1
             if move == 'up':
                 self.ups += 1
@@ -128,23 +106,26 @@ class Battlesnake(object):
                 self.rights += 1
             elif move == 'left':
                 self.lefts += 1
-                
+            
+            # Choose a different legal action, maybe go head-to-head
             if legal_actions:
                 action_index = random.choice(legal_actions)
-            elif might_die_actions:
-                action_index = random.choice(might_die_actions)
-            else:
-                action_index = 0 # Just go and die then!
+            elif head_to_head_actions:
+                action_index = random.choice(head_to_head_actions.keys())
                 
         end = time.time()
          
         # Get string name corresponding to action
         action = possible_moves[action_index]
         
-        # Print move
-        print("Step {}... Move: {}".format(data['turn'], action))
-        print("Duration: {:.2f}s".format(end-start))
-        print("Value: {:.2f}".format(value[0].item()))
+        # Print logs
+        print("Step {}, Move: {}, Dur: {:.3f}s, Move value: {:.3f}".format(
+            data['turn'], 
+            action,
+            end-start,
+            value[0].item()
+            )
+        )
         
         return {"move": action}
 

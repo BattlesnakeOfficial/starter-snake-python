@@ -173,8 +173,7 @@ class Heuristics:
 
     # ------------------------------------------------------------------------
     
-    # Check if we die on the next move
-    
+    # Check if we die on the next, next move (two move look-ahead)
     def will_die_on_next_move(self, action):
         
         # Helper function to see if we're dead
@@ -255,68 +254,34 @@ class Heuristics:
         log_strings = []
         action_names = ['UP', 'DOWN', 'LEFT', 'RIGHT']
         actions = [0, 1, 2, 3]
-        certain_death_actions = []
-        might_die_actions = []
+        certain_death_actions = {}
+        head_to_head_actions = {}
         
         # See if we can eat food
-        food_direction = None
-        if self.my_health < 50:
-            food_direction = self.go_to_food_if_close()
+        # food_direction = None
+        # if self.my_health < 50:
+        #     food_direction = self.go_to_food_if_close()
         
         # Check to see which actions kill us
         for action in [UP, DOWN, LEFT, RIGHT]:
             
             # Don't hit another snake (including self)
             if self.did_try_to_hit_snake(action):
-                certain_death_actions.append(action)
-                log_strings.append("{} tries to hit a snake/self".format(action_names[action]))
+                certain_death_actions[action] = "tried to hit a snake/self"
                 continue
 
             # Don't exit the map
             if self.did_try_to_escape(action):
-                certain_death_actions.append(action)
-                log_strings.append("{} tries to escape".format(action_names[action]))
+                certain_death_actions[action] = "tried to escape"
                 continue
             
             # Don't go where we will die
             if self.will_die_on_next_move(action):
-                certain_death_actions.append(action)
-                might_die_actions.append(action)
-                log_strings.append("{} will die on next move".format(action_names[action]))
+                certain_death_actions[action] = "will die two moves later"
                 continue
             
-            # Don't lose a head-to-head
+            # Don't (potentially) lose a head-to-head
             if self.about_to_go_head_to_head(action):
-                certain_death_actions.append(action)
-                might_die_actions.append(action)
-                log_strings.append("{} could lose a head-to-head".format(action_names[action]))
+                head_to_head_actions[action] = "might lose head to head"
 
-        return certain_death_actions, might_die_actions
-        
-        # legal_actions = [a for a in actions if a not in certain_death_actions]
-
-
-        # # 1) Now choose to go to food if safe 
-        # # 2) If no food, choose random action TODO: Prioritize bigger "free box"
-        # # 3) If no legal actions, choose an action where we might die (head-to-head)
-        # # 4) Just go die lmao
-        # if food_direction and food_direction in legal_actions:
-        #     action = food_direction
-        #     log_strings.append("Went {} to food if close".format(action_names[action]))
-        # elif len(legal_actions) > 0:
-        #     if len(legal_actions) == 1:
-        #         action = legal_actions[0]
-        #     elif len(legal_actions) == 2:
-        #         action = self.get_action_based_on_dist(legal_actions)
-        #     else: 
-        #         action = random.choice(legal_actions)
-        # elif len(legal_actions) == 0 and len(might_die_actions) > 0:
-        #     action = random.choice(might_die_actions)
-        #     log_strings.append("Let's go for a head-to-head to a will-die action")
-        # else:
-        #     action = random.choice(actions) # Just go die!
-        #     log_strings.append("Guess I'll just die!")
-        
-        # assert action in [0, 1, 2, 3], "{} is not a valid action.".format(action)
-        
-        # return action, log_strings
+        return certain_death_actions, head_to_head_actions
