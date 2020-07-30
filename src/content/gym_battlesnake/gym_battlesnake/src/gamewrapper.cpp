@@ -332,6 +332,7 @@ public:
         info_[ii].over_ = false;
         info_[ii].alive_count_ = n_models_;
         info_[ii].death_reason_ = DEATH_NONE;
+        info_[ii].kill_count_ = 0;
       });
     }
     threadpool_.wait();

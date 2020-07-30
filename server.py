@@ -42,11 +42,11 @@ class Battlesnake(object):
         self.height = 23
         
         # Make our policy from previous weights
-        self.policy = make_policy(self.layers, self.width, self.height, "weights/weights-50iter.pt")
+        self.policy = make_policy(self.layers, self.width, self.height, "weights/weights-200iter-aggressive.pt")
         self.policy.eval()
         
         # Try using symmetry
-        self.generator = GameGenerator(self.layers, self.width, self.height)
+        self.generator = GameGenerator(self.layers, self.width, self.height, '#FFFFFF', True)
 
         print("Made policy and generator!")
         
@@ -83,7 +83,10 @@ class Battlesnake(object):
         with torch.no_grad():
             action_index, value = self.policy.predict(converted_input, deterministic=True)
             
+        # TODO: Fix this roundabout logic
         action_index = action_index.item()
+        action = self.generator.get_action(data, possible_moves[action_index])
+        action_index = possible_moves.index(action)
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
