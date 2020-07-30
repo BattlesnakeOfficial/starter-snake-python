@@ -53,31 +53,32 @@ class GameGenerator():
         
         if transpose:
             if action == LEFT:
-                return UP # ORIGINALLY UP
+                return DOWN # ORIGINALLY UP
             if action == RIGHT:
-                return DOWN # ORIGINALLY DOWN
+                return UP # ORIGINALLY DOWN
             if action == UP: 
                 return LEFT
             if action == DOWN:
                 return RIGHT
         if transpose_rotate:
             if action == LEFT:
-                return UP # ORIGINALLY UP
+                return DOWN # ORIGINALLY UP
             if action == RIGHT:
-                return DOWN # ORIGINALLY DOWN
+                return UP # ORIGINALLY DOWN
             if action == UP:
                 return RIGHT
             if action == DOWN:
                 return LEFT
-        if flip_y:
-            if action == LEFT:
-                return LEFT
-            if action == RIGHT:
-                return RIGHT
-            if action == UP:
-                return DOWN
-            if action == DOWN:
-                return UP
+        # if flip_y:
+        #     return action
+            # if action == LEFT:
+            #     return LEFT
+            # if action == RIGHT:
+            #     return RIGHT
+            # if action == UP:
+            #     return DOWN
+            # if action == DOWN:
+            #     return UP
         
         # Added conversion
         if action == UP:
