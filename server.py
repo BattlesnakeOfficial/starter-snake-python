@@ -46,7 +46,8 @@ class Battlesnake(object):
         self.policy.eval()
         
         # Try using symmetry
-        self.generator = GameGenerator(self.layers, self.width, self.height, '#FFFFFF', True)
+        self.generator = GameGenerator(self.layers, self.width, self.height)
+        # self.generator = GameGenerator(self.layers, self.width, self.height, '#FFFFFF', True)
 
         print("Made policy and generator!")
         
@@ -85,8 +86,8 @@ class Battlesnake(object):
             
         # TODO: Fix this roundabout logic
         action_index = action_index.item()
-        action = self.generator.get_action(data, possible_moves[action_index])
-        action_index = possible_moves.index(action)
+        # action = self.generator.get_action(data, possible_moves[action_index])
+        # action_index = possible_moves.index(action)
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
