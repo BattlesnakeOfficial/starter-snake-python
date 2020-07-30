@@ -99,11 +99,12 @@ class Battlesnake(object):
               [possible_moves[a] for a in list(certain_death_actions)]
         )
         
-        # If our model tried to kill us, print and choose a new action
+        # If our model tried to kill us, print it 
+        # and choose a new action
         if action_index in certain_death_actions:
             move = possible_moves[action_index]
             log_message = certain_death_actions[action_index]
-            print("BAD MOVE: {}, {}".format(move, log_message))
+            print("Potential bad move: {}, {}".format(move, log_message))
             
             self.deaths += 1
             if move == 'up':
@@ -116,10 +117,10 @@ class Battlesnake(object):
                 self.lefts += 1
             
             # Choose a different legal action, maybe go head-to-head
-            if legal_actions:
-                action_index = random.choice(legal_actions)
-            elif head_to_head_actions:
-                action_index = random.choice(list(head_to_head_actions))
+            # if legal_actions:
+            #     action_index = random.choice(legal_actions)
+            # elif head_to_head_actions:
+            #     action_index = random.choice(list(head_to_head_actions))
                 
         end = time.time()
          

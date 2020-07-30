@@ -47,10 +47,6 @@ class GameGenerator():
                 if diff_x == -1: # Facing left
                     transpose = True
                     
-        print("flip_y: {}, transpose: {}, transpose_rotate: {}".format(
-            flip_y, transpose, transpose_rotate
-        ))
-        
         if transpose:
             if action == LEFT:
                 return DOWN # ORIGINALLY UP
