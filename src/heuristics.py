@@ -188,6 +188,7 @@ class Heuristics:
             # Don't hit another snake
             # Loop through snakes to see if we're about to collide // TODO: Avoid duplicate code
             for snake in self.snakes:
+                # TODO: NEED TO ADD NEW LOCATION OF HEAD OF OWN SNAKE
                 for piece in snake["body"]:
                     x, y = piece["x"], piece["y"]
                     if x == i and y == j: # Exact match
