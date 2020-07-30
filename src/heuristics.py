@@ -282,6 +282,7 @@ class Heuristics:
             
             # Don't (potentially) lose a head-to-head
             if self.about_to_go_head_to_head(action):
+                certain_death_actions[action] = "might lose head to head"
                 head_to_head_actions[action] = "might lose head to head"
 
         return certain_death_actions, head_to_head_actions
