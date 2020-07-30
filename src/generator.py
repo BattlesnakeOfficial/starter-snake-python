@@ -53,18 +53,18 @@ class GameGenerator():
         
         if transpose:
             if action == LEFT:
-                return UP
+                return DOWN # ORIGINALLY UP
             if action == RIGHT:
-                return DOWN
-            if action == UP:
+                return UP # ORIGINALLY DOWN
+            if action == UP: 
                 return LEFT
             if action == DOWN:
                 return RIGHT
         if transpose_rotate:
             if action == LEFT:
-                return UP
+                return DOWN # ORIGINALLY UP
             if action == RIGHT:
-                return DOWN
+                return UP # ORIGINALLY DOWN
             if action == UP:
                 return RIGHT
             if action == DOWN:

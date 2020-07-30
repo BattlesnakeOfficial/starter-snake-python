@@ -94,8 +94,10 @@ class Battlesnake(object):
         
         legal_actions = [a for a in actions if a not in certain_death_actions]
         
-        print("Model action: {}".format(action_index))
-        print("Certain death: ", certain_death_actions.keys())
+        print("Model action: {}".format(possible_moves[action_index]))
+        print("Certain death actions: ", 
+              [possible_moves[a] for a in list(certain_death_actions)]
+        )
         
         # If our model tried to kill us, print and choose a new action
         if action_index in certain_death_actions:
@@ -117,7 +119,7 @@ class Battlesnake(object):
             if legal_actions:
                 action_index = random.choice(legal_actions)
             elif head_to_head_actions:
-                action_index = random.choice(head_to_head_actions.keys())
+                action_index = random.choice(list(head_to_head_actions))
                 
         end = time.time()
          
