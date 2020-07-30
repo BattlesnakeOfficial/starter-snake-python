@@ -21,9 +21,9 @@ class Battlesnake(object):
         return {
             "apiversion": "1",
             "author": "jpulmano",
-            "color": "#800000",
-            "head": "shac-gamer",
-            "tail": "shac-coffee"
+            "color": "#0CDED8",
+            "head": "bwc-rudolph",
+            "tail": "round-bum"
         }
 
     @cherrypy.expose
@@ -31,7 +31,7 @@ class Battlesnake(object):
     def start(self):
         # This function is called everytime your snake is entered into a game.
         # cherrypy.request.json contains information about the game that's about to be played.
-        # TODO: Use this function to decide how your snake is going to look on the board.
+
         data = cherrypy.request.json
         
         print("START")
@@ -49,7 +49,7 @@ class Battlesnake(object):
         # self.generator = GameGenerator(self.layers, self.width, self.height)
         self.generator = GameGenerator(self.layers, self.width, self.height, True)
 
-        print("Made policy and game generator!")
+        print("Made policy and game generator")
         
         # Trackers
         self.deaths = 0
