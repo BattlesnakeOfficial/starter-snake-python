@@ -275,10 +275,10 @@ class Heuristics:
                 certain_death_actions[action] = "tried to escape"
                 continue
             
-            # Don't go where we will die
-            if self.will_die_on_next_move(action):
-                certain_death_actions[action] = "will die two moves later"
-                continue
+            # Don't die two moves later
+            # if self.will_die_on_next_move(action):
+            #     certain_death_actions[action] = "will die two moves later"
+            #     continue
             
             # Don't (potentially) lose a head-to-head
             if self.about_to_go_head_to_head(action):

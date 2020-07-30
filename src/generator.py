@@ -121,7 +121,7 @@ class GameGenerator():
         neck = player_snake['body'][1]
         params = {}
         
-        flip_y = True # This needs to be set to True if symmetry wasn't used
+        flip_y = False
         transpose = False
         transpose_rotate = False
         
