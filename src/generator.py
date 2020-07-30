@@ -69,16 +69,15 @@ class GameGenerator():
                 return RIGHT
             if action == DOWN:
                 return LEFT
-        # if flip_y:
-        #     return action
-            # if action == LEFT:
-            #     return LEFT
-            # if action == RIGHT:
-            #     return RIGHT
-            # if action == UP:
-            #     return DOWN
-            # if action == DOWN:
-            #     return UP
+        if flip_y:
+            if action == LEFT:
+                return LEFT
+            if action == RIGHT:
+                return RIGHT
+            if action == UP:
+                return DOWN
+            if action == DOWN:
+                return UP
         
         # Added conversion
         if action == UP:
