@@ -7,14 +7,26 @@ import torch
 # Game generator file provided by cbinners (https://github.com/cbinners/)
 class GameGenerator():
     
-    def __init__(self, layers, width, height, color='#FFFFFF', use_symmetry=False):
+    def __init__(self, layers, width, height, use_symmetry=False):
         self.NUM_LAYERS = layers
         self.LAYER_WIDTH = width
         self.LAYER_HEIGHT = height
-        self.color = color
         self.use_symmetry = use_symmetry
         
+    
     def get_action(self, data, action):
+        """
+        Takes the json and the action returned by the agent/policy 
+        and corrects the action if necessary - i.e. if symmetry
+        was used to train
+        
+        data: the json returned by the game
+        action: the action (in number form)
+        
+        returns action
+        """
+        
+        UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
         if self.use_symmetry == False:
             return action
         player_snake = data['you']
@@ -34,33 +46,38 @@ class GameGenerator():
                     transpose_rotate = True
                 if diff_x == -1:
                     transpose = True
+                    
+        print("flip_y: {}, transpose: {}, transpose_rotate: {}".format(
+            flip_y, transpose, transpose_rotate
+        ))
+        
         if transpose:
-            if action == 'left':
-                return 'up'
-            if action == 'right':
-                return 'down'
-            if action == 'up':
-                return 'left'
-            if action == 'down':
-                return 'right'
+            if action == LEFT:
+                return UP
+            if action == RIGHT:
+                return DOWN
+            if action == UP:
+                return LEFT
+            if action == DOWN:
+                return RIGHT
         if transpose_rotate:
-            if action == 'left':
-                return 'up'
-            if action == 'right':
-                return 'down'
-            if action == 'up':
-                return 'right'
-            if action == 'down':
-                return 'left'
+            if action == LEFT:
+                return UP
+            if action == RIGHT:
+                return DOWN
+            if action == UP:
+                return RIGHT
+            if action == DOWN:
+                return LEFT
         if flip_y:
-            if action == 'left':
-                return 'left'
-            if action == 'right':
-                return 'right'
-            if action == 'up':
-                return 'down'
-            if action == 'down':
-                return 'up'
+            if action == LEFT:
+                return LEFT
+            if action == RIGHT:
+                return RIGHT
+            if action == UP:
+                return DOWN
+            if action == DOWN:
+                return UP
         return action
     
     def get_x(self, head, flip_y, transpose, transpose_rotate, x, y):

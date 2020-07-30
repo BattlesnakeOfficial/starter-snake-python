@@ -47,9 +47,9 @@ class Battlesnake(object):
         
         # Try using symmetry
         # self.generator = GameGenerator(self.layers, self.width, self.height)
-        self.generator = GameGenerator(self.layers, self.width, self.height, '#FFFFFF', True)
+        self.generator = GameGenerator(self.layers, self.width, self.height, True)
 
-        print("Made policy and generator!")
+        print("Made policy and game generator!")
         
         # Trackers
         self.deaths = 0
@@ -65,7 +65,8 @@ class Battlesnake(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def move(self):
-        # This function is called on every turn of a game. It's how your snake decides where to move.
+        # This function is called on every turn of a game. 
+        # It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
         
         start = time.time() # Start timer
@@ -84,10 +85,8 @@ class Battlesnake(object):
         with torch.no_grad():
             action_index, value = self.policy.predict(converted_input, deterministic=True)
             
-        # TODO: Fix this roundabout logic
-        action_index = action_index.item()
-        # action = self.generator.get_action(data, possible_moves[action_index])
-        # action_index = possible_moves.index(action)
+        # Convert
+        action_index = self.generator.get_action(data, action_index.item())
         
         # Check model action with heuristics
         heuristics = Heuristics(data)
@@ -131,8 +130,7 @@ class Battlesnake(object):
             action,
             end-start,
             value[0].item()
-            )
-        )
+        ))
         
         return {"move": action}
 
@@ -146,9 +144,9 @@ class Battlesnake(object):
         print("END")
         
         if data["you"] not in data["board"]["snakes"]:
-            print("you lost bruh")
+            print("You lost :(")
         else:
-            print("you won bruh!")
+            print("You won :D")
             
         print("You chose a dying move {} out of {} times".format(self.deaths, self.total_moves))
         print("Ups: ", self.ups)
