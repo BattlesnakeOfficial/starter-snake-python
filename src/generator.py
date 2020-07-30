@@ -39,12 +39,12 @@ class GameGenerator():
         diff_y = head['y'] - neck['y']
         if self.use_symmetry:
             if diff_x == 0:
-                if diff_y == 1:
+                if diff_y == 1: # Facing up
                     flip_y = True
             else:
-                if diff_x == 1:
+                if diff_x == 1: # Facing right
                     transpose_rotate = True
-                if diff_x == -1:
+                if diff_x == -1: # Facing left
                     transpose = True
                     
         print("flip_y: {}, transpose: {}, transpose_rotate: {}".format(
@@ -70,14 +70,15 @@ class GameGenerator():
             if action == DOWN:
                 return LEFT
         if flip_y:
-            if action == LEFT:
-                return LEFT
-            if action == RIGHT:
-                return RIGHT
-            if action == UP:
-                return DOWN
-            if action == DOWN:
-                return UP
+            return action 
+            # if action == LEFT:
+            #     return LEFT
+            # if action == RIGHT:
+            #     return RIGHT
+            # if action == UP:
+            #     return DOWN
+            # if action == DOWN:
+            #     return UP
         
         # Added conversion
         if action == UP:
