@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import numpy as np 
 
@@ -69,6 +70,8 @@ if __name__ == "__main__":
     board = Board(data)
     print(board.hazards)
 =======
+=======
+>>>>>>> origin/master
 """
 Game Board logic
 """
@@ -76,4 +79,7 @@ Game Board logic
 class Board:
   def __init__(self, data):
     pass
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
