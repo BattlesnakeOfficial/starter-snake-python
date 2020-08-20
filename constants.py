@@ -1,0 +1,6 @@
+FREE_SPACE = 0
+FOOD = 1
+SAFE_SPACE = 2
+HAZARD = 3
+
+

@@ -4,12 +4,16 @@ description = "Highly-optimized, pure-python HTTP server"
 name = "cheroot"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
-version = "8.3.0"
+version = "8.4.4"
 
 [package.dependencies]
 "jaraco.functools" = "*"
 more-itertools = ">=2.6"
 six = ">=1.11.0"
+
+[package.extras]
+docs = ["sphinx (>=1.8.2)", "jaraco.packaging (>=3.2)", "sphinx-tabs (>=1.1.0)", "docutils", "alabaster", "python-dateutil", "sphinxcontrib-spelling (>=5.2.0)"]
+testing = ["pytest (>=4.6.6)", "pytest-mock (>=1.11.0)", "pytest-sugar (>=0.9.3)", "pytest-testmon (<1.0.0)", "pytest-watch (4.2.0)", "pytest-xdist (>=1.28.0)", "jaraco.text (>=3.1)", "codecov (2.0.22)", "pytest-cov (2.7.1)", "trustme (>=0.4.0)", "pyopenssl", "requests-unixsocket", "portend", "requests-toolbelt", "jaraco.context", "coverage (5.1)", "urllib3 (>=1.25)", "futures", "coverage (<5)", "urllib3 (<1.25)", "colorama (!=0.4.2)", "pytest-forked (>=1.2.0)", "pytest-forked (>=1.1.3)"]
 
 [[package]]
 category = "main"
@@ -27,6 +31,15 @@ portend = ">=2.1.1"
 pywin32 = "*"
 "zc.lockfile" = "*"
 
+[package.extras]
+docs = ["sphinx", "docutils", "alabaster", "rst.linker (>=1.11)", "jaraco.packaging (>=3.2)"]
+json = ["simplejson"]
+memcached_session = ["python-memcached (>=1.58)"]
+routes_dispatcher = ["routes (>=2.3.1)"]
+ssl = ["pyopenssl"]
+testing = ["coverage", "codecov", "objgraph", "pytest (>=5.3.5,<5.4.0)", "pytest-cov", "pytest-sugar", "backports.unittest-mock", "path.py", "requests-toolbelt", "pytest-services (>=2)"]
+xcgi = ["flup"]
+
 [[package]]
 category = "main"
 description = "Utility functions for Python class constructs"
@@ -37,6 +50,10 @@ version = "3.1.0"
 
 [package.dependencies]
 more-itertools = "*"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black-multipy", "pytest-cov"]
 
 [[package]]
 category = "main"
@@ -51,6 +68,10 @@ version = "3.0.0"
 "jaraco.text" = "*"
 six = ">=1.7.0"
 
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black-multipy", "pytest-cov"]
+
 [[package]]
 category = "main"
 description = "Functools like those found in stdlib"
@@ -61,6 +82,10 @@ version = "3.0.1"
 
 [package.dependencies]
 more-itertools = "*"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black (>=0.3.7)", "pytest-cov", "jaraco.classes"]
 
 [[package]]
 category = "main"
@@ -74,13 +99,17 @@ version = "3.2.0"
 "jaraco.functools" = "*"
 six = "*"
 
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black-multipy", "pytest-cov"]
+
 [[package]]
 category = "main"
 description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
 optional = false
 python-versions = ">=3.5"
-version = "8.3.0"
+version = "8.4.0"
 
 [[package]]
 category = "main"
@@ -92,6 +121,10 @@ version = "2.6"
 
 [package.dependencies]
 tempora = ">=1.8"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs", "pytest-flake8", "pytest-black-multipy", "pytest-cov"]
 
 [[package]]
 category = "main"
@@ -108,7 +141,7 @@ marker = "sys_platform == \"win32\""
 name = "pywin32"
 optional = false
 python-versions = "*"
-version = "227"
+version = "228"
 
 [[package]]
 category = "main"
@@ -124,11 +157,15 @@ description = "Objects and routines pertaining to date and time (tempora)"
 name = "tempora"
 optional = false
 python-versions = ">=3.6"
-version = "3.0.0"
+version = "4.0.0"
 
 [package.dependencies]
 "jaraco.functools" = ">=1.20"
 pytz = "*"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black (>=0.3.7)", "pytest-cov", "pytest-mypy", "backports.unittest-mock", "freezegun", "pytest-freezegun"]
 
 [[package]]
 category = "main"
@@ -141,21 +178,73 @@ version = "2.0"
 [package.dependencies]
 setuptools = "*"
 
+[package.extras]
+test = ["zope.testing"]
+
 [metadata]
 content-hash = "4525054609701dd3baffd13f86cbea41801fb80b658a5de84dcccb8eaee13401"
 python-versions = "^3.8"
 
-[metadata.hashes]
-cheroot = ["2b48c88959b5b80a79aca627ae5212acb398becaa70b576b8b89bec1ad0d1367", "a0577e1f28661727d472671a7cc4e0c12ea0cbc5220265e70f00a8b8cb628931"]
-cherrypy = ["56608edd831ad00991ae585625e0206ed61cf1a0850e4b2cc48489fb2308c499", "c0a7283f02a384c112a0a18404fd3abd849fc7fd4bec19378067150a2573d2e4"]
-"jaraco.classes" = ["116429c2047953f525afdcae165475c4589c7b14870e78b2d068ecb01018827e", "c38698ff8ef932eb33d91c0e8fc192ad7c44ecee03f7f585afd4f35aeaef7aab"]
-"jaraco.collections" = ["a7889f28c80c4875bd6256d9924e8526dacfef22cd7b80ff8469b4d312f9f144", "be570ef4f2e7290b757449395238fa63d70a9255574624e73c5ff9f1ee554721"]
-"jaraco.functools" = ["9fedc4be3117512ca3e03e1b2ffa7a6a6ffa589bfb7d02bfb324e55d493b94f4", "d3dc9f6c1a1d45d7f59682a3bf77aceb685c1a60891606c7e4161e72ecc399ad"]
-"jaraco.text" = ["c87569c9afae14f71b2e1c57f316770ab6981ab675d9c602be1c7981161bacdd", "e5078b1126cc0f166c7859aa75103a56c0d0f39ebcafc21695615472e0f810ec"]
-more-itertools = ["558bb897a2232f5e4f8e2399089e35aecb746e1f9191b6584a151647e89267be", "7818f596b1e87be009031c7653d01acc46ed422e6656b394b0f765ce66ed4982"]
-portend = ["600dd54175e17e9347e5f3d4217aa8bcf4bf4fa5ffbc4df034e5ec1ba7cdaff5", "62dd00b94a6a55fbf0320365fbdeba37f0d1fe14d613841037dc4780bedfda8f"]
-pytz = ["a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed", "c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"]
-pywin32 = ["300a2db938e98c3e7e2093e4491439e62287d0d493fe07cce110db070b54c0be", "31f88a89139cb2adc40f8f0e65ee56a8c585f629974f9e07622ba80199057511", "371fcc39416d736401f0274dd64c2302728c9e034808e37381b5e1b22be4a6b0", "47a3c7551376a865dd8d095a98deba954a98f326c6fe3c72d8726ca6e6b15507", "4cdad3e84191194ea6d0dd1b1b9bdda574ff563177d2adf2b4efec2a244fa116", "7c1ae32c489dc012930787f06244426f8356e129184a02c25aef163917ce158e", "7f18199fbf29ca99dff10e1f09451582ae9e372a892ff03a28528a24d55875bc", "9b31e009564fb95db160f154e2aa195ed66bcc4c058ed72850d047141b36f3a2", "a929a4af626e530383a579431b70e512e736e9588106715215bf685a3ea508d4", "c054c52ba46e7eb6b7d7dfae4dbd987a1bb48ee86debe3f245a2884ece46e295", "f27cec5e7f588c3d1051651830ecc00294f90728d19c3bf6916e6dba93ea357c", "f4c5be1a293bae0076d93c88f37ee8da68136744588bc5e2be2f299a34ceb7aa"]
-six = ["30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259", "8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"]
-tempora = ["70503a3a10fb341f49e7919d193f0b6362bbfddffb560fac47df3e977414c0c6", "e370d822cf48f5356aab0734ea45807250f5120e291c76712a1d766b49ae34f8"]
-"zc.lockfile" = ["307ad78227e48be260e64896ec8886edc7eae22d8ec53e4d528ab5537a83203b", "cc33599b549f0c8a248cb72f3bf32d77712de1ff7ee8814312eb6456b42c015f"]
+[metadata.files]
+cheroot = [
+    {file = "cheroot-8.4.4-py2.py3-none-any.whl", hash = "sha256:a9423d1c3a772f276971f2bcb53d1f6ab21f4d29a2a7321eed5ec9ba9d913c9c"},
+    {file = "cheroot-8.4.4.tar.gz", hash = "sha256:ca92669cc90fbd0920fda1ebcc431147e7d3ae6887216ce404f85f1b3133fa93"},
+]
+cherrypy = [
+    {file = "CherryPy-18.6.0-py2.py3-none-any.whl", hash = "sha256:c0a7283f02a384c112a0a18404fd3abd849fc7fd4bec19378067150a2573d2e4"},
+    {file = "CherryPy-18.6.0.tar.gz", hash = "sha256:56608edd831ad00991ae585625e0206ed61cf1a0850e4b2cc48489fb2308c499"},
+]
+"jaraco.classes" = [
+    {file = "jaraco.classes-3.1.0-py2.py3-none-any.whl", hash = "sha256:116429c2047953f525afdcae165475c4589c7b14870e78b2d068ecb01018827e"},
+    {file = "jaraco.classes-3.1.0.tar.gz", hash = "sha256:c38698ff8ef932eb33d91c0e8fc192ad7c44ecee03f7f585afd4f35aeaef7aab"},
+]
+"jaraco.collections" = [
+    {file = "jaraco.collections-3.0.0-py2.py3-none-any.whl", hash = "sha256:a7889f28c80c4875bd6256d9924e8526dacfef22cd7b80ff8469b4d312f9f144"},
+    {file = "jaraco.collections-3.0.0.tar.gz", hash = "sha256:be570ef4f2e7290b757449395238fa63d70a9255574624e73c5ff9f1ee554721"},
+]
+"jaraco.functools" = [
+    {file = "jaraco.functools-3.0.1-py3-none-any.whl", hash = "sha256:d3dc9f6c1a1d45d7f59682a3bf77aceb685c1a60891606c7e4161e72ecc399ad"},
+    {file = "jaraco.functools-3.0.1.tar.gz", hash = "sha256:9fedc4be3117512ca3e03e1b2ffa7a6a6ffa589bfb7d02bfb324e55d493b94f4"},
+]
+"jaraco.text" = [
+    {file = "jaraco.text-3.2.0-py2.py3-none-any.whl", hash = "sha256:c87569c9afae14f71b2e1c57f316770ab6981ab675d9c602be1c7981161bacdd"},
+    {file = "jaraco.text-3.2.0.tar.gz", hash = "sha256:e5078b1126cc0f166c7859aa75103a56c0d0f39ebcafc21695615472e0f810ec"},
+]
+more-itertools = [
+    {file = "more-itertools-8.4.0.tar.gz", hash = "sha256:68c70cc7167bdf5c7c9d8f6954a7837089c6a36bf565383919bb595efb8a17e5"},
+    {file = "more_itertools-8.4.0-py3-none-any.whl", hash = "sha256:b78134b2063dd214000685165d81c154522c3ee0a1c0d4d113c80361c234c5a2"},
+]
+portend = [
+    {file = "portend-2.6-py2.py3-none-any.whl", hash = "sha256:62dd00b94a6a55fbf0320365fbdeba37f0d1fe14d613841037dc4780bedfda8f"},
+    {file = "portend-2.6.tar.gz", hash = "sha256:600dd54175e17e9347e5f3d4217aa8bcf4bf4fa5ffbc4df034e5ec1ba7cdaff5"},
+]
+pytz = [
+    {file = "pytz-2020.1-py2.py3-none-any.whl", hash = "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed"},
+    {file = "pytz-2020.1.tar.gz", hash = "sha256:c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"},
+]
+pywin32 = [
+    {file = "pywin32-228-cp27-cp27m-win32.whl", hash = "sha256:37dc9935f6a383cc744315ae0c2882ba1768d9b06700a70f35dc1ce73cd4ba9c"},
+    {file = "pywin32-228-cp27-cp27m-win_amd64.whl", hash = "sha256:11cb6610efc2f078c9e6d8f5d0f957620c333f4b23466931a247fb945ed35e89"},
+    {file = "pywin32-228-cp35-cp35m-win32.whl", hash = "sha256:1f45db18af5d36195447b2cffacd182fe2d296849ba0aecdab24d3852fbf3f80"},
+    {file = "pywin32-228-cp35-cp35m-win_amd64.whl", hash = "sha256:6e38c44097a834a4707c1b63efa9c2435f5a42afabff634a17f563bc478dfcc8"},
+    {file = "pywin32-228-cp36-cp36m-win32.whl", hash = "sha256:ec16d44b49b5f34e99eb97cf270806fdc560dff6f84d281eb2fcb89a014a56a9"},
+    {file = "pywin32-228-cp36-cp36m-win_amd64.whl", hash = "sha256:a60d795c6590a5b6baeacd16c583d91cce8038f959bd80c53bd9a68f40130f2d"},
+    {file = "pywin32-228-cp37-cp37m-win32.whl", hash = "sha256:af40887b6fc200eafe4d7742c48417529a8702dcc1a60bf89eee152d1d11209f"},
+    {file = "pywin32-228-cp37-cp37m-win_amd64.whl", hash = "sha256:00eaf43dbd05ba6a9b0080c77e161e0b7a601f9a3f660727a952e40140537de7"},
+    {file = "pywin32-228-cp38-cp38-win32.whl", hash = "sha256:fa6ba028909cfc64ce9e24bcf22f588b14871980d9787f1e2002c99af8f1850c"},
+    {file = "pywin32-228-cp38-cp38-win_amd64.whl", hash = "sha256:9b3466083f8271e1a5eb0329f4e0d61925d46b40b195a33413e0905dccb285e8"},
+    {file = "pywin32-228-cp39-cp39-win32.whl", hash = "sha256:ed74b72d8059a6606f64842e7917aeee99159ebd6b8d6261c518d002837be298"},
+    {file = "pywin32-228-cp39-cp39-win_amd64.whl", hash = "sha256:8319bafdcd90b7202c50d6014efdfe4fde9311b3ff15fd6f893a45c0868de203"},
+]
+six = [
+    {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
+    {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
+]
+tempora = [
+    {file = "tempora-4.0.0-py3-none-any.whl", hash = "sha256:9f46de767be7dd21d9602a8a5b0978fd55abc70af3e2a7814c85c00d7a8fffa3"},
+    {file = "tempora-4.0.0.tar.gz", hash = "sha256:599a3a910b377f2b544c7b221582ecf4cb049b017c994b37f2b1a9ed1099716e"},
+]
+"zc.lockfile" = [
+    {file = "zc.lockfile-2.0-py2.py3-none-any.whl", hash = "sha256:cc33599b549f0c8a248cb72f3bf32d77712de1ff7ee8814312eb6456b42c015f"},
+    {file = "zc.lockfile-2.0.tar.gz", hash = "sha256:307ad78227e48be260e64896ec8886edc7eae22d8ec53e4d528ab5537a83203b"},
+]
