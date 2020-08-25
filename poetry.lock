@@ -4,7 +4,7 @@ description = "Highly-optimized, pure-python HTTP server"
 name = "cheroot"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
-version = "8.4.4"
+version = "8.4.5"
 
 [package.dependencies]
 "jaraco.functools" = "*"
@@ -13,7 +13,7 @@ six = ">=1.11.0"
 
 [package.extras]
 docs = ["sphinx (>=1.8.2)", "jaraco.packaging (>=3.2)", "sphinx-tabs (>=1.1.0)", "docutils", "alabaster", "python-dateutil", "sphinxcontrib-spelling (>=5.2.0)"]
-testing = ["pytest (>=4.6.6)", "pytest-mock (>=1.11.0)", "pytest-sugar (>=0.9.3)", "pytest-testmon (<1.0.0)", "pytest-watch (4.2.0)", "pytest-xdist (>=1.28.0)", "jaraco.text (>=3.1)", "codecov (2.0.22)", "pytest-cov (2.7.1)", "trustme (>=0.4.0)", "pyopenssl", "requests-unixsocket", "portend", "requests-toolbelt", "jaraco.context", "coverage (5.1)", "urllib3 (>=1.25)", "futures", "coverage (<5)", "urllib3 (<1.25)", "colorama (!=0.4.2)", "pytest-forked (>=1.2.0)", "pytest-forked (>=1.1.3)"]
+testing = ["pytest (>=4.6.6)", "pytest-mock (>=1.11.0)", "pytest-sugar (>=0.9.3)", "pytest-testmon (<1.0.0)", "pytest-watch (4.2.0)", "pytest-xdist (>=1.28.0)", "jaraco.text (>=3.1)", "codecov (2.0.22)", "trustme (>=0.4.0)", "pyopenssl", "requests-unixsocket", "portend", "requests-toolbelt", "jaraco.context", "coverage (5.1)", "pytest-cov (2.10.1)", "urllib3 (>=1.25)", "futures", "coverage (<5)", "pytest-cov (2.8.1)", "urllib3 (<1.25)", "colorama (!=0.4.2)", "pytest-forked (>=1.2.0)", "pytest-forked (>=1.1.3)"]
 
 [[package]]
 category = "main"
@@ -187,8 +187,8 @@ python-versions = "^3.8"
 
 [metadata.files]
 cheroot = [
-    {file = "cheroot-8.4.4-py2.py3-none-any.whl", hash = "sha256:a9423d1c3a772f276971f2bcb53d1f6ab21f4d29a2a7321eed5ec9ba9d913c9c"},
-    {file = "cheroot-8.4.4.tar.gz", hash = "sha256:ca92669cc90fbd0920fda1ebcc431147e7d3ae6887216ce404f85f1b3133fa93"},
+    {file = "cheroot-8.4.5-py2.py3-none-any.whl", hash = "sha256:ab342666c8e565a55cd2baf2648be9b379269a89d47e60862a087cff9d8b33ce"},
+    {file = "cheroot-8.4.5.tar.gz", hash = "sha256:b6c18caf5f79cdae668c35fc8309fc88ea4a964cce9e2ca8504fab13bcf57301"},
 ]
 cherrypy = [
     {file = "CherryPy-18.6.0-py2.py3-none-any.whl", hash = "sha256:c0a7283f02a384c112a0a18404fd3abd849fc7fd4bec19378067150a2573d2e4"},
