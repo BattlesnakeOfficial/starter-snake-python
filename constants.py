@@ -1,3 +1,5 @@
+import util
+
 FREE_SPACE = 0
 FOOD = 1
 SAFE_SPACE = 2
@@ -13,5 +15,3 @@ RIGHT = "right"
 UP = "up"
 DOWN = "down"
 
-def all_moves():
-    return {"up", "down", "left", "right"}
