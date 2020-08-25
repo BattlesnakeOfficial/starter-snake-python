@@ -2,8 +2,9 @@
 import json
 import numpy as np 
 
+import moves
 from snake import Snake
-from util import get_pos
+from util import get_pos, distance, directions
 from constants import FREE_SPACE, FOOD, SAFE_SPACE, HAZARD, ENEMY_HEAD, ENEMY_TAIL, ENEMY_BODY
 
 class Board:
@@ -33,6 +34,7 @@ class Board:
 
   def __getitem__(self, index):
     return self.board[index]
+  
   def process_board(self, data):
     # load hazards
     self.load_hazards(data)
@@ -68,9 +70,10 @@ class Board:
     else:
       return False
 
-  def is_safe(self, x, y=None):
+  def is_safe(self, x, y=None, ignored=[]):
     x, y = get_pos(x, y)
-    if self.in_bounds(x, y) and self[x, y] <= SAFE_SPACE:
+    contents = self[x, y]
+    if self.in_bounds(x, y) and (contents <= SAFE_SPACE or contents in ignored):
       return True
     else:
       return False
@@ -90,7 +93,6 @@ class Board:
     else:
       return False
 
-
 if __name__ == "__main__":
   with open("example_move.json") as file:
     data = json.load(file)
@@ -98,5 +100,6 @@ if __name__ == "__main__":
     print(board.board)
     print(board.hazards)
     print(board.snakes)
-    print(board.snakematrix[0][0])
+    print(board.is_safe(0,0))
+    
     
