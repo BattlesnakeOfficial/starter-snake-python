@@ -2,7 +2,7 @@ import os
 import random
 
 import cherrypy
-import behaviour.behaviour as behaviour
+import behaviour
 
 """
 This is a simple Battlesnake server written in Python.
