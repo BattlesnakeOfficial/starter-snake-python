@@ -72,9 +72,11 @@ class Board:
 
   def is_safe(self, x, y=None, ignored=[]):
     x, y = get_pos(x, y)
-    contents = self[x, y]
-    if self.in_bounds(x, y) and (contents <= SAFE_SPACE or contents in ignored):
-      return True
+    
+    if self.in_bounds(x, y):
+      contents = self[x, y]
+      if contents <= SAFE_SPACE or contents in ignored:
+        return True
     else:
       return False
   
