@@ -24,8 +24,8 @@ class Battlesnake(object):
             #"color": "#596b75",  # TODO: Personalize
             #"color": "#272f33",  # TODO: Personalize
             "color": "#3a464d",  # TODO: Personalize
-            "head": "default",  # TODO: Personalize
-            "tail": "default",  # TODO: Personalize
+            "head": "shac-tiger-king",  # TODO: Personalize
+            "tail": "bolt",  # TODO: Personalize
         }
 
     @cherrypy.expose
