@@ -10,6 +10,10 @@ def avoid_obstacles(board, x, y=None):
     x, y = util.get_pos(x, y)
     possible_moves = safe_moves(board, x, y)
     
+    # follow your own tail if necessary
+    if len(possible_moves) == 0:
+        possible_moves = safe_moves(board, x, y, ignored=[constants.MY_TAIL])
+    # follow enemy tail if no other options exist
     if len(possible_moves) == 0:
         possible_moves = safe_moves(board, x, y, ignored=[constants.ENEMY_TAIL])
     move = None
