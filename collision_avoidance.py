@@ -10,7 +10,11 @@ def avoid_obstacles(board, x, y=None):
     x, y = util.get_pos(x, y)
     possible_moves = safe_moves(board, x, y)
     
-    move = random.choice(list(possible_moves.keys()))
+    if len(possible_moves) == 0:
+        possible_moves = safe_moves(board, x, y, ignored=[constants.ENEMY_TAIL])
+    move = None
+    if len(possible_moves) > 0:
+      move = random.choice(list(possible_moves.keys()))
     
     return move
 

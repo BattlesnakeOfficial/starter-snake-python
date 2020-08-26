@@ -4,7 +4,7 @@ class Move:
         self.x, self.y = get_pos(x, y)
 
 def all_moves():
-    return {"up", "down", "left", "right"}
+    return ["up", "down", "left", "right"]
 
 def get_moves(x, y=None):
     x, y = util.get_pos(x, y)
