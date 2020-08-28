@@ -1,7 +1,7 @@
 import util
 class Move:
-    def __init__(x, y=None):
-        self.x, self.y = get_pos(x, y)
+    def __init__(self, x, y=None):
+        self.x, self.y = util.get_pos(x, y)
 
 def all_moves():
     return ["up", "down", "left", "right"]
