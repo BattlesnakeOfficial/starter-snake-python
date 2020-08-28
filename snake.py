@@ -8,7 +8,7 @@ class Snake:
         self.health = data['health']
         
         self.head = get_pos(data['head'])#create_point(head, contents=ENEMY_SNAKE_HEAD, parent_object=self)
-        self.body = [self.head]
+        self.body = []
         for pos in data['body']:
             self.body.append(get_pos(pos))
         self.tail = get_pos(data['body'][-1])
