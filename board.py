@@ -9,7 +9,9 @@ from constants import FREE_SPACE, FOOD, SAFE_SPACE, HAZARD, MY_HEAD, MY_BODY, MY
 
 class Board:
     def __init__(self, data):
-
+        
+        self.data = data
+        
         self.width = data['board']['width']
         self.height = data['board']['height']
         
@@ -19,7 +21,7 @@ class Board:
         self.healthmatrix = np.zeros((self.width, self.height), dtype=np.int16)
         self.lengthmatrix = np.zeros((self.width, self.height), dtype=np.int16)
         
-        self.snakematrix = np.zeros((self.width, self.height), dtype=str)
+        self.snakematrix = np.zeros((self.width, self.height), dtype=object)
         
         self.me = Snake(data['you'], is_you=True)
         self.snakes = dict()
@@ -52,7 +54,7 @@ class Board:
                 self.board[x, y] = ENEMY_BODY
                 self.healthmatrix[x, y] = snake.health
                 self.lengthmatrix[x, y] = snake.length
-                self.snakematrix[x, y] = snake.snake_id
+                self.snakematrix[x, y] = snake
             
             head = get_pos(snake.head)
             tail = get_pos(snake.tail)
@@ -92,6 +94,8 @@ class Board:
             contents = self[x, y]
             if contents <= SAFE_SPACE or contents in ignored:
                 return True
+            else:
+                return False
         else:
             return False
     
@@ -109,6 +113,20 @@ class Board:
             return True
         else:
             return False
+    """
+    Return the snake at x, y
+    """
+    def get_snake_at(self, x, y=None):
+        x, y = get_pos(x, y)
+        return self.snakematrix[x, y]
+    
+    """ Is there a snake at (x, y) ? """
+    def is_snake_at(self, x, y=None):
+        x, y = get_pos(x, y)
+        if type(self.get_snake_at(x, y)) == type(Snake(self.data['you'])):
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
   with open("example_move.json") as file:
@@ -118,5 +136,7 @@ if __name__ == "__main__":
     print(board.hazards)
     print(board.snakes)
     print(board.is_safe(0,0))
+    print(board.snakematrix)
+    print(board.is_snake_at(0,0))
     
     
