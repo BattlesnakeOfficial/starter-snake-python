@@ -15,3 +15,5 @@ if __name__ == "__main__":
     
     print(avoid_obstacles(board, 0, 0))
     print(behaviour.snake_behaviour(data))
+    
+    print(board.me.body)
