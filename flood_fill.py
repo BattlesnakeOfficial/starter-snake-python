@@ -5,18 +5,18 @@ import moves
 import util
 
 def compare_moves(board, pos, possible_moves, ignored=[]):
-    print("Safe flood fill moves:", possible_moves)
+    
     returned_moves = dict()
     space_per_direction = dict()
     for name, move in possible_moves.items():
-        free_space, board_copy, surroundings = flood_fill(board, pos, ignored)
+        free_space, board_copy, surroundings = flood_fill(board, move, ignored)
         space_per_direction[name] = free_space
     most_free_space = max(space_per_direction.values())
-    print("space_per_direction", space_per_direction)
+    
     for name, space in space_per_direction.items():
         if space == most_free_space:
             returned_moves[name] = possible_moves[name]
-    print("Safe flood fill moves:", returned_moves)
+    
     return returned_moves
 
 

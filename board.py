@@ -49,7 +49,9 @@ class Board:
         for snake in self.snakes.values():
             if snake == self.me:
                 self.load_me(snake) # load yourself
-            if not self.me.on_my_team(snake):
+                continue
+            on_same_team = self.me.on_my_team(snake)
+            if not on_same_team:
                 for pos in snake.body:
                     x, y = get_pos(pos)
                     self.board[x, y] = ENEMY_BODY
@@ -61,6 +63,10 @@ class Board:
             
             head = get_pos(snake.head)
             self.board[head] = ENEMY_HEAD
+            if snake.health >= self.me.health or on_same_team:
+                other_snake_moves = self.safe_moves(head)
+                for move in other_snake_moves.values():
+                    self.board[move] = ENEMY_NEXT_MOVE
             
 
     # load yourself
@@ -82,6 +88,18 @@ class Board:
             x, y = get_pos(hazard)
             self.hazards[x, y] = HAZARD
 
+    def safe_moves(self, x, y=None, ignored=[]):
+        x, y = get_pos(x, y)
+        possible_moves = moves.get_moves(x, y)
+        returned_moves = dict()
+    
+        for name, move in possible_moves.items():
+            if self.is_safe(move, ignored=ignored):
+                returned_moves[name] = move
+            else:
+                continue
+        return returned_moves
+    
     def in_bounds(self, x, y=None):
         x, y = get_pos(x, y)
         if x in range(self.width) and y in range(self.height):
