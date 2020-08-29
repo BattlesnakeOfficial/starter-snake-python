@@ -49,17 +49,19 @@ class Board:
         for snake in self.snakes.values():
             if snake == self.me:
                 self.load_me(snake) # load yourself
-            for pos in snake.body:
-                x, y = get_pos(pos)
-                self.board[x, y] = ENEMY_BODY
-                self.healthmatrix[x, y] = snake.health
-                self.lengthmatrix[x, y] = snake.length
-                self.snakematrix[x, y] = snake
+            if not self.me.on_my_team(snake):
+                for pos in snake.body:
+                    x, y = get_pos(pos)
+                    self.board[x, y] = ENEMY_BODY
+                    self.healthmatrix[x, y] = snake.health
+                    self.lengthmatrix[x, y] = snake.length
+                    self.snakematrix[x, y] = snake
+                tail = get_pos(snake.tail)
+                self.board[tail] = ENEMY_TAIL
             
             head = get_pos(snake.head)
-            tail = get_pos(snake.tail)
             self.board[head] = ENEMY_HEAD
-            self.board[tail] = ENEMY_TAIL
+            
 
     # load yourself
     def load_me(self, snake):

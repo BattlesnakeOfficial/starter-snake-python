@@ -17,13 +17,19 @@ class Snake:
         self.is_you = is_you
         self.is_alive = is_alive
         
+        self.squad = ""
+        self.is_squad_game = False
+        if "squad" in data:
+            self.squad = data['squad']
+            if self.squad != "":
+                self.is_squad_game = True
         self.move_hist = []
     
     def __str__(self):
         return self.name
     
     def __len__(self):
-        return len(body)
+        return len(self.body)
     def __eq__(self, other):
         if self.snake_id == other.snake_id:
             return True
@@ -33,3 +39,11 @@ class Snake:
         return self.is_you
     def alive(self):
         return self.is_alive
+    
+    def on_my_team(self, snake):
+        if not self.is_squad_game:
+            return False
+        if snake.squad == self.squad:
+            return True
+        else:
+            return False
