@@ -1,4 +1,6 @@
 import util
+import random
+
 class Move:
     def __init__(self, x, y=None):
         self.x, self.y = util.get_pos(x, y)
@@ -35,6 +37,9 @@ def move_left(x, y):
     return x-1, y
 def move_right(x, y):
     return x+1, y
+
+def pick_move(possible_moves):
+    return random.choice(list(possible_moves.keys()))
 
 if __name__ == "__main__":
     print(get_moves({"x": 0, "y": 0}))
