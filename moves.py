@@ -8,6 +8,7 @@ class Move:
 def all_moves():
     return ["up", "down", "left", "right"]
 
+
 def get_moves(x, y=None):
     x, y = util.get_pos(x, y)
     moves = dict()
