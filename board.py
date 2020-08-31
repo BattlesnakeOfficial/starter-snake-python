@@ -15,6 +15,7 @@ class Board:
         self.width = data['board']['width']
         self.height = data['board']['height']
         
+        self.food = []
         
         self.board = np.zeros((self.width, self.height), dtype=np.int16)
         self.hazards = np.zeros((self.width, self.height), dtype=np.int16)
@@ -43,7 +44,9 @@ class Board:
         
         # load food data
         for food in data['board']['food']:
-            self.board[get_pos(food)] = FOOD
+            food_pos = get_pos(food)
+            self.board[food_pos] = FOOD
+            self.food.append(food_pos)
         
         # load enemy snakes
         for snake in self.snakes.values():
