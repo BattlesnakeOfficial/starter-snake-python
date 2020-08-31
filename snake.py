@@ -1,4 +1,4 @@
-
+import moves
 from util import get_pos
 
 class Snake:
@@ -24,6 +24,10 @@ class Snake:
             if self.squad != "":
                 self.is_squad_game = True
         self.move_hist = []
+        
+        # TODO: maybe make this more situation specific?
+        # i.e., eliminate moves this snake can't possibly make,
+        self.possible_moves = moves.get_moves(self.head)
     
     def __str__(self):
         return self.name
