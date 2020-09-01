@@ -15,7 +15,6 @@ class Board:
         self.width = data['board']['width']
         self.height = data['board']['height']
         
-        self.food = []
         
         self.board = np.zeros((self.width, self.height), dtype=np.int16)
         self.hazards = np.zeros((self.width, self.height), dtype=np.int16)
@@ -44,9 +43,7 @@ class Board:
         
         # load food data
         for food in data['board']['food']:
-            food_pos = get_pos(food)
-            self.board[food_pos] = FOOD
-            self.food.append(food_pos)
+            self.board[get_pos(food)] = FOOD
         
         # load enemy snakes
         for snake in self.snakes.values():
@@ -66,7 +63,7 @@ class Board:
             
             head = get_pos(snake.head)
             self.board[head] = ENEMY_HEAD
-            if snake.health >= self.me.health or on_same_team:
+            if snake.length >= self.me.length or on_same_team:
                 other_snake_moves = self.safe_moves(head)
                 for move in other_snake_moves.values():
                     self.board[move] = ENEMY_NEXT_MOVE
@@ -84,7 +81,12 @@ class Board:
         head = get_pos(snake.head)
         tail = get_pos(snake.tail)
         self.board[head] = MY_HEAD
-        self.board[tail] = MY_TAIL
+        
+        if len(snake.body) == snake.length and snake.length > 3 and snake.health < 100:
+            return
+        else:
+            if self.board[tail] == FREE_SPACE:
+                self.board[tail] = MY_TAIL
     
     def load_hazards(self, data):
         for hazard in data['board']['hazards']:
