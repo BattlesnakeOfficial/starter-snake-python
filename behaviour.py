@@ -34,9 +34,9 @@ def snake_behaviour(data):
 
 # find possible moves to make from your current position
 def search_for_moves(board, curr_pos, ignored=[]):
-    possible_moves = board.safe_moves(curr_pos)
+    possible_moves = board.safe_moves(curr_pos, ignored=ignored)
     
     if len(possible_moves) > 1:
-        possible_moves = flood_fill.compare_moves(board, curr_pos, possible_moves)
+        possible_moves = flood_fill.compare_moves(board, curr_pos, possible_moves, ignored=ignored)
     
     return possible_moves
