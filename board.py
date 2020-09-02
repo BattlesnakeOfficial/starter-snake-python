@@ -155,6 +155,27 @@ class Board:
             return True
         else:
             return False
+    
+    # return the position of every enemy snake head on the board
+    def get_enemy_heads(self):
+        heads = []
+        for snake in self.snakes.values():
+            if snake == self.you:
+                continue
+            heads.append(snake.head())
+        return heads
+
+    # Is this position on the edge of the board?
+    def on_edge(self, x, y=None):
+        x, y = get_pos(x,y)
+        if 0 in (x, y):
+            return True
+        elif x == self.width-1:
+            return True
+        elif y == self.height-1:
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
   with open("example_move.json") as file:

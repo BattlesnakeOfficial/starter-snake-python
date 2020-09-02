@@ -44,6 +44,8 @@ def directions(A, B):
         moves.append("up")
     
     return moves
+
+
 if __name__ == "__main__":
     print(directions((1, 11), (1, 11)))
     
