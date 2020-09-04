@@ -15,13 +15,17 @@ def get_pos(x, y=None):
     return x, y
 
 """
-get the pythagorean distance between points A and B
+get the Manhattan distance between points A and B,
+Special thanks to one of the Victoria 2019 bounty snakes for this adjustment from Pythagorean distance
 """
 def distance(A, B):
     xA, yA = get_pos(A)
     xB, yB = get_pos(B)
-    
-    dist = math.sqrt(((xB-xA) ** 2) + ((yB-yA) ** 2))
+    # get the Pythagorean distance between points A and B
+    #dist = math.sqrt(((xB-xA) ** 2) + ((yB-yA) ** 2))
+
+    # get the Manhattan distance between points A and B:
+    dist = abs(xB-xA) + abs(yB-yA)
     return dist
 
 """
