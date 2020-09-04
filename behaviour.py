@@ -26,11 +26,13 @@ def snake_behaviour(data):
             curr_pos, ignored=[constants.ENEMY_NEXT_MOVE])
     
     move = None
-    
+    if len(possible_moves.keys()) == 1:
+        move = moves.pick_move(possible_moves)
+        return move
     if len(possible_moves) > 0 and eat_food(board, possible_moves):
         move = goto.find_food(board, curr_pos, possible_moves)
         
-    elif len(possible_moves) > 0 and move == None:
+    if len(possible_moves) > 0 and move == None:
         move = moves.pick_move(possible_moves)
     
     if move == None:

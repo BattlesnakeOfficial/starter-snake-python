@@ -24,7 +24,7 @@ def goto_nearest_target(board, x, y, possible_moves, targets):
         if not is_closer_snake(board, my_distance, target):
             moves_to_food = directions(my_head, target)
             for move in moves_to_food:
-                if move in possible_moves:
+                if move in possible_moves.keys():
                     return move
         del targets[0]
         del target_distances[0]
@@ -38,18 +38,20 @@ Is another snake closer to the target (i.e., a piece of food) than you
 (don't bother going for it in that case)
 """
 def is_closer_snake(board, my_dist, target):
-    
-    for head in board.get_enemy_heads():
-        print(head)
-        if head == board.me.head:
+    snakes = board.get_enemy_snakes()
+    if snakes == None or len(snakes) == 0:
+        return False
+    for snake in snakes:
+        print(snake)
+        if snake.head == board.me.head:
             continue
-        dist = distance(head, target)
+        dist = distance(snake.head, target)
         print(dist, my_dist)
         if dist < my_dist: # another snake could get there sooner
             print("closer snake")
             return True
         elif dist == my_dist:
-            if snake.length >= my_snake.length:
+            if snake.length >= board.me.length:
                 return True
             
     return False
