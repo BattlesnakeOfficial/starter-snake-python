@@ -28,6 +28,13 @@ class Snake:
         # TODO: maybe make this more situation specific?
         # i.e., eliminate moves this snake can't possibly make,
         self.possible_moves = moves.get_moves(self.head)
+        
+        self.last_move = "" # the last move this snake made
+        self.last_pos = self.body[1]
+        for name, move in moves.get_moves(self.last_pos).items():
+            if move == self.head:
+                self.last_move = name
+        
     
     def __str__(self):
         return self.name

@@ -160,11 +160,24 @@ class Board:
     def get_enemy_heads(self):
         heads = []
         for snake in self.snakes.values():
-            if snake == self.you:
+            if snake == self.me:
                 continue
-            heads.append(snake.head())
+            heads.append(snake.head)
         return heads
-
+    
+    # return a list of all snakes on the board
+    def get_snakes(self):
+        return list(self.snakes.values())
+    
+    # return all enemy snakes on the board
+    def get_enemy_snakes(self):
+        snakes = self.get_snakes()
+        returned_snakes = []
+        for snake in snakes:
+            if snake != self.me:
+                returned_snakes.append(snake)
+    
+    
     # Is this position on the edge of the board?
     def on_edge(self, x, y=None):
         x, y = get_pos(x,y)
