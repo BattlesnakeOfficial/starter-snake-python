@@ -29,7 +29,7 @@ def goto_nearest_target(board, x, y, possible_moves, targets):
         del targets[0]
         del target_distances[0]
             
-    return ""
+    return None
     
 
 
