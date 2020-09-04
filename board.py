@@ -170,6 +170,7 @@ class Board:
         return list(self.snakes.values())
     
     # return all enemy snakes on the board
+    # TODO: ignore squadmates
     def get_enemy_snakes(self):
         snakes = self.get_snakes()
         returned_snakes = []
