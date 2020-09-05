@@ -26,7 +26,7 @@ def test_food_behaviour(board):
     for pos in board.food:
         print(util.distance(head, pos))
     print("\n\nTesting find_food()")
-    print("Find food", find_food(board, enemy_head, moves.all_moves()))
+    print("Find food", find_food(board, head, moves.get_moves(head)))
     
 
 if __name__ == "__main__":

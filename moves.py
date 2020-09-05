@@ -9,25 +9,23 @@ class Move:
 def all_moves():
     return ["up", "down", "left", "right"]
 
-# get all reasonable {"name": value} dictionary pairs for moves: {"move name": position}
+# get all reasonable {"name": value} dictionary pairs for moves:
+# {"move name": position}
 def get_moves(x, y=None):
     x, y = util.get_pos(x, y)
     moves = dict()
     
-    up_move = move_up(x, y)
-    down_move = move_down(x, y)
-    left_move = move_left(x, y)
-    right_move = move_right(x, y)
+    # I do not want negative indexing!:
+    if x < 0 or y < 0:
+        return moves
     
-    if up_move >= 0:
-        moves[up()] = up_move
-    if down_move >= 0:
-        moves[down()] = down_move
-    if left_move >= 0:
-        moves[left()] = left_move
-    if right_move >= 0:
-        moves[right()] = right_move
-       
+    moves[up()]  = move_up(x, y)
+    if y > 0:
+        moves[down()] = move_down(x, y)
+    if x > 0:
+        moves[left()] = move_left(x, y)
+    moves[right()] = move_right(x, y)
+    
     return moves
 
 def up():
