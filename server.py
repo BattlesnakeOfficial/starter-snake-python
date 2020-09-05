@@ -3,7 +3,6 @@ import random
 
 import cherrypy
 import behaviour
-
 """
 This is a simple Battlesnake server written in Python.
 For instructions see https://github.com/BattlesnakeOfficial/starter-snake-python/README.md
@@ -48,9 +47,9 @@ class Battlesnake(object):
         # TODO: Use the information in cherrypy.request.json to decide your next move.
         data = cherrypy.request.json
 
-#         # Choose a random direction to move in
-#         possible_moves = ["up", "down", "left", "right"]
-#         move = random.choice(possible_moves)
+        #         # Choose a random direction to move in
+        #         possible_moves = ["up", "down", "left", "right"]
+        #         move = random.choice(possible_moves)
         move = behaviour.snake_behaviour(data)
 
         print(f"MOVE: {move}")
@@ -70,8 +69,9 @@ class Battlesnake(object):
 if __name__ == "__main__":
     server = Battlesnake()
     cherrypy.config.update({"server.socket_host": "0.0.0.0"})
-    cherrypy.config.update(
-        {"server.socket_port": int(os.environ.get("PORT", "8080")),}
-    )
+    cherrypy.config.update({
+        "server.socket_port":
+        int(os.environ.get("PORT", "8080")),
+    })
     print("Starting Battlesnake Server...")
     cherrypy.quickstart(server)
