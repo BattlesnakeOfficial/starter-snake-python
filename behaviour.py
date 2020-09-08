@@ -17,8 +17,12 @@ def snake_behaviour(data):
 
     # follow enemy tail if no other options exist
     if len(possible_moves) == 0:
-        possible_moves = search_for_moves(
+        returned_moves = search_for_moves(
             board, curr_pos, ignored=[constants.ENEMY_TAIL])
+        for name, move in returned_moves.values():
+            snake = board.get_snake_at(move)
+            if len(snake.body) == snake.length and snake.length > 3 and snake.health < 100:
+                possible_moves[name] = move
 
     # move into possible enemy next move if necessary
     if len(possible_moves) == 0:
