@@ -192,6 +192,8 @@ class Board:
         else:
             return False
 
+    def copy(self):
+        return Board(self.data)
 
 if __name__ == "__main__":
     with open("example_move.json") as file:
