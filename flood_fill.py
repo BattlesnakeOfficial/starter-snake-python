@@ -46,4 +46,4 @@ def flood_fill(board, pos, ignored=[]):
 def flood_fill_look_ahead(board, pos, possible_moves, ignored=[]):
     max_free_space, _, _ = flood_fill(board, pos, ignored)
     possible_moves = compare_moves(board, pos, possible_moves, ignored)
-    pass
+    
