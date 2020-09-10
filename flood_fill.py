@@ -10,7 +10,7 @@ def compare_moves(board, pos, possible_moves, ignored=[]):
     returned_moves = dict()
     space_per_direction = dict()
     for name, move in possible_moves.items():
-        free_space, board_copy, surroundings = flood_fill(board, move, ignored)
+        free_space, available_spaces, surroundings = flood_fill(board, move, ignored)
         space_per_direction[name] = free_space
     most_free_space = max(space_per_direction.values())
 
@@ -42,3 +42,8 @@ def flood_fill(board, pos, ignored=[]):
             elif move not in surroundings:
                 surroundings.append(move)
     return free_space, available_spaces, surroundings
+
+def flood_fill_look_ahead(board, pos, possible_moves, ignored=[]):
+    max_free_space, _, _ = flood_fill(board, pos, ignored)
+    possible_moves = compare_moves(board, pos, possible_moves, ignored)
+    pass
