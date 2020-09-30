@@ -10,30 +10,43 @@ import goto
 
 # define the snake's behaviour
 def snake_behaviour(data):
-    hunt_food = True
+    hunt_food = True # change this back to true later
     board = Board(data)
+    me = board.me
     curr_pos = board.me.head
-
+    
+    if me.health < 10:
+        hunt_food = True # change this back to true later
+    
+    possible_moves = search_for_moves(board, curr_pos)
+    # change health threshold back to 30 later
+    if me.is_full_length and (me.health >= 10 or len(possible_moves)==0): #me.health < 100:
+        possible_moves = moves.get_moves(curr_pos)
+        for name, move in possible_moves.items():
+            if move == me.tail:
+                return name
+    
+    
     possible_moves = search_for_moves(board, curr_pos)
     
     # follow enemy tail if no other options exist
     if len(possible_moves) == 0:
         returned_moves = search_for_moves(
-            board, curr_pos, ignored=[constants.ENEMY_TAIL])
+            board, curr_pos, ignored=[constants.MY_TAIL,constants.ENEMY_TAIL])
         for name, move in returned_moves.values():
             snake = board.get_snake_at(move)
-            if len(snake.body) == snake.length and snake.length > 3 and snake.health < 100:
+            if snake.is_full_length: #len(snake.body) == snake.length and 
                 possible_moves[name] = move
 
     # move into possible enemy next move if necessary
     if len(possible_moves) == 0:
         possible_moves = search_for_moves(
             board, curr_pos, ignored=[constants.ENEMY_NEXT_MOVE])
-        hunt_food = False # don't
+        hunt_food = False # don't hunt for food in this situation
 
     move = None
     # if only one move if possible, return it
-    if len(possible_moves.keys()) == 1:
+    if len(possible_moves) == 1:
         move = moves.pick_move(possible_moves)
         return move
     # look for food, if I should do that now
@@ -53,7 +66,7 @@ def search_for_moves(board, curr_pos, ignored=[]):
     possible_moves = board.safe_moves(curr_pos, ignored=ignored)
 
     if len(possible_moves) > 1:
-        possible_moves = flood_fill.compare_moves(
+        possible_moves, _ = flood_fill.compare_moves(
             board, curr_pos, possible_moves, ignored=ignored)
 
     return possible_moves

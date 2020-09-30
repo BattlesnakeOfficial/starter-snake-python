@@ -78,10 +78,13 @@ class Board:
             self.board[x, y] = MY_BODY
             self.healthmatrix[x, y] = snake.health
             self.lengthmatrix[x, y] = snake.length
-            self.snakematrix[x, y] = snake.snake_id
+            self.snakematrix[x, y] = snake
 
         head = get_pos(snake.head)
         tail = get_pos(snake.tail)
+
+        self.snakematrix[head] = snake
+        self.snakematrix[tail] = snake
         self.board[head] = MY_HEAD
 
         if len(snake.body
