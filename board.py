@@ -1,6 +1,6 @@
 import json
 import numpy as np
-
+import predict
 import moves
 from snake import Snake
 from util import get_pos, distance, directions
@@ -62,14 +62,16 @@ class Board:
                     self.lengthmatrix[x, y] = snake.length
                     self.snakematrix[x, y] = snake
                 tail = get_pos(snake.tail)
-                self.board[tail] = ENEMY_TAIL
+                if distance(self.me.head, tail) < 2:
+                    self.board[tail] = ENEMY_TAIL
 
             head = get_pos(snake.head)
             self.board[head] = ENEMY_HEAD
-            if snake.length >= self.me.length or on_same_team:
+            if snake.length >= self.me.length or on_same_team or distance(self.me.head, snake.head) > 2:
                 other_snake_moves = self.safe_moves(head)
                 for move in other_snake_moves.values():
                     self.board[move] = ENEMY_NEXT_MOVE
+                predict.predict_moves(self, snake)
 
     # load yourself
     def load_me(self, snake):

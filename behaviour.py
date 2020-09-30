@@ -15,16 +15,7 @@ def snake_behaviour(data):
     me = board.me
     curr_pos = board.me.head
     
-    if me.health < 10:
-        hunt_food = True # change this back to true later
     
-    possible_moves = search_for_moves(board, curr_pos)
-    # change health threshold back to 30 later
-    if me.is_full_length and (me.health >= 10 or len(possible_moves)==0): #me.health < 100:
-        possible_moves = moves.get_moves(curr_pos)
-        for name, move in possible_moves.items():
-            if move == me.tail:
-                return name
     
     
     possible_moves = search_for_moves(board, curr_pos)
@@ -41,7 +32,12 @@ def snake_behaviour(data):
     # move into possible enemy next move if necessary
     if len(possible_moves) == 0:
         possible_moves = search_for_moves(
-            board, curr_pos, ignored=[constants.ENEMY_NEXT_MOVE])
+            board, curr_pos, ignored=[constants.ENEMY_MOVE_2])
+        hunt_food = False # don't hunt for food in this situation
+    # move into possible enemy next move if necessary
+    if len(possible_moves) == 0:
+        possible_moves = search_for_moves(
+            board, curr_pos, ignored=[constants.ENEMY_NEXT_MOVE, constants.ENEMY_MOVE_2])
         hunt_food = False # don't hunt for food in this situation
 
     move = None
@@ -66,7 +62,7 @@ def search_for_moves(board, curr_pos, ignored=[]):
     possible_moves = board.safe_moves(curr_pos, ignored=ignored)
 
     if len(possible_moves) > 1:
-        possible_moves, _ = flood_fill.compare_moves(
+        possible_moves, _ = flood_fill.select_roomiest_moves(
             board, curr_pos, possible_moves, ignored=ignored)
 
     return possible_moves

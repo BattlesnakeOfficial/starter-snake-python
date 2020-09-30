@@ -5,9 +5,22 @@ import moves
 import util
 import constants
 
+def select_roomiest_moves(board, pos, possible_moves, ignored=[]):
+    returned_moves = dict()
+
+    space_per_direction, surroundings_per_direction, available_spaces_per_direction = compare_moves(board, pos, possible_moves, ignored=[])
+
+    most_free_space = max(space_per_direction.values())
+    for name, space in space_per_direction.items():
+            if space == most_free_space:
+                returned_moves[name] = possible_moves[name]
+                continue
+    
+    return returned_moves, space_per_direction
+
 def compare_moves(board, pos, possible_moves, ignored=[]):
 
-    returned_moves = dict()
+    #returned_moves = dict()
     space_per_direction = dict()
     surroundings_per_direction = dict()
     available_spaces_per_direction = dict()
@@ -17,27 +30,12 @@ def compare_moves(board, pos, possible_moves, ignored=[]):
         space_per_direction[name] = free_space
         surroundings_per_direction[name] = surroundings
         available_spaces_per_direction[name] = available_spaces
-    most_free_space = max(space_per_direction.values())
 
-    if should_follow_tail(board, pos, space_per_direction, surroundings_per_direction, available_spaces_per_direction, possible_moves, ignored):
-        for name, space in space_per_direction.items():
-            my_tail = board.me.tail
-            if my_tail in surroundings_per_direction[name] or my_tail in available_spaces_per_direction[name]:
-                returned_moves[name] = possible_moves[name]
-                continue
-    if len(returned_moves) == 0:
-        for name, space in space_per_direction.items():
-            if space == most_free_space:
-                returned_moves[name] = possible_moves[name]
-                continue
-        
+    #if len(returned_moves) == 0:
 
-    return returned_moves, space_per_direction
+    return space_per_direction, surroundings_per_direction, available_spaces_per_direction
 
-# return True if the snake should follow its own tail
-# False otherwise
-def should_follow_tail(board, pos, space_per_direction, surroundings_per_direction, available_spaces_per_direction, possible_moves, ignored):
-    return True
+
 def flood_fill(board, pos, ignored=[]):
     free_space = 0
     #board_copy = board.board.copy()
