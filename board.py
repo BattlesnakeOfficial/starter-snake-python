@@ -62,6 +62,7 @@ class Board:
                     self.lengthmatrix[x, y] = snake.length
                     self.snakematrix[x, y] = snake
                 tail = get_pos(snake.tail)
+                #todo: double check this
                 if distance(self.me.head, tail) < 2:
                     self.board[tail] = ENEMY_TAIL
 
