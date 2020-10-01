@@ -68,7 +68,7 @@ class Board:
 
             head = get_pos(snake.head)
             self.board[head] = ENEMY_HEAD
-            if snake.length >= self.me.length or on_same_team or distance(self.me.head, snake.head) > 2:
+            if snake.length >= self.me.length or on_same_team or distance(self.me.head, snake.head) > 2: # todo: double check this condition
                 other_snake_moves = self.safe_moves(head)
                 for move in other_snake_moves.values():
                     self.board[move] = ENEMY_NEXT_MOVE
