@@ -5,10 +5,13 @@ import moves
 import util
 import constants
 
-def select_roomiest_moves(board, pos, possible_moves, ignored=[]):
+def select_roomiest_moves(board, curr_pos, possible_moves, 
+            space_per_direction, 
+            surroundings_per_direction,available_spaces_per_direction, 
+            ignored=[]):
     returned_moves = dict()
 
-    space_per_direction, surroundings_per_direction, available_spaces_per_direction = compare_moves(board, pos, possible_moves, ignored=[])
+    
 
     most_free_space = max(space_per_direction.values())
     for name, space in space_per_direction.items():
@@ -16,7 +19,7 @@ def select_roomiest_moves(board, pos, possible_moves, ignored=[]):
                 returned_moves[name] = possible_moves[name]
                 continue
     
-    return returned_moves, space_per_direction
+    return returned_moves
 
 def compare_moves(board, pos, possible_moves, ignored=[]):
 

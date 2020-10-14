@@ -6,7 +6,7 @@ import flood_fill
 import constants
 import util
 import goto
-
+import tail_chasing
 
 # define the snake's behaviour
 def snake_behaviour(data):
@@ -61,9 +61,21 @@ def snake_behaviour(data):
 def search_for_moves(board, curr_pos, ignored=[]):
     possible_moves = board.safe_moves(curr_pos, ignored=ignored)
 
+    space_per_direction, surroundings_per_direction, available_spaces_per_direction = flood_fill.compare_moves(board, curr_pos, possible_moves, ignored)
+    
+    returned_moves = tail_chasing.tail_chase(board, curr_pos, possible_moves, 
+            space_per_direction, 
+            surroundings_per_direction,available_spaces_per_direction, 
+            ignored=ignored)
+    if len(returned_moves) > 0:
+        return returned_moves
+
     if len(possible_moves) > 1:
-        possible_moves, _ = flood_fill.select_roomiest_moves(
-            board, curr_pos, possible_moves, ignored=ignored)
+        possible_moves = flood_fill.select_roomiest_moves(
+            board, curr_pos, possible_moves, 
+            space_per_direction, 
+            surroundings_per_direction,available_spaces_per_direction, 
+            ignored=ignored)
 
     return possible_moves
 
