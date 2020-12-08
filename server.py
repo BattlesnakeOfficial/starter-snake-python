@@ -34,6 +34,43 @@ class Battlesnake(object):
         print("START")
         return "ok"
 
+    def willCollideWithSelf(self, data, direction):
+      head = data['you']['head']
+      new_pos = head
+
+      if direction == "up":
+        new_pos['y'] -= 1
+      elif direction == "down":
+        new_pos['y'] += 1
+      elif direction == "right":
+        new_pos['x'] += 1
+      elif direction == "left":
+        new_pos['x'] -= 1
+      
+      if new_pos in data['you']['body']:
+        return True
+      else:
+        return False
+
+    def willGoOutOfBounds(self, data, direction):
+      head = data['you']['head']
+      print("data: ")
+      print(data)
+      print(head)
+      print(head['x'])
+      print(head['y'])
+
+      if direction == "up" and head['y'] == 0:
+        return True
+      elif direction == "down" and head['y'] == data['board']['height']-1:
+        return True
+      elif direction == "right" and head['x'] == data['board']['width']-1:
+        return True
+      elif direction == "left" and head['x'] == 0:
+        return True
+      
+      return False
+
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
@@ -45,7 +82,20 @@ class Battlesnake(object):
 
         # Choose a random direction to move in
         possible_moves = ["up", "down", "left", "right"]
-        move = random.choice(possible_moves)
+
+        print("head:")
+        print(data['you']['head'])
+        print(data)
+
+        move="up"
+
+        for possible_move in possible_moves:
+          print(possible_move)
+          if not self.willCollideWithSelf(data, possible_move) and not self.willGoOutOfBounds(data, possible_move):
+            move = possible_move
+            break
+
+        # move = random.choice(possible_moves)
 
         print(f"MOVE: {move}")
         return {"move": move}
