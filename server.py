@@ -36,29 +36,20 @@ class Battlesnake(object):
 
     def willCollideWithSelf(self, data, direction):
       head = data['you']['head']
-      new_pos = head
 
-      if direction == "up":
-        new_pos['y'] -= 1
-      elif direction == "down":
-        new_pos['y'] += 1
-      elif direction == "right":
-        new_pos['x'] += 1
-      elif direction == "left":
-        new_pos['x'] -= 1
-      
-      if new_pos in data['you']['body']:
+      if direction == "up" and {'x':head['x'], 'y':head['y']-1} in data['you']['body']:
         return True
-      else:
-        return False
+      elif direction == "down" and {'x':head['x'], 'y':head['y']+1} in data['you']['body']:
+        return True
+      elif direction == "right" and {'x':head['x']+1, 'y':head['y']} in data['you']['body']:
+        return True
+      elif direction == "left" and {'x':head['x']-1, 'y':head['y']} in data['you']['body']:
+        return True
+
+      return False
 
     def willGoOutOfBounds(self, data, direction):
       head = data['you']['head']
-      print("data: ")
-      print(data)
-      print(head)
-      print(head['x'])
-      print(head['y'])
 
       if direction == "up" and head['y'] == 0:
         return True
