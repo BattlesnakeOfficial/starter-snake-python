@@ -62,6 +62,21 @@ class Battlesnake(object):
       
       return False
 
+    def willHitAnotherSnake(self, data, direction):
+      head = data['you']['head']
+
+      for snake in data['board']['snakes']:
+        if direction == "up" and {'x':head['x'], 'y':head['y']-1} in snake['body']:
+          return True
+        elif direction == "down" and {'x':head['x'], 'y':head['y']+1} in snake['body']:
+          return True
+        elif direction == "right" and {'x':head['x']+1, 'y':head['y']} in snake['body']:
+          return True
+        elif direction == "left" and {'x':head['x']-1, 'y':head['y']} in snake['body']:
+          return True
+
+      return False
+
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
@@ -74,15 +89,15 @@ class Battlesnake(object):
         # Choose a random direction to move in
         possible_moves = ["up", "down", "left", "right"]
 
-        print("head:")
-        print(data['you']['head'])
-        print(data)
+        # print("head:")
+        # print(data['you']['head'])
+        # print(data)
 
         move="up"
 
         for possible_move in possible_moves:
-          print(possible_move)
-          if not self.willCollideWithSelf(data, possible_move) and not self.willGoOutOfBounds(data, possible_move):
+          # print(possible_move)
+          if not self.willHitAnotherSnake(data, possible_move) and not self.willGoOutOfBounds(data, possible_move):
             move = possible_move
             break
 
