@@ -37,9 +37,9 @@ class Battlesnake(object):
     def willCollideWithSelf(self, data, direction):
       head = data['you']['head']
 
-      if direction == "up" and {'x':head['x'], 'y':head['y']-1} in data['you']['body']:
+      if direction == "up" and {'x':head['x'], 'y':head['y']+1} in data['you']['body']:
         return True
-      elif direction == "down" and {'x':head['x'], 'y':head['y']+1} in data['you']['body']:
+      elif direction == "down" and {'x':head['x'], 'y':head['y']-1} in data['you']['body']:
         return True
       elif direction == "right" and {'x':head['x']+1, 'y':head['y']} in data['you']['body']:
         return True
@@ -51,9 +51,9 @@ class Battlesnake(object):
     def willGoOutOfBounds(self, data, direction):
       head = data['you']['head']
 
-      if direction == "up" and head['y'] == 0:
+      if direction == "up" and head['y'] == data['board']['height']-1:
         return True
-      elif direction == "down" and head['y'] == data['board']['height']-1:
+      elif direction == "down" and head['y'] == 0:
         return True
       elif direction == "right" and head['x'] == data['board']['width']-1:
         return True
@@ -66,9 +66,9 @@ class Battlesnake(object):
       head = data['you']['head']
 
       for snake in data['board']['snakes']:
-        if direction == "up" and {'x':head['x'], 'y':head['y']-1} in snake['body']:
+        if direction == "up" and {'x':head['x'], 'y':head['y']+1} in snake['body']:
           return True
-        elif direction == "down" and {'x':head['x'], 'y':head['y']+1} in snake['body']:
+        elif direction == "down" and {'x':head['x'], 'y':head['y']-1} in snake['body']:
           return True
         elif direction == "right" and {'x':head['x']+1, 'y':head['y']} in snake['body']:
           return True
