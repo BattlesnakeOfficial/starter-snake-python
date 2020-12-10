@@ -75,45 +75,51 @@ class Battlesnake(object):
 
     def headToHeadCollision(self, data, direction):
         your_head = data['you']['head']
+        is_h2h_collision = False
         for snake in data['board']['snakes']:
-            oponent_head = snake['head']
-            if direction == 'up' and your_head['x'] == oponent_head[
-                    'x'] and your_head['y'] + 1 == oponent_head['y']:
-                return True
-            elif direction == 'down' and your_head['x'] == oponent_head[
-                    'x'] and your_head['y'] - 1 == oponent_head['y']:
-                return True
-            elif direction == 'right' and your_head['x'] + 1 == oponent_head[
-                    'x'] and your_head['y'] == oponent_head['y']:
-                return True
-            elif direction == 'left' and your_head['x'] - 1 == oponent_head[
-                    'x'] and your_head['y'] == oponent_head['y']:
-                return True
+            opponent_head = snake['head']
+            if direction == 'up' and your_head['x'] == opponent_head[
+                    'x'] and your_head['y'] + 1 == opponent_head['y']:
+                is_h2h_collision = True
+            elif direction == 'down' and your_head['x'] == opponent_head[
+                    'x'] and your_head['y'] - 1 == opponent_head['y']:
+                is_h2h_collision = True
+            elif direction == 'right' and your_head['x'] + 1 == opponent_head[
+                    'x'] and your_head['y'] == opponent_head['y']:
+                is_h2h_collision = True
+            elif direction == 'left' and your_head['x'] - 1 == opponent_head[
+                    'x'] and your_head['y'] == opponent_head['y']:
+                is_h2h_collision = True
+            if is_h2h_collision:
+                if data['you']['health'] < snake['health']:
+                    return is_h2h_collision  #true
+                else:
+                    return False  #there's a h2h collision and an opportunity to eliminate opponent
         return False
 
     def willHitAnotherSnake(self, data, direction):
         head = data['you']['head']
         for snake in data['board']['snakes']:
-            oponent_body = snake['body']
+            opponent_body = snake['body']
             if direction == "up" and {
                     'x': head['x'],
                     'y': head['y'] + 1
-            } in oponent_body:
+            } in opponent_body:
                 return True
             elif direction == "down" and {
                     'x': head['x'],
                     'y': head['y'] - 1
-            } in oponent_body:
+            } in opponent_body:
                 return True
             elif direction == "right" and {
                     'x': head['x'] + 1,
                     'y': head['y']
-            } in oponent_body:
+            } in opponent_body:
                 return True
             elif direction == "left" and {
                     'x': head['x'] - 1,
                     'y': head['y']
-            } in oponent_body:
+            } in opponent_body:
                 return True
 
         return False
@@ -140,8 +146,7 @@ class Battlesnake(object):
             # print(possible_move)
             will_hit_another_snake = self.willHitAnotherSnake(
                 data, possible_move)
-            will_go_out_of_bounds = self.willGoOutOfBounds(
-                data, possible_move)
+            will_go_out_of_bounds = self.willGoOutOfBounds(data, possible_move)
             is_head_to_head_collision = self.headToHeadCollision(
                 data, possible_move)
             if not will_hit_another_snake and not will_go_out_of_bounds and not is_head_to_head_collision:
