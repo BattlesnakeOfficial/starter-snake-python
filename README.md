@@ -67,7 +67,7 @@ Now you're ready to start customizing your Battlesnake's appearance and behavior
 
 ### Changing Appearance
 
-Locate the `index` function inside [server.py](server.py#L15). At the end of that function tou should see a line that looks like this:
+Locate the `index` function inside [server.py](server.py#L15). At the end of that function you should see a line that looks like this:
 
 ```python
 return {
