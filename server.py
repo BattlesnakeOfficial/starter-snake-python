@@ -45,7 +45,10 @@ class Battlesnake(object):
         # Valid moves are "up", "down", "left", or "right".
         # TODO: Use the information in cherrypy.request.json to decide your next move.
         data = cherrypy.request.json
-
+        snakes = data['snakes']
+        for x in snakes:
+            for y in x:
+                print(y)
 
 
         # Choose a random direction to move in
