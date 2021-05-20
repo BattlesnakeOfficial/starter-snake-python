@@ -23,7 +23,7 @@ class Battlesnake(object):
             "head": "default",  # TODO: Personalize
             "tail": "default",  # TODO: Personalize
         }
-
+    
     @cherrypy.expose
     @cherrypy.tools.json_in()
     def start(self):
