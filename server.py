@@ -34,7 +34,7 @@ class Battlesnake(object):
         xSize = data['board']['height']
         ySize = data['board']['width']
         boardData = [ [0] * xSize for _ in range(ySize)]
-        print(boardData)
+        print(numpy.matrix(boardData))
         return "ok"
 
     @cherrypy.expose
