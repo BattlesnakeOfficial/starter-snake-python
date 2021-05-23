@@ -1,6 +1,6 @@
 class Node():
     """A node class for A* Pathfinding"""
-
+#wip
     def __init__(self, parent=None, position=None):
         self.parent = parent
         self.position = position
