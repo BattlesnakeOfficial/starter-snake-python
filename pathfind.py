@@ -14,17 +14,6 @@ class Node():
         return self.position == other.position
 
 
-def getTarget(node):
-    temp = str(node)
-    result = []
-    letters = [char for char in temp]
-    for x in letters:
-        if x.isdigit():
-            result.append(int(x))
-    return result;
-
-
-
 def astar(maze, start, end):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
 

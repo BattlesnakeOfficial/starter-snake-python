@@ -59,10 +59,16 @@ class Battlesnake(object):
         boardData = [ [0] * xSize for _ in range(ySize)]
         data = cherrypy.request.json
         snakeList = data['board']['snakes']
-
+        xHead = data['you']['head']['x']
+        yHead = xSize - 1 - data['you']['head']['y']
+        print("xHead is")
+        print(xHead)
+        print("yHead is")
+        print(yHead)
         for i in data['board']['food']:
             boardData[xSize - 1 - i['y']][i['x']] = 0
             Food.append((xSize - 1 - i['y'],i['x']))
+
 
 
 
@@ -74,8 +80,6 @@ class Battlesnake(object):
             for y in body:
                 boardData[xSize - 1 - y['y']][y['x']] = 1
             boardData[xSize - 1 - head['y']][head['x']] = 1
-            xHead = head['x']
-            yHead = xSize - 1 - head['y']
             
         print("-----------\nSTATE UPDATED:")
         print(numpy.matrix(boardData))
