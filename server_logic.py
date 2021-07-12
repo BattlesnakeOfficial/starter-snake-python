@@ -72,7 +72,8 @@ def choose_move(data: dict) -> str:
 
     # Choose a random direction from the remaining possible_moves to move in, and then return that move
     move = random.choice(possible_moves)
+    # TODO: Explore new strategies for picking a move that are better than random
 
-    print(f"CHOOSING MOVE: {move} from all valid options in {possible_moves}")
-    
+    print(f"{data['game']['id']} MOVE {data['turn']}: {move} picked from all valid options in {possible_moves}")
+
     return move
