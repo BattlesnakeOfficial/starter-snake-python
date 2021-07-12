@@ -22,6 +22,7 @@ class BattlesnakeServer(object):
         
         TIP: If you open your Battlesnake URL in browser you should see this data.
         """
+        print("INFO")
         return {
             "apiversion": "1",
             "author": "",  # TODO: Your Battlesnake Username
@@ -38,8 +39,8 @@ class BattlesnakeServer(object):
         cherrypy.request.json contains information about the game that's about to be played.
         """
         data = cherrypy.request.json
-
-        print("START")
+        
+        print(f"{data['game']['id']} START")
         return "ok"
 
     @cherrypy.expose
@@ -65,8 +66,8 @@ class BattlesnakeServer(object):
         It's purely for informational purposes, you don't have to make any decisions here.
         """
         data = cherrypy.request.json
-
-        print("END")
+        
+        print(f"{data['game']['id']} END")
         return "ok"
 
 
