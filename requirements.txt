@@ -1,1 +1,1 @@
-CherryPy==18.5.0
+Flask==2.0.1

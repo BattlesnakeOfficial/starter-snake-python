@@ -5,7 +5,7 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 ### Technologies Used
 
 * [Python3](https://www.python.org/)
-* [CherryPy](https://cherrypy.org/)
+* [Flask](https://flask.palletsprojects.com/)
 
 
 ## Prerequisites
@@ -24,11 +24,14 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 
 3. You should see your Repl being initialized - this might take a few moments to complete.
 
-4. Once your Repl is ready to run, click `Run ▶️` at the top of the screen. You should see CherryPy (and any other dependencies) being installed. Once installation is complete, your Battlesnake server will start and you should see the following:
+4. Once your Repl is ready to run, click `Run ▶️` at the top of the screen. You should see Flask (and any other dependencies) being installed. Once installation is complete, your Battlesnake server will start and you should see the following:
 
     ```
+    * Serving Flask app 'server' (lazy loading)
+    * Environment: production
+      WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+    * Debug mode: on
     Starting Battlesnake Server...
-    ENGINE Serving on http://0.0.0.0:8080
     ```
 
 5. Above the terminal window you'll see the live output from your Battlesnake server, including its URL. That URL will be the URL used to create your Battlesnake in the next step. If you visit that URL in your browser, you should see text similar to this:

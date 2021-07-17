@@ -16,12 +16,11 @@ from server_logic import avoid_my_neck
 
 
 class AvoidNeckTest(unittest.TestCase):
-    
     def test_avoid_neck_all(self):
         """
         The possible move set should be all moves.
 
-        In the starter position, a Battlesnake body is 'stacked' in a 
+        In the starter position, a Battlesnake body is 'stacked' in a
         single place, and thus all directions are valid.
         """
         # Arrange
@@ -93,5 +92,5 @@ class AvoidNeckTest(unittest.TestCase):
         self.assertEqual(expected, result_moves)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

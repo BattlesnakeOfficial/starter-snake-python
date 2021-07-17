@@ -42,7 +42,7 @@ def choose_move(data: dict) -> str:
     return: A String, the single move to make. One of "up", "down", "left" or "right".
 
     Use the information in 'data' to decide your next move. The 'data' variable can be interacted
-    with as a Python Dictionary, and contains all of the information about the Battlesnake board 
+    with as a Python Dictionary, and contains all of the information about the Battlesnake board
     for each move of the game.
 
     """
@@ -51,7 +51,7 @@ def choose_move(data: dict) -> str:
 
     # TODO: uncomment the lines below so you can see what this data looks like in your output!
     # print(f"~~~ Turn: {data['turn']}  Game Mode: {data['game']['ruleset']['name']} ~~~")
-    # print(f"All board data this turn: {data}")        
+    # print(f"All board data this turn: {data}")
     # print(f"My Battlesnakes head this turn is: {my_head}")
     # print(f"My Battlesnakes body this turn is: {my_body}")
 
