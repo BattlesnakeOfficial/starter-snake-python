@@ -1,4 +1,5 @@
 import logging
+import os
 
 from flask import Flask
 from flask import request
@@ -72,4 +73,5 @@ if __name__ == "__main__":
     logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
     print("Starting Battlesnake Server...")
-    app.run(host="0.0.0.0", port="8080", debug=True)
+    port = int(os.environ.get("PORT", "8080"))
+    app.run(host="0.0.0.0", port=port, debug=True)
