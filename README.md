@@ -46,6 +46,11 @@ Locate the `handle_move` function inside [server.py](server.py#L48). Possible mo
 
 See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) for more information on playing the game, moving around the board, and improving your algorithm.
 
+## Running Tests
+
+This Starter Project comes with a very simple test suite for you to expand! Located in `tests.py` you can run them using the following command:
+```python tests.py -v```
+
 ---
 
 ## Playing Battlesnake
