@@ -4,7 +4,7 @@
 
 This is a basic implementation of the [Battlesnake API](https://docs.battlesnake.com/references/api). It's a great starting point for anyone wanting to program their first Battlesnake using Python. It comes ready to use with [Repl.it](https://repl.it) and [Heroku](https://heroku.com), or you can use any other cloud provider you'd like. 
 
-### Technologies Used
+## Technologies Used
 
 * [Python3](https://www.python.org/)
 * [Flask](https://flask.palletsprojects.com/)
@@ -12,7 +12,7 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 
 ## Quickstart
 
-The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) provides the full set of instructions to customize, register, and create your first games with your Battlesnake! While the guide uses [Repl.it](https://repl.it) as an example host, the instructions can be used with any provider of your choice. If this is your first Battlesnake, check out the [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) regardless of which hosting provider you choose. You can also find specific advice on other hosting providers on our [Hosting Suggestions](https://docs.battlesnake.com/references/hosting-suggestions) page.
+The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) provides the full set of instructions to customize, register, and create your first games with your Battlesnake! While the guide uses [Repl.it](https://repl.it) as an example host, the instructions can be modified to work with any hosting provider. You can also find advice on other hosting providers on our [Hosting Suggestions](https://docs.battlesnake.com/references/hosting-suggestions) page.
 
 ### Prerequisites
 
@@ -52,7 +52,7 @@ See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) 
 
 ### Completing Challenges
 
-If you're looking for the Single Player Mode of Battlesnake, or something to practice with between events, check out [Challenges](https://docs.battlesnake.com/guides/quick-start-challenges-guide)
+If you're looking for the Single Player Mode of Battlesnake, or something to practice with between events, check out [Challenges.](https://docs.battlesnake.com/guides/quick-start-challenges-guide)
 
 ### Joining a Battlesnake Arena
 
@@ -72,11 +72,11 @@ All documentation is available at [docs.battlesnake.com](https://docs.battlesnak
 
 You can also join the Battlesnake Developer Community on [Discord](https://play.battlesnake.com/discord?utm_source=github&utm_medium=readme&utm_campaign=python_starter&utm_content=discord). We have a growing community of Battlesnake developers of all skill levels wanting to help everyone succeed and have fun with Battlesnake :)
 
-Check out live Battlesnake events on [Twitch](https://www.twitch.tv/battlesnakeofficial) and see what is happening when on the [Calendar](https://play.battlesnake.com/calendar?utm_source=github&utm_medium=readme&utm_campaign=python_starter&utm_content=calendar).
+Check out live Battlesnake events on [Twitch](https://www.twitch.tv/battlesnakeofficial) and see what is happening when on the [Calendar.](https://play.battlesnake.com/calendar?utm_source=github&utm_medium=readme&utm_campaign=python_starter&utm_content=calendar)
 
-Want to contribute to Battlesnake? We have a number of open-source codebases and would love for you to get involved! Check out our page on [Contributing](https://docs.battlesnake.com/guides/contributing)
+Want to contribute to Battlesnake? We have a number of open-source codebases and would love for you to get involved! Check out our page on [Contributing.](https://docs.battlesnake.com/guides/contributing)
 
 
 ## Feedback
 
-* **Do you have an issue or suggestions for this repository?** Head over to our [Feedback Repository](https://play.battlesnake.com/feedback?utm_source=github&utm_medium=readme&utm_campaign=python_starter&utm_content=feedback) today and let us know!
+**Do you have an issue or suggestions for this repository?** Head over to our [Feedback Repository](https://play.battlesnake.com/feedback?utm_source=github&utm_medium=readme&utm_campaign=python_starter&utm_content=feedback) today and let us know!
