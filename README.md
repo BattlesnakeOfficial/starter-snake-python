@@ -1,7 +1,3 @@
-Current Task notes
-
-
-
 # A Simple [Battlesnake](http://play.battlesnake.com) Written in Python
 
 ![Battlesnake Logo](https://media.battlesnake.com/social/GitHubSocial.png)
@@ -16,13 +12,13 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 
 ## Quickstart
 
-The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) provides the full set of instructions to customize, register, and create your first games with your Battlesnake! While the guide uses [Repl.it](https://repl.it) as an example host, the instructions can be used with any provider of your choice.  If this is your first Battlesnake, check out the [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) regardless of which hosting provider you choose. You can also find specific advice on other hosting providers on our [Hosting Suggestions](https://docs.battlesnake.com/references/hosting-suggestions) page.
+The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) provides the full set of instructions to customize, register, and create your first games with your Battlesnake! While the guide uses [Repl.it](https://repl.it) as an example host, the instructions can be used with any provider of your choice. If this is your first Battlesnake, check out the [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) regardless of which hosting provider you choose. You can also find specific advice on other hosting providers on our [Hosting Suggestions](https://docs.battlesnake.com/references/hosting-suggestions) page.
 
 ### Prerequisites
 
 * A free [Battlesnake Account](https://play.battlesnake.com/)
 
- ## Customizing Your Battlesnake
+## Customizing Your Battlesnake
 
 Locate the `handle_info` function inside [server.py](server.py#L15). At the end of that function you should see a line that looks like this:
 
