@@ -18,6 +18,8 @@ The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-start
 
 * A free [Battlesnake Account](https://play.battlesnake.com/)
 
+---
+
 ## Customizing Your Battlesnake
 
 Locate the `handle_info` function inside [server.py](server.py#L15). At the end of that function you should see a line that looks like this:
@@ -36,7 +38,7 @@ This function is called by the game engine periodically to make sure your Battle
 
 Whenever you update these values, go to the page for your Battlesnake and select 'Refresh Metadata' from the option menu. This will update your Battlesnake to use your latest configuration and those changes should be reflected in the UI as well as any new games created.
 
-### Changing Behavior
+## Changing Behavior
 
 On every turn of each game your Battlesnake receives information about the game board and must decide its next move.
 
@@ -44,6 +46,7 @@ Locate the `handle_move` function inside [server.py](server.py#L48). Possible mo
 
 See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) for more information on playing the game, moving around the board, and improving your algorithm.
 
+---
 
 ## Playing Battlesnake
 
@@ -63,7 +66,7 @@ Want to get out there to compete and win prizes? Check out the [Quick Start Leag
 
 ---
 
-### Resources
+## Resources
 
 All documentation is available at [docs.battlesnake.com](https://docs.battlesnake.com), including detailed Guides, API References, and Tips.
 
@@ -74,6 +77,6 @@ Check out live Battlesnake events on [Twitch](https://www.twitch.tv/battlesnakeo
 Want to contribute to Battlesnake? We have a number of open-source codebases and would love for you to get involved! Check out our page on [Contributing](https://docs.battlesnake.com/guides/contributing)
 
 
-### Feedback
+## Feedback
 
 * **Do you have an issue or suggestions for this repository?** Head over to our [Feedback Repository](https://play.battlesnake.com/feedback) today and let us know!
