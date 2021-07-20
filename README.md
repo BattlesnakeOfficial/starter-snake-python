@@ -46,6 +46,16 @@ Locate the `handle_move` function inside [server.py](server.py#L48). Possible mo
 
 See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) for more information on playing the game, moving around the board, and improving your algorithm.
 
+## (Optional) Running Your Battlesnake Locally
+
+Eventually you might want to run your Battlesnake server locally for faster testing and debugging. You can do this by installing [Python 3.8](https://www.python.org/downloads/) and running:
+
+```shell
+python server.py
+```
+
+**Note:** You cannot create games on [play.battlesnake.com](https://play.battlesnake.com) using a locally running Battlesnake unless you install and use a port forwarding tool like [ngrok](https://ngrok.com/). See [Hosting Suggestions.](https://docs.battlesnake.com/references/hosting-suggestions#local)
+
 ## Running Tests
 
 This Starter Project comes with a very simple test suite for you to expand! Located in `tests.py` you can run them using the following command:
