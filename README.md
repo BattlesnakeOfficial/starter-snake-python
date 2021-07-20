@@ -60,6 +60,7 @@ Arenas will regularly create new games and rank Battlesnakes based on their resu
 ### Joining a Battlesnake League
 
 Want to get out there to compete and win prizes? Check out the [Quick Start League Guide](https://docs.battlesnake.com/guides/quick-start-league-guide) for information on the how and when of our competitive seasons.
+
 ---
 
 ### Resources
