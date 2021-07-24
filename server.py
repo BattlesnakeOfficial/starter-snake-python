@@ -35,7 +35,7 @@ def handle_info():
 def handle_start():
     """
     This function is called everytime your snake is entered into a game.
-    cherrypy.request.json contains information about the game that's about to be played.
+    request.json contains information about the game that's about to be played.
     """
     data = request.get_json()
 
