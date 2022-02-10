@@ -68,6 +68,10 @@ def end():
     print(f"{data['game']['id']} END")
     return "ok"
 
+@app.after_request
+def identify_server(response):
+    response.headers["Server"] = "BattlesnakeOfficial/starter-snake-python"
+    return response
 
 if __name__ == "__main__":
     logging.getLogger("werkzeug").setLevel(logging.ERROR)
