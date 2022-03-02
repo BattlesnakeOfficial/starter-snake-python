@@ -1,2 +1,3 @@
 language = "python3"
 run = "python src/main.py"
+entrypoint = "src/logic.py"
