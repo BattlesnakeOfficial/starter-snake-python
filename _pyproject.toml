@@ -6,4 +6,4 @@ authors = ["Battlesnake Developers <developers@battlesnake.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Flask = "^2.0.1"
+Flask = "^2.0.3"
