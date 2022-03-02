@@ -7,7 +7,7 @@ You can expand these to cover more cases!
 To run the unit tests, use the following command in your terminal,
 in the folder where this file exists:
 
-    python tests.py -v
+    python src/tests.py -v
 
 """
 import unittest
@@ -17,12 +17,6 @@ import logic
 
 class AvoidNeckTest(unittest.TestCase):
     def test_avoid_neck_all(self):
-        """
-        The possible move set should be all moves.
-
-        In the starter position, a Battlesnake body is 'stacked' in a
-        single place, and thus all directions are valid.
-        """
         # Arrange
         test_body = [{"x": 5, "y": 5}, {"x": 5, "y": 5}, {"x": 5, "y": 5}]
         possible_moves = ["up", "down", "left", "right"]

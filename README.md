@@ -2,7 +2,7 @@
 
 ![Battlesnake Logo](https://media.battlesnake.com/social/StarterSnakeGitHubRepos_Python.png)
 
-This is a basic implementation of the [Battlesnake API](https://docs.battlesnake.com/references/api) in Python. It's a great starting point for anyone wanting to program their first Battlesnake using Python, and comes ready to deploy with [Replit](https://repl.it) and [Heroku](https://heroku.com), or you can use any other cloud provider you'd like. 
+This is a basic implementation of the [Battlesnake API](https://docs.battlesnake.com/references/api) in Python. It's a great starting point for anyone wanting to program their first Battlesnake using Python, and comes ready to deploy with [Replit](https://repl.it) and [Heroku](https://heroku.com), or you can use any other cloud provider you'd like.
 
 ## Technologies Used
 
@@ -12,7 +12,7 @@ This is a basic implementation of the [Battlesnake API](https://docs.battlesnake
 
 ## Quickstart
 
-The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) provides the full set of instructions to customize, register, and create your first games with your Battlesnake! While the guide uses [Repl.it](https://repl.it) as an example host, the instructions can be modified to work with any hosting provider. You can also find advice on other hosting providers on our [Hosting Suggestions](https://docs.battlesnake.com/references/hosting-suggestions) page.
+The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-started) provides the full set of instructions to customize, register, and create your first games with your Battlesnake! While the guide uses [Replit](https://repl.it) as an example host, the instructions can be modified to work with any hosting provider. You can also find advice on other hosting providers on our [Hosting Suggestions](https://docs.battlesnake.com/references/hosting-suggestions) page.
 
 ### Prerequisites
 
@@ -22,7 +22,7 @@ The [Quick Start Coding Guide](https://docs.battlesnake.com/guides/getting-start
 
 ## Customizing Your Battlesnake
 
-Locate the `handle_info` function inside [server.py](server.py#L15). At the end of that function you should see a line that looks like this:
+Locate the `get_info` function inside [logic.py](logic.py#L11). You should see a line that looks like this:
 
 ```python
 return {
@@ -42,7 +42,7 @@ Whenever you update these values, go to the page for your Battlesnake and select
 
 On every turn of each game your Battlesnake receives information about the game board and must decide its next move.
 
-Locate the `handle_move` function inside [server.py](server.py#L48). Possible moves are "up", "down", "left", or "right". To start your Battlesnake will choose a move randomly. Your goal as a developer is to read information sent to you about the board (available in the `data` variable) and decide where your Battlesnake should move next. Your Battlesnakes move logic lives in [server_logic.py](server_logic.py#L37). This is the code you will want to edit.
+Locate the `choose_move` function inside [logic.py](logic.py#L27). Possible moves are "up", "down", "left", or "right" and initially your Battlesnake will choose a move randomly. Your goal as a developer is to read information sent to you about the game (available in the `data` variable) and decide where your Battlesnake should move next. All your Battlesnake logic lives in [logic.py](logic.py), and this is the code you will want to edit.
 
 See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) for more information on playing the game, moving around the board, and improving your algorithm.
 
@@ -51,15 +51,15 @@ See the [Battlesnake Game Rules](https://docs.battlesnake.com/references/rules) 
 Eventually you might want to run your Battlesnake server locally for faster testing and debugging. You can do this by installing [Python 3.8](https://www.python.org/downloads/) and running:
 
 ```shell
-python server.py
+python src/main.py
 ```
 
 **Note:** You cannot create games on [play.battlesnake.com](https://play.battlesnake.com) using a locally running Battlesnake unless you install and use a port forwarding tool like [ngrok](https://ngrok.com/). See [Hosting Suggestions.](https://docs.battlesnake.com/references/hosting-suggestions#local)
 
 ## Running Tests
 
-This Starter Project comes with a very simple test suite for you to expand! Located in `tests.py` you can run them using the following command:
-```python tests.py -v```
+This Starter Project comes with a very simple test suite for you to expand! Located in [src/tests.py](src/tests.py) you can run them using the following command:
+```python src/tests.py -v```
 
 ---
 
