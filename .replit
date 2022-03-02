@@ -1,2 +1,2 @@
 language = "python3"
-run = ["python", "src/main.py"]
+run = "python src/main.py"
