@@ -1,7 +1,5 @@
 import random
-import re
-from turtle import pos
-from typing import List, Dict
+from typing import List
 
 """
 This file can be a nice home for your Battlesnake's logic and helper functions.
@@ -9,7 +7,6 @@ This file can be a nice home for your Battlesnake's logic and helper functions.
 We have started this for you, and included some logic to remove your Battlesnake's 'neck'
 from the list of possible moves!
 """
-
 def get_info() -> dict:
     """
     This controls your Battlesnake appearance and author permissions.
@@ -173,3 +170,29 @@ def _find_food(my_head: dict, food: list, possible_moves: List[str]) -> str:
         return currY
     else:
         return "none"
+    
+def floodFill(board: dict, start_pos: dict, snake_squares: List[dict]):
+    w, h = board["width"], board["height"]
+    board_matrix = [[0 for x in range(w)] for y in range(h)]
+    
+    for coord in snake_squares:
+        board_matrix[coord["y"]][coord["x"]] = 1
+        
+    return fill(start_pos["x"], start_pos["y"], board_matrix, w, h, 0)
+        
+def fill(x, y, board, w, h, count):
+    if board[y][x] == 0:
+        board[y][x] = 1
+        count += 1
+        if x > 0:
+            fill(x-1, y, board, w, h)
+        if x < len(w - 1):
+            fill(x+1, y, board, w, h)
+        if y > 0:
+            fill(x, y-1, board, w, h)
+        if y < h:
+            fill(x, y+1, board, w, h)
+            
+    return count
+    
+    

@@ -3,11 +3,13 @@ import os
 
 from flask import Flask
 from flask import request
+from flask_ngrok import run_with_ngrok
 
 import logic
 
 
 app = Flask(__name__)
+run_with_ngrok(app)
 
 
 @app.get("/")
@@ -73,4 +75,4 @@ if __name__ == "__main__":
 
     print(f"\nRunning Battlesnake server at http://{host}:{port}")
     app.env = 'development'
-    app.run(host=host, port=port, debug=True)
+    app.run()
