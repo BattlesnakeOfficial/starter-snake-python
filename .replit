@@ -1,4 +1,0 @@
-language = "python3"
-run = "python src/main.py"
-entrypoint = "src/logic.py"
-hidden = ["venv", ".config", "**/__pycache__", "**/.mypy_cache", "**/*.pyc"]
