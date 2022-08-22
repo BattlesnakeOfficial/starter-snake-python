@@ -7,7 +7,7 @@ from flask import request
 
 
 def run_server(handlers: typing.Dict):
-    app = Flask("My Battlesnake")
+    app = Flask("Battlesnake")
 
     @app.get("/")
     def on_info():
@@ -29,6 +29,13 @@ def run_server(handlers: typing.Dict):
         game_state = request.get_json()
         handlers["end"](game_state)
         return "ok"
+
+    @app.after_request
+    def identify_server(response):
+        response.headers.set(
+            "server", "battlesnake/github/starter-snake-python"
+        )
+        return response
 
     host = "0.0.0.0"
     port = int(os.environ.get("PORT", "8000"))
