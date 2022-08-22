@@ -1,15 +1,16 @@
 # Battlesnake Python Starter Project
 
-![Battlesnake Logo](https://media.battlesnake.com/social/StarterProjectBanner-Python.png)
+### An official Battlesnake template written in Python. Get started at play.battlesnake.com.
 
-This project is a simple template that implements the [Battlesnake API](https://docs.battlesnake.com/api) in Python. It's a great starting point for anyone wanting to program their first Battlesnake, and can easily be deployed to a cloud provider of your choosing or run locally using a tool like [ngrok](https://ngrok.com/).
+![Battlesnake Logo](https://media.battlesnake.com/social/StarterSnakeGitHubRepos_Python.png)
 
-**To get started, click [Use This Template](https://github.com/BattlesnakeOfficial/starter-snake-python/generate) to clone it to your own GitHub account.**
+This project is a great starting point for anyone wanting to program their first Battlesnake in Python. It can be run locally or easily deployed to a cloud provider of your choosing. See the [Battlesnake API Docs](https://docs.battlesnake.com/api) for more detail. 
+
+[![Run on Replit](https://repl.it/badge/github/BattlesnakeOfficial/starter-snake-python)](https://replit.com/@Battlesnake/starter-snake-python)
 
 ## Technologies Used
 
-* [Python 3](https://www.python.org/)
-* [Flask](https://flask.palletsprojects.com/)
+This project uses [Python 3](https://www.python.org/) and [Flask](https://flask.palletsprojects.com/). It also comes with an optional [Dockerfile](https://docs.docker.com/engine/reference/builder/) to help with deployment.
 
 ## Run Your Battlesnake
 
