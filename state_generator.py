@@ -4,6 +4,8 @@ import copy
 class StateGeneraror():
 
     def next_state_for_action(self, game_state, snake_id, action):
+        height = game_state['board']['height']
+        width = game_state['board']['width']
         game_state = copy.deepcopy(game_state)
         for all_snakes in game_state['board']['snakes']:
             if all_snakes['id'] == snake_id:
@@ -14,13 +16,13 @@ class StateGeneraror():
 
         # move the head
         if action == 'up':
-            next_position = {'x': head['x'], 'y': head['y'] + 1}
+            next_position = {'x': head['x'], 'y': (head['y'] + 1)%height}
         if action == 'down':
-            next_position = {'x': head['x'], 'y': head['y'] - 1}
+            next_position = {'x': head['x'], 'y': (head['y'] - 1)%height}
         if action == 'left':
-            next_position = {'x': head['x'] - 1, 'y': head['y']}
+            next_position = {'x': (head['x'] - 1)%width, 'y': head['y']}
         if action == 'right':
-            next_position = {'x': head['x'] + 1, 'y': head['y']}
+            next_position = {'x': (head['x'] + 1)%width, 'y': head['y']}
 
         ate_food = False
         for index in range(len(food)):
