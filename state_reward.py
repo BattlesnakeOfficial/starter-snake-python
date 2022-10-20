@@ -7,6 +7,7 @@ def state_reward(game_state: typing.Dict, rewards: typing.Dict) -> typing.Dict:
     state_reward += death_reward(game_state, rewards)
     state_reward += head_collision_reward(game_state, rewards)
     state_reward += food_reward(game_state, rewards)
+    state_reward += domination_reward(game_state, rewards)
     return state_reward
 
 
