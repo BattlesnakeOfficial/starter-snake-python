@@ -52,7 +52,7 @@ def head_collision_reward(game_state: typing.Dict, rewards: typing.Dict):
             if (snake_head) == my_head:
                 # collision with a bigger snake head
                 if snake['length'] >= my_length:
-                    reward -= rewards['death']
+                    reward += rewards['death']
                 # collision with a smaller snake head
                 else:
                     reward += rewards['opponent_death']
