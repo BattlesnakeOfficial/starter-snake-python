@@ -139,7 +139,8 @@ def bfs_board_domination(game_state):
     snake_domination = {}
     snake_queues = {}
     visited = set()
-    for snake in game_state['board']['snakes'].sort(key=lambda x: x['length'], reverse=True):
+    game_state['board']['snakes'].sort(key=lambda x: x['length'], reverse=True)
+    for snake in game_state['board']['snakes']:
         snake_domination[snake['id']] = 0
         snake_head = (snake['head']['x'], snake['head']['y'])
         snake_queues[snake['id']] = []
