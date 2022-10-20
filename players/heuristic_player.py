@@ -25,7 +25,7 @@ class HeuristicPlayer():
     move_value = {}
     for move in moves:
       move_value[move] = state_reward(
-        state_generator.next_state_for_action(game_state['you']['id'], move),
+        state_generator.next_state_for_action(game_state, game_state['you']['id'], move),
         self.rewards)
 
     return move_value
