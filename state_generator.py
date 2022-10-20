@@ -3,7 +3,10 @@ class StateGeneraror():
         self.game_state = game_state
 
     def next_state_for_action(self, snake_id, action):
-        snake = self.game_state['board']['snakes']['snake_id']
+        for all_snakes in self.game_state['board']['snakes']:
+            if all_snakes['id'] == snake_id:
+                snake = all_snakes
+                break
         head = snake['head']
         food = self.game_state['board']['food']
 
