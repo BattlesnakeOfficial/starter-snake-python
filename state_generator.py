@@ -16,13 +16,13 @@ class StateGeneraror():
 
         # move the head
         if action == 'up':
-            next_position = {'x': head['x'], 'y': (head['y'] + 1)%height}
+            next_position = {'x': head['x'], 'y': (head['y'] + 1) % height}
         if action == 'down':
-            next_position = {'x': head['x'], 'y': (head['y'] - 1)%height}
+            next_position = {'x': head['x'], 'y': (head['y'] - 1) % height}
         if action == 'left':
-            next_position = {'x': (head['x'] - 1)%width, 'y': head['y']}
+            next_position = {'x': (head['x'] - 1) % width, 'y': head['y']}
         if action == 'right':
-            next_position = {'x': (head['x'] + 1)%width, 'y': head['y']}
+            next_position = {'x': (head['x'] + 1) % width, 'y': head['y']}
 
         ate_food = False
         for index in range(len(food)):

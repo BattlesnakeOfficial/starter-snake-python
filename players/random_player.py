@@ -18,7 +18,7 @@ class RandomPlayer():
     }
 
   def move(self, game_state):
-
+    
     is_move_safe = {"up": True, "down": True, "left": True, "right": True}
 
     # prevent Battlesnake from moving backwards
