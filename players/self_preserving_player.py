@@ -20,7 +20,7 @@ class SelfPreservingPlayer():
   def get_move_values(self, game_state):
     # value is the immedtae reward for a move
     # does not take other opponents' moves into account
-    state_generator = StateGeneraror(game_state)
+    state_generator = StateGeneraror()
     moves = ["up", "down", "left", "right"]
     move_value = {}
     for move in moves:
