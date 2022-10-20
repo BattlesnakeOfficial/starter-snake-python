@@ -1,14 +1,16 @@
-class StateGeneraror():
-    def __init__(self, game_state):
-        self.game_state = game_state
+import copy
 
-    def next_state_for_action(self, snake_id, action):
-        for all_snakes in self.game_state['board']['snakes']:
+
+class StateGeneraror():
+
+    def next_state_for_action(self, game_state, snake_id, action):
+        game_state = copy.deepcopy(game_state)
+        for all_snakes in game_state['board']['snakes']:
             if all_snakes['id'] == snake_id:
                 snake = all_snakes
                 break
         head = snake['head']
-        food = self.game_state['board']['food']
+        food = game_state['board']['food']
 
         # move the head
         if action == 'up':
@@ -37,11 +39,11 @@ class StateGeneraror():
             snake['body'].pop(-1)
 
         # if I am the snake
-        if snake_id == self.game_state['you']['id']:
-            me = self.game_state['you']
+        if snake_id == game_state['you']['id']:
+            me = game_state['you']
             me['body'].insert(0, next_position)
             me['head'] = next_position
             if not ate_food:
                 me['body'].pop(-1)
 
-        return self.game_state
+        return game_state
