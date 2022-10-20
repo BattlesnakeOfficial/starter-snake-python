@@ -16,16 +16,24 @@ def death_reward(game_state: typing.Dict, rewards: typing.Dict):
 
     # death by collision with a wall
     my_head = (game_state['you']['head']['x'], game_state['you']['head']['y'])
-    hazards = [(x, y) for x, y in game_state['board']['hazards'].items()]
+    hazards = []
+    for hazard in game_state['board']['hazards']:
+        hazards.append((hazard['x'], hazard['y']))
     if my_head in hazards:
         dead = True
 
     # death by collision with a snake body
-    snake_bodies = []
+    snake_bodies = {}
     for snake in game_state['board']['snakes']:
-        snake_bodies.append([(x, y) for x, y in snake['body'].items()[1:]])
-    if my_head in snake_bodies:
-        dead = True
+        snake_bodies[snake['id']] = []
+        for body in snake['body']:
+            snake_bodies[snake['id']].append((body['x'], body['y']))
+        # pop the heads
+        snake_bodies[snake['id']].pop(0)
+    
+    for snake_id, snake_body in snake_bodies.items():
+        if my_head in snake_body:
+            dead = True
 
     if dead:
         return rewards['death']
