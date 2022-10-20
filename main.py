@@ -14,6 +14,8 @@ import random
 import typing
 
 from players.heuristic_player import HeuristicPlayer
+from players.random_player import RandomPlayer
+from players.self_preserving_player import SelfPreservingPlayer
 
 
 # start is called when your Battlesnake begins a game
