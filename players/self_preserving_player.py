@@ -1,6 +1,5 @@
 import random
-from battlesnake.state_generator import next_state_for_action, transform_state
-from state_generator import StateGeneraror
+from state_generator import next_state_for_action, transform_state
 from state_reward import state_reward
 
 
