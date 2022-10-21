@@ -9,7 +9,8 @@ class TreeSearchPlayer():
   def __init__(self):
     self.rewards = {
       'death': -1000,
-      'opponent_death': 50,
+      'death_by_head_collision': -700,
+      'opponent_death': 100,
       'distance_to_food_when_hungry': -5,
       'distance_to_food_when_small': -2,
       'board_domination': 1

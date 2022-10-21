@@ -48,7 +48,7 @@ def head_collision_reward(game_state, rewards):
       # collision with a bigger snake head
       if game_state['snake_lengths'][0] <= game_state['snake_lengths'][
           snake_index]:
-        reward += rewards['death']
+        reward += rewards['death_by_head_collision']
       # collision with a smaller snake head
       else:
         reward += rewards['opponent_death']
