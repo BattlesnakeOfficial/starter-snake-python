@@ -1,6 +1,4 @@
 import random
-from state_generator import StateGeneraror
-from state_reward import state_reward
 
 
 class RandomPlayer():
