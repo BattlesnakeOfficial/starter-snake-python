@@ -33,6 +33,6 @@ class TreeSearchPlayer():
     action_values = sample_best_minmax_action(game_state, self.rewards)
 
     next_move = sorted(action_values, key=action_values.get, reverse=True)[0]
-    print(action_values, next_move)
+    #print(action_values, next_move)
 
     return {"move": next_move}

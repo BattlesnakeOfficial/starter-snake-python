@@ -118,7 +118,7 @@ def bfs_board_domination(game_state, snakes):
   # sort snakes by length and put me last if it's a tie
   snake_indices_by_length = sorted(
     range(len(game_state['snake_lengths'])),
-    key=(lambda k: game_state['snake_lengths'][k], lambda k: 0 if k==0 else 1),
+    key=lambda k: (game_state['snake_lengths'][k], 0 if k==0 else 1),
     reverse=True)
   for snake_index in snake_indices_by_length:
     snake_head = game_state['snake_heads'][snake_index]
