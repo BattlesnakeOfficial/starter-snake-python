@@ -4,6 +4,7 @@ import typing
 from players.heuristic_player import HeuristicPlayer
 from players.random_player import RandomPlayer
 from players.self_preserving_player import SelfPreservingPlayer
+from players.tree_search_player import TreeSearchPlayer
 
 
 # start is called when your Battlesnake begins a game
@@ -19,7 +20,7 @@ def end(game_state: typing.Dict):
 # Start server when `python main.py` is run
 if __name__ == "__main__":
     from server import run_server
-    player = HeuristicPlayer()
+    player = TreeSearchPlayer()
 
     run_server({
         "info": player.info,
