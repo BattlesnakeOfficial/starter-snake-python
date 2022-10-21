@@ -6,8 +6,7 @@ def state_reward(game_state, rewards):
   # a list of all snake bodies
   snakes = []
   for snake in game_state['snake_bodies']:
-    for body in snake:
-      snakes += body
+    snakes += snake
   snakes += game_state['snake_heads']
 
   state_reward = 0
