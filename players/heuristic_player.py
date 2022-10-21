@@ -46,5 +46,4 @@ class HeuristicPlayer():
         # Choose a random move from the safe ones
         next_move = random.choice(best_moves)
 
-        print(f"MOVE {game_state['turn']}: {next_move}")
         return {"move": next_move}
