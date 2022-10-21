@@ -4,7 +4,6 @@ from state_generator import next_state_for_action
 
 
 def sample_best_minmax_action(game_state, rewards):
-    # returns 
     # for the current game state
     actions = ['up', 'down', 'left', 'right']
     action_values = {}

@@ -32,26 +32,26 @@ def next_state_for_action(game_state, snake_index, action):
     if not ate_food:
         game_state['snake_bodies'][snake_index].pop(-1)
 
-    dead = False
-    snake_bodies = []
-    for snake in range(len(game_state['snake_heads'])):
-        snake_bodies += game_state['snake_bodies'][snake]
-    
-    if next_position in game_state['hazards'] or next_position in snake_bodies:
-        dead = True
-    
-    for opponent in range(len(game_state['snake_heads'])):
-        if opponent != snake_index:
-            if next_position == game_state['snake_heads'][opponent] and game_state['snake_lengths'][snake_index] <= game_state['snake_lengths'][opponent]:
-                dead = True
-
-    # check if the snake died
-    if dead:
-        # erase snake from the board
-        game_state['snake_heads'].pop(snake_index)
-        game_state['snake_bodies'].pop(snake_index)
-        game_state['snake_lengths'].pop(snake_index)
-        game_state['snake_healths'].pop(snake_index)
+    #dead = False
+    #snake_bodies = []
+    #for snake in range(len(game_state['snake_heads'])):
+    #    snake_bodies += game_state['snake_bodies'][snake]
+    #
+    #if next_position in game_state['hazards'] or next_position in snake_bodies:
+    #    dead = True
+    #
+    #for opponent in range(len(game_state['snake_heads'])):
+    #    if opponent != snake_index:
+    #        if next_position == game_state['snake_heads'][opponent] and game_state['snake_lengths'][snake_index] <= game_state['snake_lengths'][opponent]:
+    #            dead = True
+#
+    ## check if the snake died
+    #if dead:
+    #    # erase snake from the board
+    #    game_state['snake_heads'].pop(snake_index)
+    #    game_state['snake_bodies'].pop(snake_index)
+    #    game_state['snake_lengths'].pop(snake_index)
+    #    game_state['snake_healths'].pop(snake_index)
 
 
     return game_state
