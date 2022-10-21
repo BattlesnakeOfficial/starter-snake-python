@@ -1,4 +1,5 @@
 import random
+from battlesnake.state_generator import next_state_for_action, transform_state
 from state_generator import StateGeneraror
 from state_reward import state_reward
 
@@ -21,13 +22,12 @@ class HeuristicPlayer():
     def get_move_values(self, game_state):
         # value is the immedtae reward for a move
         # does not take other opponents' moves into account
-        state_generator = StateGeneraror()
         moves = ["up", "down", "left", "right"]
         move_value = {}
         for move in moves:
             move_value[move] = state_reward(
-                state_generator.next_state_for_action(
-                    game_state, game_state['you']['id'], move),
+                next_state_for_action(
+                    game_state, 0, move),
                 self.rewards)
 
         return move_value
@@ -35,6 +35,7 @@ class HeuristicPlayer():
     def move(self, game_state):
         # move is called on every turn and returns your next move
         # Valid moves are "up", "down", "left", or "right"
+        game_state = transform_state(game_state)
 
         move_values = self.get_move_values(game_state)
         best_value = max(move_values.values())

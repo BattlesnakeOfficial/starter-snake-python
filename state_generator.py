@@ -1,51 +1,76 @@
 import copy
 
 
-class StateGeneraror():
+def next_state_for_action(game_state, snake_index, action):
 
-    def next_state_for_action(self, game_state, snake_id, action):
-        height = game_state['board']['height']
-        width = game_state['board']['width']
-        game_state = copy.deepcopy(game_state)
-        for all_snakes in game_state['board']['snakes']:
-            if all_snakes['id'] == snake_id:
-                snake = all_snakes
-                break
-        head = snake['head']
-        food = game_state['board']['food']
+    game_state = copy.deepcopy(game_state)
+    head = game_state['snake_heads'][snake_index]
+    food = game_state['food']
+    # move the head
+    if action == 'up':
+        next_position = (head[0], (head[1] + 1) % game_state['height'])
+    if action == 'down':
+        next_position = (head[0], (head[1] - 1) % game_state['height'])
+    if action == 'left':
+        next_position = ((head[0] - 1) % game_state['width'], head[1])
+    if action == 'right':
+        next_position = ((head[0] + 1) % game_state['width'], head[1])
 
-        # move the head
-        if action == 'up':
-            next_position = {'x': head['x'], 'y': (head['y'] + 1) % height}
-        if action == 'down':
-            next_position = {'x': head['x'], 'y': (head['y'] - 1) % height}
-        if action == 'left':
-            next_position = {'x': (head['x'] - 1) % width, 'y': head['y']}
-        if action == 'right':
-            next_position = {'x': (head['x'] + 1) % width, 'y': head['y']}
+    ate_food = False
+    if next_position in food:
+        ate_food = True
+        food.remove(next_position)
+        game_state['snake_lengths'][snake_index] += 1
+        # TODO: check rules for health
+        game_state['snake_healths'][snake_index] = 100
 
-        ate_food = False
-        for index in range(len(food)):
-            if (food[index]['x'], food[index]['y']) == (next_position['x'], next_position['y']):
-                food.pop(index)
-                snake['length'] += 1
-                ate_food = True
-                break
+    # add head to body
+    game_state['snake_bodies'][snake_index].insert(0, head)
+    # move head to the next position
+    game_state['snake_heads'][snake_index] = next_position
+    # remove the tail if the snake did not eat food
+    if not ate_food:
+        game_state['snake_bodies'][snake_index].pop(-1)
 
-        # move head to the next position
-        snake['body'].insert(0, next_position)
-        snake['head'] = next_position
+    # check if the snake died
 
-        # remove the tail if the snake did not eat food
-        if not ate_food:
-            snake['body'].pop(-1)
+    return game_state
 
-        # if I am the snake
-        if snake_id == game_state['you']['id']:
-            me = game_state['you']
-            me['body'].insert(0, next_position)
-            me['head'] = next_position
-            if not ate_food:
-                me['body'].pop(-1)
 
-        return game_state
+def transform_state(game_state):
+    # transform game state to a flatter format
+    transformed_state = {}
+    transformed_state['height'] = game_state['board']['height']
+    transformed_state['width'] = game_state['board']['width']
+    transformed_state['food'] = set()
+    for food in game_state['board']['food']:
+        transformed_state['food'].add((food['x'], food['y']))
+    transformed_state['hazards'] = set()
+    for hazard in game_state['board']['hazards']:
+        transformed_state['hazards'].add((hazard['x'], hazard['y']))
+    transformed_state['snake_heads'] = []
+    transformed_state['snake_bodies'] = []
+    transformed_state['snake_lengths'] = []
+    transformed_state['snake_healths'] = []
+    # I am always the snake at index 0
+    transformed_state['snake_heads'].append(
+        (game_state['you']['head']['x'], game_state['you']['head']['y']))
+    transformed_state['snake_bodies'].append([])
+    # do not append head to body
+    for body in game_state['you']['body'][1:]:
+        transformed_state['snake_bodies'][0].append((body['x'], body['y']))
+    transformed_state['snake_lengths'].append(game_state['you']['length'])
+    transformed_state['snake_healths'].append(game_state['you']['health'])
+    # Other snakes
+    for snake in game_state['board']['snakes']:
+        if snake['id'] != game_state['you']['id']:
+            transformed_state['snake_heads'].append(
+                (snake['head']['x'], snake['head']['y']))
+            transformed_state['snake_bodies'].append([])
+            # do not append head to body
+            for body in snake['body'][1:]:
+                transformed_state['snake_bodies'][-1].append(
+                    (body['x'], body['y']))
+            transformed_state['snake_lengths'].append(snake['length'])
+            transformed_state['snake_healths'].append(snake['health'])
+    return transformed_state

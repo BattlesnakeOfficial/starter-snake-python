@@ -2,40 +2,36 @@ import random
 import typing
 
 
-def state_reward(game_state: typing.Dict, rewards: typing.Dict) -> typing.Dict:
+def state_reward(game_state, rewards):
+    # a list of all snake bodies
+    snakes = []
+    for snake in game_state['snake_bodies']:
+        for body in snake:
+            snakes += body
+    snakes += game_state['snake_heads']
+
     state_reward = 0
     state_reward += death_reward(game_state, rewards)
     state_reward += head_collision_reward(game_state, rewards)
-    state_reward += food_reward(game_state, rewards)
-    state_reward += domination_reward(game_state, rewards)
+    state_reward += food_reward(game_state, rewards, snakes)
+    state_reward += domination_reward(game_state, rewards, snakes)
     return state_reward
 
 
-def death_reward(game_state: typing.Dict, rewards: typing.Dict):
+def death_reward(game_state, rewards):
     dead = False
     # death by hunger
-    if game_state['you']['health'] == 0:
+    if game_state['snake_healths'][0] <= 0:
         dead = True
 
     # death by collision with a wall
-    my_head = (game_state['you']['head']['x'], game_state['you']['head']['y'])
-    hazards = []
-    for hazard in game_state['board']['hazards']:
-        hazards.append((hazard['x'], hazard['y']))
-    if my_head in hazards:
+    if game_state['snake_heads'][0] in game_state['hazards']:
         dead = True
 
     # death by collision with a snake body
-    snake_bodies = {}
-    for snake in game_state['board']['snakes']:
-        snake_bodies[snake['id']] = []
-        for body in snake['body']:
-            snake_bodies[snake['id']].append((body['x'], body['y']))
-        # pop the heads
-        snake_bodies[snake['id']].pop(0)
-
-    for snake_id, snake_body in snake_bodies.items():
-        if my_head in snake_body:
+    for snake_body in game_state['snake_bodies']:
+        # if my head is in a snake body
+        if game_state['snake_heads'][0] in snake_body:
             dead = True
 
     if dead:
@@ -44,122 +40,104 @@ def death_reward(game_state: typing.Dict, rewards: typing.Dict):
         return 0
 
 
-def head_collision_reward(game_state: typing.Dict, rewards: typing.Dict):
+def head_collision_reward(game_state, rewards):
     reward = 0
-    my_head = (game_state['you']['head']['x'], game_state['you']['head']['y'])
-    my_length = game_state['you']['length']
-    for snake in game_state['board']['snakes']:
-        if snake["id"] != game_state['you']['id']:
-            snake_head = (snake['head']['x'], snake['head']['y'])
-            if (snake_head) == my_head:
-                # collision with a bigger snake head
-                if snake['length'] >= my_length:
-                    reward += rewards['death']
-                # collision with a smaller snake head
-                else:
-                    reward += rewards['opponent_death']
+
+    for snake_index in range(1, len(game_state['snake_heads'])):
+        # if my head is in an opponent's head
+        if game_state['snake_heads'][0] == game_state['snake_heads'][snake_index]:
+            # collision with a bigger snake head
+            if game_state['snake_lengths'][0] <= game_state['snake_lengths'][snake_index]:
+                reward += rewards['death']
+            # collision with a smaller snake head
+            else:
+                reward += rewards['opponent_death']
     return reward
 
 
-def food_reward(game_state, rewards):
+def food_reward(game_state, rewards, snakes):
     reward = 0
-    nearest_food = bfs_nearest_food(game_state)
+    nearest_food = bfs_nearest_food(game_state, snakes)
     if nearest_food is None:
         return 0
     # if hungry
-    if game_state['you']['health'] < 20:
+    if game_state['snake_healths'][0] < 30:
         reward += nearest_food * rewards['distance_to_food_when_hungry']
     # if not bigger than the biggest opponent
-    biggest_opponent = 0
-    for snake in game_state['board']['snakes']:
-        if snake['id'] != game_state['you']['id']:
-            if snake['length'] > biggest_opponent:
-                biggest_opponent = snake['length']
-    if game_state['you']['length'] <= biggest_opponent:
+    elif game_state['snake_lengths'][0] < max(game_state['snake_lengths'][1:]):
         reward += nearest_food * rewards['distance_to_food_when_small']
     return reward
 
-def domination_reward(game_state, rewards):
+
+def domination_reward(game_state, rewards, snakes):
     reward = 0
-    board_domination = bfs_board_domination(game_state)
-    reward = board_domination[game_state['you']['id']] * rewards['board_domination']
+    board_domination = bfs_board_domination(game_state, snakes)
+    reward = board_domination[0] * rewards['board_domination']
     return reward
 
 
-def bfs_nearest_food(game_state):
-    hazards = []
-    for hazard in game_state['board']['hazards']:
-        hazards.append((hazard['x'], hazard['y']))
-    snakes = []
-    for snake in game_state['board']['snakes']:
-        for body in snake['body']:
-            snakes.append((body['x'], body['y']))
-    food = []
-    for f in game_state['board']['food']:
-        food.append((f['x'], f['y']))
-    my_head = (game_state['you']['head']['x'], game_state['you']['head']['y'])
+def bfs_nearest_food(game_state, snakes):
+
+    my_head = game_state['snake_heads'][0]
     visited = set()
     queue = []
     queue.append((my_head, 0))
     visited.add(my_head)
     while queue:
         current_node, distance = queue.pop(0)
-        if current_node in food:
+        if current_node in game_state['food']:
             return distance
-        for neighbor in get_neighbors(current_node, game_state, hazards, snakes):
+        for neighbor in get_neighbors(current_node, game_state, snakes):
             if neighbor not in visited:
                 queue.append((neighbor, distance + 1))
                 visited.add(neighbor)
     return None
 
 
-def get_neighbors(current_node, game_state, hazards, snakes):
+def get_neighbors(current_node, game_state, snakes):
     potential_neighbors = []
     neighbors = []
-    height = game_state['board']['height']
-    width = game_state['board']['width']
+    height = game_state['height']
+    width = game_state['width']
     x, y = current_node
     potential_neighbors.append(((x + 1) % width, y))
     potential_neighbors.append(((x - 1) % width, y))
     potential_neighbors.append((x, (y + 1) % height))
     potential_neighbors.append((x, (y - 1) % height))
     for neighbor in potential_neighbors:
-        if neighbor not in hazards and neighbor not in snakes:
+        if neighbor not in game_state['hazards'] and neighbor not in snakes:
             neighbors.append(neighbor)
     return neighbors
 
-def bfs_board_domination(game_state):
-    hazards = []
-    for hazard in game_state['board']['hazards']:
-        hazards.append((hazard['x'], hazard['y']))
-    snakes = []
-    for snake in game_state['board']['snakes']:
-        for body in snake['body']:
-            snakes.append((body['x'], body['y']))
+
+def bfs_board_domination(game_state, snakes):
+
     snake_domination = {}
     snake_queues = {}
     visited = set()
-    game_state['board']['snakes'].sort(key=lambda x: x['length'], reverse=True)
-    for snake in game_state['board']['snakes']:
-        snake_domination[snake['id']] = 0
-        snake_head = (snake['head']['x'], snake['head']['y'])
-        snake_queues[snake['id']] = []
-        snake_queues[snake['id']].append((snake_head))
+    snake_indices_by_length = sorted(range(len(
+        game_state['snake_lengths'])), key=lambda k: game_state['snake_lengths'][k], reverse=True)
+    for snake_index in snake_indices_by_length:
+        snake_head = game_state['snake_heads'][snake_index]
+        snake_domination[snake_index] = 0
+        snake_queues[snake_index] = []
+        snake_queues[snake_index].append((snake_head, 0))
         visited.add(snake_head)
 
     while non_empty(snake_queues):
-        for snake_id, queue in snake_queues.items():
+        for snake_index, queue in snake_queues.items():
             if queue:
                 current_node = queue.pop(0)
-                for neighbor in get_neighbors(current_node, game_state, hazards, snakes):
+                for neighbor in get_neighbors(current_node, game_state, snakes):
                     if neighbor not in visited:
-                        snake_queues[snake_id].append(neighbor)
+                        snake_queues[snake_index].append(neighbor)
                         visited.add(neighbor)
-                        snake_domination[snake_id] += 1
+                        snake_domination[snake_index] += 1
     return snake_domination
 
+
 def non_empty(snake_queues):
-    for snake_id, queue in snake_queues.items():
+    for queue in snake_queues.values():
         if queue:
             return True
     return False
