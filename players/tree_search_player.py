@@ -12,8 +12,8 @@ class TreeSearchPlayer():
       'death_by_head_collision': -700,
       'opponent_death': 100,
       'distance_to_food_when_hungry': -5,
-      'distance_to_food_when_small': -2,
-      'board_domination': 1
+      'distance_to_food_when_small': -1,
+      'board_domination': 2
     }
 
   def info(self):

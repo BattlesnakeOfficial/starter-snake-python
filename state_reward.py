@@ -110,7 +110,6 @@ def get_neighbors(current_node, game_state, snakes):
 
 
 def bfs_board_domination(game_state, snakes):
-
   snake_domination = {}
   snake_queues = {}
   visited = set()
