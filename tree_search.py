@@ -9,6 +9,7 @@ def sample_best_minmax_action(game_state, rewards):
     action_values = {}
     # my actions
     for action in actions:
+        print('me', action)
         state_values = []
         my_next_state = next_state_for_action(game_state, 0, action)
         for snake_index in range(1, len(game_state['snake_heads'])):

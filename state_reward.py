@@ -7,7 +7,6 @@ def state_reward(game_state, rewards):
   snakes = []
   for snake in game_state['snake_bodies']:
     snakes += snake
-  snakes += game_state['snake_heads']
 
   state_reward = 0
   state_reward += death_reward(game_state, rewards)
@@ -77,12 +76,12 @@ def domination_reward(game_state, rewards, snakes):
 
 
 def bfs_nearest_food(game_state, snakes):
-
   my_head = game_state['snake_heads'][0]
   visited = set()
   queue = []
-  queue.append((my_head, 0))
-  visited.add(my_head)
+  if my_head not in snakes and my_head not in game_state['hazards'] and my_head not in game_state['snake_heads'][1:]:
+    queue.append((my_head, 0))
+    visited.add(my_head)
   while queue:
     current_node, distance = queue.pop(0)
     if current_node in game_state['food']:
@@ -105,7 +104,7 @@ def get_neighbors(current_node, game_state, snakes):
   potential_neighbors.append((x, (y + 1) % height))
   potential_neighbors.append((x, (y - 1) % height))
   for neighbor in potential_neighbors:
-    if neighbor not in game_state['hazards'] and neighbor not in snakes:
+    if neighbor not in game_state['hazards'] and neighbor not in snakes and neighbor not in game_state['snake_heads']:
       neighbors.append(neighbor)
   return neighbors
 
@@ -124,8 +123,9 @@ def bfs_board_domination(game_state, snakes):
     snake_head = game_state['snake_heads'][snake_index]
     snake_domination[snake_index] = 0
     snake_queues[snake_index] = []
-    snake_queues[snake_index].append((snake_head, 0))
-    visited.add(snake_head)
+    if snake_head not in snakes and snake_head not in game_state['hazards'] and snake_head not in game_state['snake_heads'][snake_index+1:] and snake_head not in game_state['snake_heads'][:snake_index]:
+      snake_queues[snake_index].append((snake_head, 0))
+      visited.add(snake_head)
 
   while non_empty(snake_queues):
     for snake_index, queue in snake_queues.items():
