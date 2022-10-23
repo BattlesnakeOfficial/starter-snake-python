@@ -13,7 +13,7 @@ class TreeSearchPlayer():
       'opponent_death': 100,
       'distance_to_food_when_hungry': -5,
       'distance_to_food_when_small': -1,
-      'board_domination': 2
+      'board_domination': 3
     }
 
   def info(self):

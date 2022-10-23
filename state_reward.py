@@ -1,6 +1,8 @@
 import random
 import typing
 
+from state_generator import next_state_for_action
+
 
 def state_reward(game_state, rewards):
   # a list of all snake bodies
@@ -58,7 +60,7 @@ def food_reward(game_state, rewards, snakes):
   reward = 0
   nearest_food = bfs_nearest_food(game_state, snakes)
   if nearest_food is None:
-    return 0
+    return 10
   # if hungry
   if game_state['snake_healths'][0] < 30:
     reward += nearest_food * rewards['distance_to_food_when_hungry']
@@ -82,7 +84,7 @@ def bfs_nearest_food(game_state, snakes):
   if my_head not in snakes and my_head not in game_state['hazards'] and my_head not in game_state['snake_heads'][1:]:
     queue.append((my_head, 0))
     visited.add(my_head)
-  while queue:
+  while queue != []:
     current_node, distance = queue.pop(0)
     if current_node in game_state['food']:
       return distance
@@ -127,8 +129,9 @@ def bfs_board_domination(game_state, snakes):
       visited.add(snake_head)
 
   while non_empty(snake_queues):
-    for snake_index, queue in snake_queues.items():
-      if queue:
+    for snake_index in snake_indices_by_length:
+      queue = snake_queues[snake_index]
+      if queue != []:
         current_node, domination = queue.pop(0)
         for neighbor in get_neighbors(current_node, game_state, snakes):
           if neighbor not in visited:

@@ -19,7 +19,6 @@ def next_state_for_action(game_state, snake_index, action):
     ate_food = False
     if next_position in food:
         ate_food = True
-        food.remove(next_position)
         game_state['snake_lengths'][snake_index] += 1
         # TODO: check rules for health
         game_state['snake_healths'][snake_index] = 100
@@ -94,3 +93,4 @@ def transform_state(game_state):
             transformed_state['snake_lengths'].append(snake['length'])
             transformed_state['snake_healths'].append(snake['health'])
     return transformed_state
+
