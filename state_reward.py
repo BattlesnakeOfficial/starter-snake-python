@@ -60,7 +60,7 @@ def food_reward(game_state, rewards, snakes):
   reward = 0
   nearest_food = bfs_nearest_food(game_state, snakes)
   if nearest_food is None:
-    return 10
+    return -10
   # if hungry
   if game_state['snake_healths'][0] < 30:
     reward += nearest_food * rewards['distance_to_food_when_hungry']
