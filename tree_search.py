@@ -9,12 +9,12 @@ def sample_best_minmax_action(game_state, rewards):
   actions = ['up', 'down', 'left', 'right']
   action_values = {}
   for action in actions:
-    possible_states = generate_possible_states(game_state, action)
+    possible_states = generate_possible_states(game_state, action, rewards)
     action_values[action] = min(possible_states)
 
   return action_values
 
-def generate_possible_states(game_state, my_action):
+def generate_possible_states(game_state, my_action, rewards):
   actions = ['up', 'down', 'left', 'right']
   possible_states = []
   move_combinations = itertools.combinations_with_replacement(

@@ -15,6 +15,7 @@ def state_reward(game_state, rewards):
   state_reward += head_collision_reward(game_state, rewards)
   state_reward += food_reward(game_state, rewards, snakes)
   state_reward += domination_reward(game_state, rewards, snakes)
+  state_reward += accessible_area_reward(game_state, snakes)*3
   return state_reward
 
 
@@ -146,3 +147,28 @@ def non_empty(snake_queues):
     if queue:
       return True
   return False
+
+def bfs_accessible_area(game_state, snake_bodies):
+    my_head = game_state['snake_heads'][0]
+    visited = set()
+    area = 0
+    queue = []
+    if my_head not in snake_bodies and my_head not in game_state['hazards'] and my_head not in game_state['snake_heads'][1:]:
+        queue.append((my_head))
+        visited.add(my_head)
+        area += 1
+    else:
+        return area
+    while queue != []:
+        current_node = queue.pop(0)
+        for neighbor in get_neighbors(current_node, game_state, snake_bodies):
+            if neighbor not in visited:
+                queue.append((neighbor))
+                visited.add(neighbor)
+                area += 1
+    return area
+
+def accessible_area_reward(state, snakes):
+  reward = 0
+  reward += bfs_accessible_area(state, snakes)
+  return reward
