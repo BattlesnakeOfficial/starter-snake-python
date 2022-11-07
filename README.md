@@ -1,6 +1,7 @@
 # Battlesnake Python Starter Project
 
 Test - Janice
+Ready - Lisa
 
 An official Battlesnake template written in Python. Get started at [play.battlesnake.com](https://play.battlesnake.com).
 
