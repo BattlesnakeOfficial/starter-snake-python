@@ -2,6 +2,7 @@
 
 Test - Janice
 Ready - Lisa
+Test - Danisa 
 
 An official Battlesnake template written in Python. Get started at [play.battlesnake.com](https://play.battlesnake.com).
 
