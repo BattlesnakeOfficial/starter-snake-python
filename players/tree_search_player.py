@@ -30,6 +30,7 @@ class TreeSearchPlayer():
     # Valid moves are "up", "down", "left", or "right"
 
     print('turn ', game_state['turn'])
+    print(game_state)
     game_state = transform_state(game_state)
     print(game_state)
     action_values = sample_best_minmax_action(game_state, self.rewards)
