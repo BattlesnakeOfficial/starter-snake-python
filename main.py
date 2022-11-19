@@ -209,7 +209,6 @@ def build_map(game_state):
         head = get_coords(snake['head'])
         grid[head[0]][head[1]] = ENEMY_HEAD
         # mark danger locations around enemy head
-        # check down from head
         head_zone = DANGER
         if snake['length'] < my_length:
             head_zone = KILL_ZONE
@@ -390,11 +389,11 @@ def calculate_direction(a, b, grid, data):
     direction = 0
     # directions = ['up', 'left', 'down', 'right']
     if x < 0:
-        direction = 3
+        direction = RIGHT
     elif x > 0:
-        direction = 1
+        direction = LEFT
     elif y < 0:
-        direction = 2
+        direction = UP
     count = 0
     if not valid_move(direction, grid, data):
         if count == 3:
@@ -417,18 +416,18 @@ def valid_move(d, grid, game_state):
     # if status: print('CHECKING IF MOVE IS VALID!')
     # directions = ['up', 'left', 'down', 'right']
     # check up direction
-    if d == 0:
+    if d == DOWN:
         if current[1] - 1 < 0:
-            if debug: print('Up move is OFF THE MAP!')
+            if debug: print('Down move is OFF THE MAP!')
             return False
         if grid[current[0]][current[1] - 1] <= DANGER:
-            if debug: print('Up move is VALID.')
+            if debug: print('Down move is VALID.')
             return True
         else:
-            if debug: print('Up move is FATAL!')
+            if debug: print('Down move is FATAL!')
             return False
     #check left direction
-    if d == 1:
+    if d == LEFT:
         if current[0] - 1 < 0:
             if debug: print('Left move is OFF THE MAP!')
             return False
@@ -438,19 +437,19 @@ def valid_move(d, grid, game_state):
         else:
             if debug: print('Left move is FATAL!')
             return False
-    # check down direction
-    if d == 2:
+    # check up direction
+    if d == UP:
         if current[1] + 1 > board_height - 1:
-            if debug: print('Down move is OFF THE MAP!')
+            if debug: print('Up move is OFF THE MAP!')
             return False
         if grid[current[0]][current[1] + 1] <= DANGER:
-            if debug: print('Down move is VALID.')
+            if debug: print('Up move is VALID.')
             return True
         else:
-            if debug: print('Down move is FATAL!')
+            if debug: print('Up move is FATAL!')
             return False
     # check right direction
-    if d == 3:
+    if d == RIGHT:
         if current[0] + 1 > board_width - 1:
             if debug: print('Right move is OFF THE MAP!')
             return False
@@ -473,14 +472,14 @@ def best_move(recommended_move, data, grid):
     kill_moves = []
     current = get_coords(data['you']['head'])
     best_move = []
-    # check UP move
-    if current[1] - 1 >= 0 and grid[current[0]][current[1] - 1] <= DANGER:
-        if debug: print('move UP is viable')
-        reg_moves.append(UP)
     # check DOWN move
-    if current[1] + 1 < board_height and grid[current[0]][current[1] + 1] <= DANGER:
+    if current[1] - 1 >= 0 and grid[current[0]][current[1] - 1] <= DANGER:
         if debug: print('move DOWN is viable')
         reg_moves.append(DOWN)
+    # check UP move
+    if current[1] + 1 < board_height and grid[current[0]][current[1] + 1] <= DANGER:
+        if debug: print('move UP is viable')
+        reg_moves.append(UP)
     # check LEFT move
     if current[0] - 1 >= 0 and grid[current[0] - 1][current[1]] <= DANGER:
         if debug: print('move LEFT is viable')
@@ -492,16 +491,16 @@ def best_move(recommended_move, data, grid):
     # check viable moves for a move better than DANGER
     if reg_moves:
         for move in reg_moves:
-            # UP
-            if move == UP:
+            # DOWN
+            if move == DOWN:
                 if grid[current[0]][current[1] - 1] == DANGER:
                     reg_moves.remove(move)
                     danger_moves.append(move)
                 elif grid[current[0]][current[1] - 1] == KILL_ZONE:
                     reg_moves.remove(move)
                     kill_moves.append(move)
-            # DOWN
-            elif move == DOWN:
+            # UP
+            elif move == UP:
                 if grid[current[0]][current[1] + 1] == DANGER:
                     reg_moves.remove(move)
                     danger_moves.append(move)
@@ -612,9 +611,9 @@ def look_ahead(move, grid, data):
     # get move coords
     given_move_coords = current
     if move == UP:
-        given_move_coords = [current[0], current[1] - 1]
-    elif move == DOWN:
         given_move_coords = [current[0], current[1] + 1]
+    elif move == DOWN:
+        given_move_coords = [current[0], current[1] - 1]
     elif move == LEFT:
         given_move_coords = [current[0] - 1, current[1]]
     elif move == RIGHT:
@@ -635,20 +634,20 @@ def look_ahead(move, grid, data):
             checked_moves.append(next_move)
             # check neighbors
             # check UP move
-            neighbor_up = [next_move[0], next_move[1] - 1]
+            neighbor_up = [next_move[0], next_move[1] + 1]
             # if not already checked, or queued to be checked
             if neighbor_up != current and neighbor_up not in checked_moves and neighbor_up not in move_queue:
                 # if move on board
-                if neighbor_up[1] >= 0:
+                if neighbor_up[1] < board_height:
                     # if move is valid
                         if grid[neighbor_up[0]][neighbor_up[1]] <= DANGER:
                             move_queue.append(neighbor_up)
             # check DOWN move
-            neighbor_down = [next_move[0], next_move[1] + 1]
+            neighbor_down = [next_move[0], next_move[1] - 1]
             # if not already checked, or queued to be checked
             if neighbor_down != current and neighbor_down not in checked_moves and neighbor_down not in move_queue:
                 # if move on board
-                if neighbor_down[1] < board_height:
+                if neighbor_down[1] >= 0:
                     # if move is valid
                         if grid[neighbor_down[0]][neighbor_down[1]] <= DANGER:
                             move_queue.append(neighbor_down)
