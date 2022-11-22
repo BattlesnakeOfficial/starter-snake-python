@@ -40,6 +40,8 @@ turn = 0
 survival_min = 50
 my_id = ''
 INITIAL_FEEDING = 3
+state = None
+grid = None
 
 # the cell class for storing a* search information
 class Cell:
@@ -71,9 +73,9 @@ def info() -> typing.Dict:
     return {
         "apiversion": "1",
         "author": "",  # TODO: Your Battlesnake Username
-        "color": "#888888",  # TODO: Choose color
-        "head": "default",  # TODO: Choose head
-        "tail": "default",  # TODO: Choose tail
+        "color": "#003333",  # TODO: Choose color
+        "head": "tiger-king",  # TODO: Choose head
+        "tail": "coffee",  # TODO: Choose tail
     }
 
 
@@ -86,61 +88,28 @@ def start(game_state: typing.Dict):
 def end(game_state: typing.Dict):
     print("GAME OVER\n")
 
-
-# move is called on every turn and returns your next move
-# Valid moves are "up", "down", "left", or "right"
-# See https://docs.battlesnake.com/api/example-move for available data
-# Welcome to
-# __________         __    __  .__                               __
-# \______   \_____ /  |_/  |_|  |   ____   ______ ____ _____  |  | __ ____
-#  |    |  /\_  \\   __\   __\  | _/ __ \ /  __//    \\_  \ |  |/ // __ \
-#  |    |   \ / __ \|  |  |  | |  |_\  __/ \__ \|   |  \/ __ \|    <\  ___/
-#  |_______/(____/_|  |_| |__/\___>____>_|_(_____/_|_\\____>
-#
-# This file can be a nice home for your Battlesnake logic and helper functions.
-#
-# To get you started we've included code to prevent your Battlesnake from moving backwards.
-# For more info see docs.battlesnake.com
-import random
-import typing
-# info is called when you create your Battlesnake on play.battlesnake.com
-# and controls your Battlesnake's appearance
-# TIP: If you open your Battlesnake URL in a browser you should see this data
-def info() -> typing.Dict:
-    print("INFO")
-    return {
-        "apiversion": "1",
-        "author": "",  # TODO: Your Battlesnake Username
-        "color": "#888888",  # TODO: Choose color
-        "head": "default",  # TODO: Choose head
-        "tail": "default",  # TODO: Choose tail
-    }
-# start is called when your Battlesnake begins a game
-def start(game_state: typing.Dict):
-    print("GAME START")
-# end is called when your Battlesnake finishes a game
-def end(game_state: typing.Dict):
-    print("GAME OVER\n")
 # move is called on every turn and returns your next move
 # Valid moves are "up", "down", "left", or "right"
 # See https://docs.battlesnake.com/api/example-move for available data
 def move(game_state: typing.Dict) -> typing.Dict:
-    global direction, directions, board_height, board_width, game_id, health, turn, my_id
+    global direction, directions, board_height, board_width, game_id, health, turn, my_id, state, grid
     board_width = game_state['board']['width']
     board_height = game_state['board']['height']
     my_id = game_state['you']['id']
     health = game_state['you']['health']
     turn = game_state['turn']
+    state = game_state
     survival_min = set_health_min(game_state)
     # if health is below set threshold
+    grid = build_map()
     if health < survival_min:
-        direction = hungry(game_state)
+        direction = hungry()
     # if not the biggest snake
-    elif not biggest(game_state):
-        direction = hungry(game_state)
-    # if all is well
+    elif not biggest():
+        direction = hungry()
+    # # if all is well
     else:
-        direction = kill_time(game_state)
+        direction = kill_time()
     # print data for debugging
     # if status:
     #     print('REMAINING HEALTH IS ' + str(health) + ' ON TURN ' + str(turn) + '.')
@@ -154,39 +123,36 @@ def move(game_state: typing.Dict) -> typing.Dict:
 
 # will return the minimum health required to keep alive
 # TODO: Consider other ways to determine the bottom line
-def set_health_min(data):
+def set_health_min():
     health_board = max(board_height, board_width) * 2
-    health_length = data['you']['length']
+    health_length = state['you']['length']
     if health_length > health_board:
         return health_length
     return health_board
 
 # return move towards the closest food
-def hungry(game_state):
-    grid = build_map(game_state)
-    close_food = closest_food(grid, game_state)
-    move = astar(game_state, grid, close_food)
+def hungry():
+    close_food = closest_food()
+    move = astar(close_food)
     return move
 
 # follow own tail to kill time
-def kill_time(data):
+def kill_time():
     if status: print('COOL. KILLING TIME.')
-    grid = build_map(data)
-    tail = get_tail(data)
-    move = astar(data, grid, tail)
+    tail = get_tail()
+    move = astar(tail)
     return move
 
-def build_map(game_state):
+def build_map():
     global my_id, board_height, board_width
-    my_length = game_state['you']['length']
+    my_length = state['you']['length']
     # create map and fill with SPACEs
-    grid = [ [SPACE for col in range(game_state['board']['height'])] for row in range(game_state['board']['width'])]
-    turn = game_state['turn']
+    grid = [ [SPACE for col in range(state['board']['height'])] for row in range(state['board']['width'])]
     # fill in food locations
-    for food in game_state['board']['food']:
+    for food in state['board']['food']:
         grid[food['x']][food['y']] = FOOD
     # fill in snake locations
-    for snake in game_state['board']['snakes']:
+    for snake in state['board']['snakes']:
         for segment in snake['body']:
             # get each segment from game_state {snakes, game_state, body, game_state}
             grid[segment['x']][segment['y']] = SNAKE_BODY
@@ -213,19 +179,19 @@ def build_map(game_state):
         if snake['length'] < my_length:
             head_zone = KILL_ZONE
         # check up from head    
-        if (head[1] + 1 < board_height - 1):
+        if (head[1] + 1 <= board_height - 1):
             if grid[head[0]][head[1] + 1] < head_zone:
                 grid[head[0]][head[1] + 1] = head_zone
         # check down from head
-        if (head[1] - 1 > 0):
+        if (head[1] - 1 >= 0):
             if grid[head[0]][head[1] - 1] < head_zone:
                 grid[head[0]][head[1] - 1] = head_zone
         # check left from head
-        if (head[0] - 1 > 0):
+        if (head[0] - 1 >= 0):
             if grid[head[0] - 1][head[1]] < head_zone:
                 grid[head[0] - 1][head[1]] = head_zone
         # check right from head
-        if (head[0] + 1 < board_width - 1):
+        if (head[0] + 1 <= board_width - 1):
             if grid[head[0] + 1][head[1]] < head_zone:
                 grid[head[0] + 1][head[1]] = head_zone
     # mark my head location
@@ -239,20 +205,20 @@ def get_coords (o):
     return (o['x'], o['y'])
 
 # returns if you are not the biggest snake
-def biggest(game_state):
-    my_id = game_state['you']['id']
-    my_length = game_state['you']['length']
-    for snake in game_state['board']['snakes']:
+def biggest():
+    my_id = state['you']['id']
+    my_length = state['you']['length']
+    for snake in state['board']['snakes']:
         if my_id != snake['id']:
             if snake['length'] > my_length:
                 return False
     return True
 
 # return coords of closest food to head, using grid
-def closest_food(grid, game_state):
-    my_location = get_coords(game_state['you']['head'])
+def closest_food():
+    my_location = get_coords(state['you']['head'])
     close_food = None
-    close_distance = board_width * board_height
+    close_distance = 9999
     for i in range(len(grid)):
         for j in range(len(grid[0])):
             if grid[i][j] == FOOD:
@@ -261,29 +227,32 @@ def closest_food(grid, game_state):
                 if distance < close_distance:
                     close_food = food
                     close_distance = distance
-    return close_food
+    if (close_food is None):
+      return get_tail()
+    else:
+      return close_food
 
 # return manhattan distance between a and b
 def get_distance(a, b):
     return (abs(a[0] - b[0]) + abs(a[1] - b[1]))
 
 # return coords to own tail
-def get_tail(game_state):
-    body = game_state['you']['body']
+def get_tail():
+    body = state['you']['body']
     tail = get_coords(body[-1]) 
     return tail
 
 # astar search, returns move that moves closest to destination
-def astar(game_state, grid, destination):
+def astar(destination):
     #destination = get_coords(destination)
-    search_scores = build_astar_grid(game_state, grid)
+    search_scores = build_astar_grid()
     open_set = []
     closed_set = []
     # set start location to current head location
-    start = get_coords(game_state['you']['head'])
+    start = get_coords(state['you']['head'])
     # on first 3 moves, point to closest food
-    if game_state['turn'] < INITIAL_FEEDING:
-        destination = closest_food(grid, game_state)
+    if state['turn'] < INITIAL_FEEDING:
+        destination = closest_food()
     open_set.append(start)
     # while openset is NOT empty keep searching
     while open_set:
@@ -295,6 +264,7 @@ def astar(game_state, grid, destination):
                 lowest_f = search_scores[cell[0]][cell[1]].f
                 lowest_cell = cell
         # found path to destination
+        
         if lowest_cell[0] == destination[0] and lowest_cell[1] == destination[1]:
             # if status: print('FOUND A PATH!')
             # if debug:
@@ -308,7 +278,7 @@ def astar(game_state, grid, destination):
                 temp = search_scores[temp[0]][temp[1]].previous
             # get direction of next optimal move
             # if debug: print('astar next move: ' + str(temp))
-            next_move = calculate_direction(start, temp, grid, game_state)
+            next_move = calculate_direction(start, temp)
             return next_move
         # else continue searching
         current = lowest_cell
@@ -333,8 +303,8 @@ def astar(game_state, grid, destination):
                     temp = search_scores[temp[0]][temp[1]].previous
                 # get direction of next optimal move
                 if debug: print('astar next move: ' + str(temp))
-                next_move = calculate_direction(start, temp, grid, game_state)
-                return best_move(next_move, game_state, grid)
+                next_move = calculate_direction(start, temp)
+                return best_move(next_move)
             # check if neighbor can be moved to
             if neighbor_cell.state < SNAKE_BODY:
                 # check if neighbor has already been evaluated
@@ -369,12 +339,12 @@ def astar(game_state, grid, destination):
         #     tail = get_tail(game_state)
         #     move = astar(game_state, grid, tail)
         
-        return best_move(move, game_state, grid)
+        return best_move(move)
 
 # return grid of empty Cells for astar search game_state
-def build_astar_grid(game_state, grid):
-    w = game_state['board']['width']
-    h = game_state['board']['height']
+def build_astar_grid():
+    w = state['board']['width']
+    h = state['board']['height']
     astar_grid = [ [Cell(row, col) for col in range(h)] for row in range(w)]
     for i in range(w):
         for j in range(h):
@@ -382,7 +352,7 @@ def build_astar_grid(game_state, grid):
     return astar_grid
 
 # return direction from a to b
-def calculate_direction(a, b, grid, data):
+def calculate_direction(a, b):
     # if status: print('CALCULATING NEXT MOVE...')
     x = a[0] - b[0]
     y = a[1] - b[1]
@@ -395,7 +365,7 @@ def calculate_direction(a, b, grid, data):
     elif y < 0:
         direction = UP
     count = 0
-    if not valid_move(direction, grid, data):
+    if not valid_move(direction):
         if count == 3:
             if status:
                 print('DEAD END, NO VALID MOVE REMAINING!')
@@ -410,9 +380,9 @@ def calculate_direction(a, b, grid, data):
 # check if move in direction will kill you
 # return True if valid
 # return False if it will kill you
-def valid_move(d, grid, game_state):
+def valid_move(d):
     global board_height, board_width
-    current = get_coords(game_state['you']['head'])
+    current = get_coords(state['you']['head'])
     # if status: print('CHECKING IF MOVE IS VALID!')
     # directions = ['up', 'left', 'down', 'right']
     # check up direction
@@ -420,7 +390,7 @@ def valid_move(d, grid, game_state):
         if current[1] - 1 < 0:
             if debug: print('Down move is OFF THE MAP!')
             return False
-        if grid[current[0]][current[1] - 1] <= DANGER:
+        if grid[current[0]][current[1] - 1] < DANGER:
             if debug: print('Down move is VALID.')
             return True
         else:
@@ -431,7 +401,7 @@ def valid_move(d, grid, game_state):
         if current[0] - 1 < 0:
             if debug: print('Left move is OFF THE MAP!')
             return False
-        if grid[current[0] - 1][current[1]] <= DANGER:
+        if grid[current[0] - 1][current[1]] < DANGER:
             if debug: print('Left move is VALID.')
             return True
         else:
@@ -442,7 +412,7 @@ def valid_move(d, grid, game_state):
         if current[1] + 1 > board_height - 1:
             if debug: print('Up move is OFF THE MAP!')
             return False
-        if grid[current[0]][current[1] + 1] <= DANGER:
+        if grid[current[0]][current[1] + 1] < DANGER:
             if debug: print('Up move is VALID.')
             return True
         else:
@@ -453,7 +423,7 @@ def valid_move(d, grid, game_state):
         if current[0] + 1 > board_width - 1:
             if debug: print('Right move is OFF THE MAP!')
             return False
-        if grid[current[0] + 1][current[1]] <= DANGER:
+        if grid[current[0] + 1][current[1]] < DANGER:
             if debug: print('Right move is VALID.')
             return True
         else:
@@ -463,14 +433,14 @@ def valid_move(d, grid, game_state):
     if d > 3 and status: print('valid_move FAILED! direction IS NOT ONE OF FOUR POSSIBLE MOVES!')
     return True
 
-def best_move(recommended_move, data, grid):
+def best_move(recommended_move):
     global board_height, board_width
     if status: print('CHECKING FOR BEST MOVE...')
 
     reg_moves = []
     danger_moves = []
     kill_moves = []
-    current = get_coords(data['you']['head'])
+    current = get_coords(state['you']['head'])
     best_move = []
     # check DOWN move
     if current[1] - 1 >= 0 and grid[current[0]][current[1] - 1] <= DANGER:
@@ -540,7 +510,7 @@ def best_move(recommended_move, data, grid):
         best_move = recommended_move
         # best_area = 0
         # check recommended_move first
-        if valid_move(recommended_move, grid, data):
+        if valid_move(recommended_move):
             best_move = recommended_move
             # best_area = look_ahead(recommended_move, grid, data)
         best_move = kill_moves[0]
@@ -566,16 +536,16 @@ def best_move(recommended_move, data, grid):
         best_move = recommended_move
         best_area = 0
         # check reccommended move first
-        if valid_move(recommended_move, grid, data):
+        if valid_move(recommended_move):
             best_move = recommended_move
-            best_area = look_ahead(recommended_move, grid, data)
+            best_area = look_ahead(recommended_move)
         # check every other reg move
         for move in reg_moves:
             # if the move contains your tail, its probably a pretty good move
             #if move_contains_tail(move, grid, data):
                 #return move
             # check available area of move
-            new_area = look_ahead(move, grid, data)
+            new_area = look_ahead(move)
             if new_area > best_area:
                 best_area = new_area
                 best_move = move
@@ -589,12 +559,12 @@ def best_move(recommended_move, data, grid):
         best_move = recommended_move
         best_area = 0
         # check reccommended move first
-        if valid_move(recommended_move, grid, data):
+        if valid_move(recommended_move):
             best_move = recommended_move
-            best_area = look_ahead(recommended_move, grid, data)
+            best_area = look_ahead(recommended_move)
         for move in danger_moves:
             # check available area of move
-            new_area = look_ahead(move, grid, data)
+            new_area = look_ahead(move)
             if new_area > best_area:
                 best_area = new_area
                 best_move = move
@@ -605,9 +575,9 @@ def best_move(recommended_move, data, grid):
             print('GAME OVER')
         return recommended_move # suicide
 
-def look_ahead(move, grid, data):
+def look_ahead(move):
     area = 0
-    current = get_coords(data['you']['head'])
+    current = get_coords(state['you']['head'])
     # get move coords
     given_move_coords = current
     if move == UP:
