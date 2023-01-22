@@ -14,7 +14,13 @@ This project uses [Python 3](https://www.python.org/) and [Flask](https://flask.
 
 ## Run Your Battlesnake
 
-Install dependencies using pip
+Clone this repository in your PC.
+
+```sh
+git clone https://github.com/BattlesnakeOfficial/starter-snake-python.git
+```
+
+Install dependencies in the same directory using pip
 
 ```sh
 pip install -r requirements.txt
