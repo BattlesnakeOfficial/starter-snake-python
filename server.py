@@ -2,8 +2,8 @@ import logging
 import os
 import typing
 
-#from flask import Flask
-#from flask import request
+from flask import Flask
+from flask import request
 
 
 def run_server(handlers: typing.Dict):
