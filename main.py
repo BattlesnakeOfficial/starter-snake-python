@@ -18,6 +18,17 @@ import typing
 # and controls your Battlesnake's appearance
 # TIP: If you open your Battlesnake URL in a browser you should see this data
 def info() -> typing.Dict:
+    """
+    Returns a dictionary containing information about the Battlesnake.
+
+    Returns:
+        typing.Dict: A dictionary with the following keys:
+        - apiversion: The API version of the Battlesnake server.
+        - author: The username of the Battlesnake's author.
+        - color: The color of the Battlesnake's head and body.
+        - head: The head style of the Battlesnake.
+        - tail: The tail style of the Battlesnake.
+    """
     print("INFO")
 
     return {
@@ -31,11 +42,21 @@ def info() -> typing.Dict:
 
 # start is called when your Battlesnake begins a game
 def start(game_state: typing.Dict):
+    """Prints a message indicating that the game has started.
+
+    Args:
+        game_state (typing.Dict): A dictionary containing information about the initial state of the game.
+    """
     print("GAME START")
 
 
 # end is called when your Battlesnake finishes a game
 def end(game_state: typing.Dict):
+    """Prints a message indicating that the game has ended.
+
+    Args:
+        game_state (typing.Dict): A dictionary containing information about the final state of the game.
+    """
     print("GAME OVER\n")
 
 
@@ -43,6 +64,15 @@ def end(game_state: typing.Dict):
 # Valid moves are "up", "down", "left", or "right"
 # See https://docs.battlesnake.com/api/example-move for available data
 def move(game_state: typing.Dict) -> typing.Dict:
+    """Chooses the next move for the Battlesnake.
+
+    Args:
+        game_state (typing.Dict): A dictionary containing information about the current state of the game.
+
+    Returns:
+        typing.Dict: A dictionary containing the chosen move. The dictionary has a single key, "move", which
+        contains a string value representing the direction of the move. The possible values are "up", "down",
+        "left", and "right".    """
 
     is_move_safe = {"up": True, "down": True, "left": True, "right": True}
 
