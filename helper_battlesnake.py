@@ -2,18 +2,16 @@ import numpy as np
 import typing
 
 
-def look_ahead(head_loc, direction):
-    """
-    Given the snake's coordinates and a possible move, return the snake's new coordinates if it were headed that way
-    """
-    snake_head = head_loc.copy()
-    if direction == "up":
+def look_ahead(head, move):
+    """Given a possible move, return the snake's new coordinates if it were headed that way"""
+    snake_head = head.copy()
+    if move == "up":
         snake_head["y"] += 1
-    if direction == "down":
+    if move == "down":
         snake_head["y"] -= 1
-    if direction == "left":
+    if move == "left":
         snake_head["x"] -= 1
-    if direction == "right":
+    if move == "right":
         snake_head["x"] += 1
     return snake_head
 
@@ -57,6 +55,7 @@ def obvious_moves(game_state: typing.Dict, my_head: typing.Dict, my_neck=None, r
     """
     is_move_safe = {"up": True, "down": True, "left": True, "right": True}
 
+    my_length = game_state["you"]["length"]
     if my_neck is None:
         my_neck = game_state["you"]["body"][1]  # Coordinates of your "neck"
     # print(f"Head location: {str(my_head)}")
@@ -74,7 +73,7 @@ def obvious_moves(game_state: typing.Dict, my_head: typing.Dict, my_neck=None, r
         is_move_safe["up"] = False
         # print("Neck is above head, don't move up")
 
-    # Step 1 - Prevent your Battlesnake from moving out of bounds
+    # Prevent your Battlesnake from moving out of bounds
     board_width = game_state['board']['width']
     board_height = game_state['board']['height']
 
@@ -91,7 +90,7 @@ def obvious_moves(game_state: typing.Dict, my_head: typing.Dict, my_neck=None, r
         is_move_safe["up"] = False
         # print("Out of bounds, can't move up")
 
-    # Step 2 - Prevent your Battlesnake from colliding with itself
+    # Prevent your Battlesnake from colliding with itself
     my_body = game_state['you']['body']
     for direction in refresh_safe_moves(is_move_safe):
         possible_move = look_ahead(my_head, direction)
@@ -101,7 +100,7 @@ def obvious_moves(game_state: typing.Dict, my_head: typing.Dict, my_neck=None, r
             # print(f"Headed towards: {str(possible_move)}")
             # print(f"Body: {str(my_body)}")
 
-    # Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
+    # Prevent your Battlesnake from colliding with other Battlesnakes
     opponents = game_state['board']['snakes']
     for opponent in opponents:
         if opponent["id"] == game_state['you']["id"]:  # Ignore yourself
@@ -112,9 +111,9 @@ def obvious_moves(game_state: typing.Dict, my_head: typing.Dict, my_neck=None, r
         for direction in ["up", "down", "left", "right"]:
             possible_move = look_ahead(my_head, direction)
             # Avoid any possible encounters with any future opponent move
-            if risk_averse:
-                opponent_move = [look_ahead(opponent_head, direction) for direction in ["up", "down", "left", "right"]]
-                if possible_move in opponent_move:
+            if risk_averse and my_length < opponent["length"]:
+                opponent_moves = [look_ahead(opponent_head, direction) for direction in ["up", "down", "left", "right"]]
+                if possible_move in opponent_moves:
                     is_move_safe[direction] = False
             # Avoid running into the opponent snake
             if possible_move in opponent_locs:
@@ -139,17 +138,17 @@ class Node:
         return str(self.location)
 
 
-def a_star_search(game_state, head_loc, food_loc):
+def a_star_search(game_state, my_head, food_loc):
     """
     Implement the A* search algorithm to find the shortest path to food
     """
+    head_loc = my_head.copy()
     open_list = [Node(head_loc)]  # Contains the nodes that have been generated but have not been yet examined till yet
     closed_list = []  # Contains the nodes which are examined
     timer = 0
 
     while len(open_list) > 0:
-        if timer > 200:
-            print("Past 200")
+        if timer > 300:
             return None, None
 
         current_node = min(open_list, key = lambda node: node.f)  # The node with the smallest f value
@@ -169,7 +168,7 @@ def a_star_search(game_state, head_loc, food_loc):
             game_state,
             my_head=current_node.location,
             my_neck=current_node.parent.location if current_node.parent is not None else None,
-            risk_averse=False
+            risk_averse=True
         )
 
         for possible_move in possible_moves:
@@ -198,22 +197,34 @@ def a_star_search(game_state, head_loc, food_loc):
 
     return None, None
 
-def flood_fill(game_state, next_square):
+def flood_fill(game_state, next_square, risk_averse=True):
+    """
+    Recursive function to get the total area of the current fill selection
+    """
     board_width = game_state['board']['width']
     board_height = game_state['board']['height']
-    board = np.zeros((board_width, board_height))
+    my_length = game_state["you"]["length"]
+
     # Make an (l x w) array and simulate the board
-    for pixel in game_state["you"]["body"]:
-        board[pixel["x"], pixel["y"]] = 1
+    board = np.zeros((board_width, board_height))
     for snake in game_state["board"]["snakes"]:
         body_pixels = snake["body"]
         for pixel in body_pixels:
             board[pixel["x"], pixel["y"]] = 1
 
+        if snake["id"] == game_state['you']["id"]:  # Ignore yourself
+            continue
+        elif risk_averse and my_length < snake["length"]:
+            opponent_head = body_pixels[0]
+            opponent_moves = [look_ahead(opponent_head, direction) for direction in ["up", "down", "left", "right"]]
+            for m in opponent_moves:
+                if 0 <= m["x"] < board_width and 0 <= m["y"] < board_height:
+                    board[m["x"], m["y"]] = 1
+
     def fill(x, y):
-        if board[x][y] == 1:
+        if board[x][y] == 1:  # Snakes or hazards
             return
-        if board[x][y] == 2:
+        if board[x][y] == 2:  # Fill
             return
         board[x][y] = 2
         neighbours = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
@@ -222,4 +233,49 @@ def flood_fill(game_state, next_square):
                 fill(n[0], n[1])
 
     fill(next_square["x"], next_square["y"])
-    return np.unique(board, return_counts=True)[-1][-1]
+    return sum((row == 2).sum() for row in board)
+
+
+def fill_search(game_state, my_head, safe_moves, log):
+    best_fill = -1
+    next_move = safe_moves[0]
+    for safe_move in safe_moves:
+        end_square = look_ahead(my_head, safe_move)
+        max_fill = flood_fill(game_state, next_square=end_square)
+        if max_fill > best_fill:
+            next_move = safe_move
+            best_fill = max_fill
+        if log:
+            print(f"Flood fill on {safe_move} and got {max_fill}")
+    return next_move
+
+def order_food(game_state, head_loc):
+    """
+    Return a sorted list of food options by distance to the snake. Also decide a cut-off based on health
+    """
+    menu = game_state["board"]["food"]
+    health = game_state["you"]["health"]
+    # For each food item, grab the Manhattan distance to the snake
+    food_costs = []
+    for food in menu:
+        cost_to_item = manhattan_distance(head_loc, food)
+        food_costs.append(cost_to_item)
+
+    def helper_food_filter(menu, food_costs, cutoff):
+        menu_indices = np.where(np.array(food_costs) <= cutoff)
+        filt_menu = menu[menu_indices]
+        return
+
+    # Sort the food by the distances and apply discretionary filters based on how hungry you are
+    sorted_menu = sorted(menu, key=lambda x: food_costs[menu.index(x)])
+    sorted_food_costs = sorted(food_costs)
+    if len(menu) == 0:
+        new_menu = []
+    elif health >= 45:  # Big chilling
+        new_menu = [x for x in sorted_menu if sorted_food_costs[sorted_menu.index(x)] <= 5]
+    elif health <= min(food_costs) * 3:  # Pretty desperate
+        new_menu = [x for x in sorted_menu if sorted_food_costs[sorted_menu.index(x)] <= 15]
+    else:
+        new_menu = [x for x in sorted_menu if sorted_food_costs[sorted_menu.index(x)] <= 10]
+
+    return new_menu
