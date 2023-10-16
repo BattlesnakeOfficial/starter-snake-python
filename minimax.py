@@ -194,7 +194,7 @@ class Battlesnake:
                     possible_moves.discard(move)
                 # If the snake is risk-averse, avoid any chance of head-on collisions only if our snake is shorter
                 elif snake_id != opp_snake_id and length <= opp_snake["length"] \
-                        and self.manhattan_distance(possible_hit, opp_snake["head"]) == 1:
+                        and self.manhattan_distance(possible_hit, opp_snake["head"]) == 0:
                     risky_moves.append(move)
                     if risk_averse:
                         possible_moves.discard(move)
@@ -303,7 +303,7 @@ class Battlesnake:
         # else:
         #     available_enemy_space = 0
 
-        if 2 >= len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
+        if 2 >= len(self.opponents) == sum([self.my_length > s["length"] + 3 for s in self.opponents.values()]):
             dist_to_enemy = self.dist_from_enemies()[0]
         else:
             dist_to_enemy = 0
