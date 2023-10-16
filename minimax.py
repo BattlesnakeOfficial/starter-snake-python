@@ -35,6 +35,13 @@ class Battlesnake:
                 "length": snake["length"],
                 "health": snake["health"]
             }
+            if "name" in game_state["you"] and game_state["you"]["name"] != "Nightwing" and snake["name"] == "Nightwing":
+                self.my_id = snake["id"]
+                self.my_head = snake["head"]
+                self.my_neck = snake["body"][1]
+                self.my_body = snake["body"]
+                self.my_length = snake["length"]
+                self.my_health = snake["health"]
         if self.my_id not in self.all_snakes_dict.keys():
             self.all_snakes_dict[self.my_id] = {
                 "head": self.my_head,
@@ -493,7 +500,7 @@ class Battlesnake:
             # Otherwise, if our snake is ALIVE and is the winner :)
             elif game_over:
                 logging.info("OUR SNAKE WON")
-                return 1e6, None
+                return 1e6 + depth, None  # Reward faster kills
 
         # At the bottom of the decision tree or if we won/lost the game
         if depth == 0:
