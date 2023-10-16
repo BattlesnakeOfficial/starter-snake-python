@@ -35,12 +35,19 @@ class Battlesnake:
                 "length": snake["length"],
                 "health": snake["health"]
             }
+        if self.my_id not in self.all_snakes_dict.keys():
+            self.all_snakes_dict[self.my_id] = {
+                "head": self.my_head,
+                "neck": self.my_neck,
+                "body": self.my_body,
+                "length": self.my_length,
+                "health": self.my_health
+            }
         # Opponent snakes
         self.opponents = self.all_snakes_dict.copy()
         self.opponents.pop(self.my_id)
 
         self.update_board()
-        # self.board_copy = copy.deepcopy(self.board)
         self.minimax_search_depth = 4
         self.peripheral_dim = 3
 
@@ -281,19 +288,20 @@ class Battlesnake:
         layers_deep = self.minimax_search_depth - depth_number
 
         # If an opponent snake dies :)
+        opponents_left = len(self.opponents)
 
         # Determine available space via flood fill
         available_space = self.flood_fill(self.my_id, risk_averse=True)
 
-        # We want to minimise available space for our opponents via flood fill (but only when there are fewer snakes in
-        # our vicinity)
-        if len(self.opponents) <= 4 \
-                and sum([dist < (self.board_width // 2) for dist in self.dist_from_enemies()]) <= 4 \
-                and len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
-            self.peripheral_dim = 4
-            available_enemy_space = self.flood_fill(self.closest_enemy(), confined_area="General")
-        else:
-            available_enemy_space = 0
+        # # We want to minimise available space for our opponents via flood fill (but only when there are fewer snakes in
+        # # our vicinity)
+        # if len(self.opponents) <= 4 \
+        #         and sum([dist < (self.board_width // 2) for dist in self.dist_from_enemies()]) <= 4 \
+        #         and len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
+        #     self.peripheral_dim = 4
+        #     available_enemy_space = self.flood_fill(self.closest_enemy(), confined_area="General")
+        # else:
+        #     available_enemy_space = 0
 
         if 2 >= len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
             dist_to_enemy = self.dist_from_enemies()[0]
@@ -309,28 +317,32 @@ class Battlesnake:
 
         # Heuristic formula
         space_weight = 0.5
+        enemy_left_weight = 1000
         enemy_restriction_weight = 75 if len(self.opponents) > 2 else 200
         food_weight = 75
         depth_weight = 25
         length_weight = 300
         centre_control_weight = 10
-        aggression_weight = 2500 if dist_to_enemy > 0 else 0
+        aggression_weight = 250 if dist_to_enemy > 0 else 0
 
         logging.info(f"Available space: {available_space}")
+        logging.info(f"Enemies left: {opponents_left}")
         logging.info(f"Distance to nearest enemy: {dist_to_enemy}")
         logging.info(f"Distance to nearest food: {dist_food}")
         logging.info(f"Layers deep in search tree: {layers_deep}")
-        logging.info(f"Available enemy space: {available_enemy_space}")
+        # logging.info(f"Available enemy space: {available_enemy_space}")
         logging.info(f"In centre: {in_centre}")
         logging.info(f"Length: {self.my_length}")
 
         h = (available_space * space_weight) + \
+            (enemy_left_weight / (opponents_left + 1)) + \
             (food_weight / (dist_food + 1)) + \
             (layers_deep * depth_weight) + \
             (self.my_length * length_weight) + \
             in_centre * centre_control_weight + \
-            (enemy_restriction_weight / (available_enemy_space + 1)) + \
             aggression_weight / (dist_to_enemy + 1)
+            # (enemy_restriction_weight / (available_enemy_space + 1)) + \
+
 
         return h
 
@@ -445,9 +457,10 @@ class Battlesnake:
                     (rm_id, snake["length"]) for rm_id, snake in new_game.all_snakes_dict.items()
                     if (snake["head"]["x"] == butt_head[0] and snake["head"]["y"] == butt_head[1])
                 ])
+                lengths = overlapping_snakes[:, 1].astype(int)
                 # Special cases where the snake committed suicide and also killed our snake => don't remove
-                if self.my_id not in overlapping_snakes[:, 0]:
-                    lengths = overlapping_snakes[:, 1].astype(int)
+                if not (self.my_id in overlapping_snakes[:, 0]
+                        and np.count_nonzero(overlapping_snakes[:, 1] == self.my_length) > 1):
                     indices_largest_snakes = np.argwhere(lengths == lengths.max()).flatten().tolist()
                     if len(indices_largest_snakes) > 1:
                         winner_id = None
@@ -682,14 +695,14 @@ class Battlesnake:
 #         return None, None
 #
 #
-# class Node:
-#     def __init__(self, location, parent=None, f=0, g=0, h=0):
-#         self.location = location
-#         self.neighbour_nodes = []
-#         self.parent = parent
-#         self.f = f  # The cost from the start node to the goal node
-#         self.g = g  # The cost from the start node to the current node
-#         self.h = h  # The cost from the current node to the goal node using a heuristic
-#
-#     def __repr__(self):
-#         return str(self.location)
+class Node:
+    def __init__(self, location, parent=None, f=0, g=0, h=0):
+        self.location = location
+        self.neighbour_nodes = []
+        self.parent = parent
+        self.f = f  # The cost from the start node to the goal node
+        self.g = g  # The cost from the start node to the current node
+        self.h = h  # The cost from the current node to the goal node using a heuristic
+
+    def __repr__(self):
+        return str(self.location)
