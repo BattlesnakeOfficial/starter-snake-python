@@ -312,9 +312,10 @@ class Battlesnake:
         enemy_restriction_weight = 75 if len(self.opponents) > 2 else 200
         food_weight = 75
         depth_weight = 25
-        length_weight = 150
+        length_weight = 300
         centre_control_weight = 10
-        aggression_weight = 2500
+        aggression_weight = 2500 if dist_to_enemy > 0 else 0
+
         logging.info(f"Available space: {available_space}")
         logging.info(f"Distance to nearest enemy: {dist_to_enemy}")
         logging.info(f"Distance to nearest food: {dist_food}")
@@ -322,6 +323,7 @@ class Battlesnake:
         logging.info(f"Available enemy space: {available_enemy_space}")
         logging.info(f"In centre: {in_centre}")
         logging.info(f"Length: {self.my_length}")
+
         h = (available_space * space_weight) + \
             (food_weight / (dist_food + 1)) + \
             (layers_deep * depth_weight) + \
@@ -422,7 +424,7 @@ class Battlesnake:
             new_game.my_health -= 1
 
         # If food was consumed, this elongates the snake from the tail and restores health
-        if new_head in self.food:
+        if new_head in self.food and (evaluate_deaths or snake_id == self.my_id):
             new_game.all_snakes_dict[snake_id]["length"] += 1
             new_game.all_snakes_dict[snake_id]["health"] = 100
             new_game.all_snakes_dict[snake_id]["body"] += [new_game.all_snakes_dict[snake_id]["body"][-1]]
@@ -542,7 +544,7 @@ class Battlesnake:
             if len(self.opponents) == 1:
                 search_within = self.board_width * self.board_height
             elif len(self.opponents) <= 3:
-                search_within = self.board_width * 2
+                search_within = self.board_width
             elif len(self.opponents) < 6:
                 search_within = self.board_width // 2
             else:
