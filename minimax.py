@@ -90,6 +90,7 @@ class Battlesnake:
     def update_board(self):
         """Fill in the board with the locations of all snakes. Our snake will be displayed like "oo£" where "o"
         represents the body and "£" represents the head. Opponents will be displayed as "xx£" in the same manner"""
+        self.board = np.full((self.board_width, self.board_height), " ")
         for num, my_square in enumerate(self.my_body):
             self.board[my_square["x"], my_square["y"]] = "£" if num == 0 else "O"
         for opponent in self.opponents.values():
@@ -197,12 +198,17 @@ class Battlesnake:
             for move in possible_moves.copy():  # Remaining moves
                 possible_hit = self.look_ahead(head, move)
                 # If the potential move hits a snake's body, it's invalid (exclude the tail since it moves forward)
-                if possible_hit in opp_snake["body"][:-1] and possible_hit != self.my_head:
+                if snake_id == self.my_id and possible_hit in opp_snake["body"][:-1]:
+                    possible_moves.discard(move)
+                elif snake_id != self.my_id and possible_hit != self.my_head and (
+                        (possible_hit in opp_snake["body"][:-1] and opp_snake_id != self.my_id)
+                        or (possible_hit in opp_snake["body"] and opp_snake_id == self.my_id)):
                     possible_moves.discard(move)
                 # If the snake is risk-averse, avoid any chance of head-on collisions only if our snake is shorter
                 elif snake_id != opp_snake_id and length <= opp_snake["length"] \
-                        and self.manhattan_distance(possible_hit, opp_snake["head"]) == 0:
-                    risky_moves.append(move)
+                        and self.manhattan_distance(possible_hit, opp_snake["head"]) <= 1:
+                    if not (snake_id != self.my_id and opp_snake_id == self.my_id):  # Allow opponents to be suicidal
+                        risky_moves.append(move)
                     if risk_averse:
                         possible_moves.discard(move)
 
@@ -410,7 +416,8 @@ class Battlesnake:
         best_dist = np.inf
         for food in self.food:
             dist = self.manhattan_distance(food, self.my_head)
-            if dist < best_dist:
+            dist_enemy = min([self.manhattan_distance(food, snake["head"]) for snake in self.opponents.values()])
+            if dist < best_dist and ((dist_enemy >= 4 and dist <= dist_enemy * 2) or (4 > dist_enemy >= dist)):
                 best_dist = dist
         return best_dist
 
@@ -443,19 +450,25 @@ class Battlesnake:
             new_game.my_health -= 1
 
         # If food was consumed, this elongates the snake from the tail and restores health
-        if new_head in self.food and (evaluate_deaths or snake_id == self.my_id):
-            new_game.all_snakes_dict[snake_id]["length"] += 1
-            new_game.all_snakes_dict[snake_id]["health"] = 100
-            new_game.all_snakes_dict[snake_id]["body"] += [new_game.all_snakes_dict[snake_id]["body"][-1]]
-            new_game.food = [food for food in self.food if not (food["x"] == new_head["x"] and food["y"] == new_head["y"])]
-            # Repeat for our snake specifically
-            if snake_id == self.my_id:
-                new_game.my_length += 1
-                new_game.my_health = 100
-                new_game.my_body += [new_game.my_body[-1]]
+        if new_head in self.food:
+            new_game.all_snakes_dict[snake_id]["food_eaten"] = new_head
 
         # Check if any snakes died from this simulated move and remove them from the game
         if evaluate_deaths:
+            # Update snake lengths from any food eaten
+            for update_id, snake in new_game.all_snakes_dict.items():
+                if "food_eaten" in snake.keys():
+                    new_game.all_snakes_dict[update_id]["length"] += 1
+                    new_game.all_snakes_dict[update_id]["health"] = 100
+                    new_game.all_snakes_dict[update_id]["body"] += [new_game.all_snakes_dict[update_id]["body"][-1]]
+                    new_game.food = [food for food in self.food
+                                     if not (food["x"] == snake["food_eaten"]["x"]
+                                             and food["y"] == snake["food_eaten"]["y"])]
+                    if update_id == self.my_id:
+                        new_game.my_length += 1
+                        new_game.my_health = 100
+                        new_game.my_body += [new_game.my_body[-1]]
+
             all_heads = [(snake["head"]["x"], snake["head"]["y"]) for snake in new_game.all_snakes_dict.values()]
             count_heads = Counter(all_heads)
             butt_heads = [k for k, v in count_heads.items() if v > 1]
@@ -467,7 +480,7 @@ class Battlesnake:
                 lengths = overlapping_snakes[:, 1].astype(int)
                 # Special cases where the snake committed suicide and also killed our snake => don't remove
                 if not (self.my_id in overlapping_snakes[:, 0]
-                        and np.count_nonzero(overlapping_snakes[:, 1] == self.my_length) > 1):
+                        and np.count_nonzero(lengths == self.my_length) > 1):
                     indices_largest_snakes = np.argwhere(lengths == lengths.max()).flatten().tolist()
                     if len(indices_largest_snakes) > 1:
                         winner_id = None
@@ -586,7 +599,7 @@ class Battlesnake:
                     if len(self.opponents) <= 5:
                         opps_moves[opp_id] = [opp_move[0]]
 
-            logging.info(f"Found {opps_nearby} of {len(self.opponents)} OPPONENT SNAKES within {self.board_width // 2} "
+            logging.info(f"Found {opps_nearby} of {len(self.opponents)} OPPONENT SNAKES within {search_within} "
                          f"squares of us in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
 
             clock_in = time.time_ns()
