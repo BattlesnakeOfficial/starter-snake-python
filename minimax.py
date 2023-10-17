@@ -35,6 +35,8 @@ class Battlesnake:
                 "length": snake["length"],
                 "health": snake["health"]
             }
+            if "food_eaten" in snake.keys():
+                self.all_snakes_dict[snake["id"]]["food_eaten"] = snake["food_eaten"]
             if "name" in game_state["you"] and game_state["you"]["name"] != "Nightwing" and snake["name"] == "Nightwing":
                 self.my_id = snake["id"]
                 self.my_head = snake["head"]
@@ -70,6 +72,8 @@ class Battlesnake:
                 "length": snake["length"],
                 "health": snake["health"]
             })
+            if "food_eaten" in snake.keys():
+                all_snakes[-1]["food_eaten"] = snake["food_eaten"]
         board = {
             "height": self.board_height,
             "width": self.board_width,
@@ -219,7 +223,7 @@ class Battlesnake:
                 # If the snake is risk-averse, avoid any chance of head-on collisions only if our snake is shorter
                 elif snake_id != opp_snake_id and length <= opp_snake["length"] \
                         and self.manhattan_distance(possible_hit, opp_snake["head"]) <= 1:
-                    if not (snake_id != self.my_id and opp_snake_id == self.my_id):  # Allow opponents to be suicidal
+                    if not (snake_id != self.my_id and opp_snake_id == self.my_id and length == opp_snake["length"]):  # Allow opponents to be suicidal (so our snakes are the same size)
                         risky_moves.append(move)
                     if risk_averse:
                         possible_moves.discard(move)
@@ -486,6 +490,9 @@ class Battlesnake:
                         new_game.my_length += 1
                         new_game.my_health = 100
                         new_game.my_body += [new_game.my_body[-1]]
+
+                    # Reset the food tracker
+                    del new_game.all_snakes_dict[update_id]["food_eaten"]
 
             all_heads = [(snake["head"]["x"], snake["head"]["y"]) for snake in new_game.all_snakes_dict.values()]
             count_heads = Counter(all_heads)
