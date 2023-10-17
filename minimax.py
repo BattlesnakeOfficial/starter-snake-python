@@ -335,10 +335,16 @@ class Battlesnake:
         # else:
         #     available_enemy_space = 0
 
+        # Get closer to enemy snakes if we're longer by 3
         if 2 >= len(self.opponents) == sum([self.my_length > s["length"] + 3 for s in self.opponents.values()]):
             dist_to_enemy = self.dist_from_enemies()[0]
         else:
             dist_to_enemy = 0
+
+        # If we're getting too close to enemy snakes that are longer, RETREAT
+        threats = [self.manhattan_distance(self.my_head, opp["head"]) for opp in self.opponents.values() if opp["length"] >= self.my_length]
+        num_threats = (np.count_nonzero(np.array(threats) <= 2) * 2
+                       + np.count_nonzero(np.array(threats) == 3) * 1)
 
         # Determine the closest safe distance to food
         dist_food = self.dist_to_nearest_food()
@@ -357,10 +363,12 @@ class Battlesnake:
         length_weight = 300
         centre_control_weight = 10
         aggression_weight = 250 if dist_to_enemy > 0 else 0
+        threat_proximity_weight = -100
 
         logging.info(f"Available space: {available_space}")
         logging.info(f"Available peripheral: {available_peripheral}")
         logging.info(f"Enemies left: {opponents_left}")
+        logging.info(f"Threats within 3 squares of us: {num_threats}")
         logging.info(f"Distance to nearest enemy: {dist_to_enemy}")
         logging.info(f"Distance to nearest food: {dist_food}")
         logging.info(f"Layers deep in search tree: {layers_deep}")
@@ -371,6 +379,7 @@ class Battlesnake:
         h = (available_space * space_weight) + \
             (peripheral_weight * available_peripheral) + \
             (enemy_left_weight / (opponents_left + 1)) + \
+            (threat_proximity_weight * num_threats) + \
             (food_weight / (dist_food + 1)) + \
             (layers_deep * depth_weight) + \
             (self.my_length * length_weight) + \
