@@ -132,7 +132,19 @@ class Battlesnake:
         """Return [x1, x2] and [y1, y2] of a portion of the board that functions as 'peripheral vision' for the snake"""
         # Our peripheral field of vision when scanning for moves
         head = self.all_snakes_dict[snake_id]["head"].copy()
+        neck = self.all_snakes_dict[snake_id]["neck"].copy()
         dim = self.peripheral_dim
+
+        if direction == "auto":  # Gotta figure out the direction ourselves
+            if neck["x"] < head["x"]:
+                direction = "right"
+            elif neck["x"] > head["x"]:
+                direction = "left"
+            elif neck["y"] < head["y"]:
+                direction = "up"
+            elif neck["y"] > head["y"]:
+                direction = "down"
+            head = neck.copy()  # Roll back our head location
 
         if direction == "right":  # Neck is left of head, don't move left
             peripheral_box_x = head["x"] + 1, min(head["x"] + dim + 1, self.board_width)
@@ -141,7 +153,7 @@ class Battlesnake:
         elif direction == "left":  # Neck is right of head, don't move right
             peripheral_box_x = max(head["x"] - dim, 0), head["x"]
             peripheral_box_y = max(head["y"] - dim, 0), min(head["y"] + dim + 1, self.board_height)
-            head["x"], head["y"] = max(head["x"] - peripheral_box_x[0] - 1, 0), head["y"] - peripheral_box_y[0] - 1
+            head["x"], head["y"] = max(head["x"] - peripheral_box_x[0] - 1, 0), head["y"] - peripheral_box_y[0]
         elif direction == "up":  # Neck is below head, don't move down
             peripheral_box_x = max(head["x"] - dim, 0), min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = head["y"] + 1, min(head["y"] + dim + 1, self.board_height)
@@ -150,7 +162,7 @@ class Battlesnake:
             peripheral_box_x = max(head["x"] - dim, 0), min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = max(head["y"] - dim, 0), head["y"]
             head["x"], head["y"] = head["x"] - peripheral_box_x[0], max(head["y"] - peripheral_box_y[0] - 1, 0)
-        else:
+        else:  # Centred around our snake's head
             peripheral_box_x = max(head["x"] - dim, 0), min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = max(head["y"] - dim, 0), min(head["y"] + dim + 1, self.board_height)
             head["x"], head["y"] = head["x"] - peripheral_box_x[0], head["y"] - peripheral_box_y[0]
@@ -231,7 +243,7 @@ class Battlesnake:
 
         logging.info(f"Identified obvious moves {list(possible_moves)} in "
                      f"{round((time.time_ns() - clock_in) / 1000000, 3)} ms")
-        return list(possible_moves)
+        return possible_moves
 
     def minimax_move(self):
         """Let's run the minimax algorithm with alpha-beta pruning!"""
@@ -306,6 +318,9 @@ class Battlesnake:
         # Determine available space via flood fill
         available_space = self.flood_fill(self.my_id, risk_averse=True)
 
+        # Estimate the space we have in our peripheral vision
+        available_peripheral = self.flood_fill(self.my_id, confined_area="auto")
+
         # # We want to minimise available space for our opponents via flood fill (but only when there are fewer snakes in
         # # our vicinity)
         # if len(self.opponents) <= 4 \
@@ -330,6 +345,7 @@ class Battlesnake:
 
         # Heuristic formula
         space_weight = 0.5
+        peripheral_weight = 1
         enemy_left_weight = 1000
         enemy_restriction_weight = 75 if len(self.opponents) > 2 else 200
         food_weight = 75
@@ -339,6 +355,7 @@ class Battlesnake:
         aggression_weight = 250 if dist_to_enemy > 0 else 0
 
         logging.info(f"Available space: {available_space}")
+        logging.info(f"Available peripheral: {available_peripheral}")
         logging.info(f"Enemies left: {opponents_left}")
         logging.info(f"Distance to nearest enemy: {dist_to_enemy}")
         logging.info(f"Distance to nearest food: {dist_food}")
@@ -348,6 +365,7 @@ class Battlesnake:
         logging.info(f"Length: {self.my_length}")
 
         h = (available_space * space_weight) + \
+            (peripheral_weight * available_peripheral) + \
             (enemy_left_weight / (opponents_left + 1)) + \
             (food_weight / (dist_food + 1)) + \
             (layers_deep * depth_weight) + \
@@ -532,8 +550,11 @@ class Battlesnake:
             clock_in = time.time_ns()
             possible_moves = self.get_obvious_moves(  # If > 6 opponents, we'll do depth = 2 and risk_averse = True
                 self.my_id, risk_averse=(len(self.opponents) > 6), sort_by_peripheral=True)
+            if len(possible_moves) == 0 and len(self.opponents) > 6:  # Try again, but do any risky move
+                possible_moves = self.get_obvious_moves(self.my_id, risk_averse=False, sort_by_peripheral=True)
             if len(possible_moves) == 0:  # RIP
                 possible_moves = ["down"]
+
             best_val, best_move = -np.inf, None
             for num, move in enumerate(possible_moves):
                 SIMULATED_BOARD_INSTANCE = self.simulate_move(move, self.my_id)
