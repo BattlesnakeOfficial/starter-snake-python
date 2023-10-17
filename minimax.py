@@ -153,7 +153,7 @@ class Battlesnake:
         if direction == "right":  # Neck is left of head, don't move left
             peripheral_box_x = head["x"] + 1, min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = max(head["y"] - dim, 0), min(head["y"] + dim + 1, self.board_height)
-            head["x"], head["y"] = 0, head["y"] - peripheral_box_y[0] - 1
+            head["x"], head["y"] = 0, head["y"] - peripheral_box_y[0]
         elif direction == "left":  # Neck is right of head, don't move right
             peripheral_box_x = max(head["x"] - dim, 0), head["x"]
             peripheral_box_y = max(head["y"] - dim, 0), min(head["y"] + dim + 1, self.board_height)
@@ -348,22 +348,25 @@ class Battlesnake:
 
         # Determine the closest safe distance to food
         dist_food = self.dist_to_nearest_food()
+        health_flag = True if self.my_health < 40 else False
+        shortest_flag = True if sum([self.my_length <= snake["length"] for snake in self.opponents.values()]) >= 2 else False
+
 
         # Are we in the centre of the board? Maximise control
         centre = range(self.board_width // 2 - 2, self.board_width // 2 + 3)
         in_centre = (self.my_head["x"] in centre and self.my_head["x"] in centre) and (len(self.opponents) <= 2)
 
         # Heuristic formula
-        space_weight = 0.5
-        peripheral_weight = 1
+        space_weight = 1
+        peripheral_weight = 2
         enemy_left_weight = 1000
         enemy_restriction_weight = 75 if len(self.opponents) > 2 else 200
-        food_weight = 75
+        food_weight = 250 if health_flag else 175 if shortest_flag else 75
         depth_weight = 25
         length_weight = 300
         centre_control_weight = 10
         aggression_weight = 250 if dist_to_enemy > 0 else 0
-        threat_proximity_weight = -100
+        threat_proximity_weight = -45
 
         logging.info(f"Available space: {available_space}")
         logging.info(f"Available peripheral: {available_peripheral}")
