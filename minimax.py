@@ -585,9 +585,6 @@ class Battlesnake:
             if len(possible_moves) == 0:  # RIP
                 possible_moves = ["down"]
 
-            if TEMP_TAG and len(possible_moves) > 2:
-                possible_moves = possible_moves[:2]
-
             best_val, best_move = -np.inf, None
             for num, move in enumerate(possible_moves):
                 SIMULATED_BOARD_INSTANCE = self.simulate_move(move, self.my_id)
@@ -596,7 +593,7 @@ class Battlesnake:
                 logging.info(f"Running minimax for OUR SNAKE moving {move}")
                 SIMULATED_BOARD_INSTANCE.display_board()
 
-                board_string = SIMULATED_BOARD_INSTANCE.display_board(return_string=True)
+                # board_string = SIMULATED_BOARD_INSTANCE.display_board(return_string=True)
                 # global tree_tracker
                 # tree_tracker[depth].append(board_string)
 
@@ -668,9 +665,9 @@ class Battlesnake:
             if len(all_opp_combos) > 2 and len(self.opponents) > 2:
                 logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
                 all_opp_combos = all_opp_combos[:2]
-            elif len(all_opp_combos) > 2:
+            elif len(all_opp_combos) > 3:
                 logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
-                all_opp_combos = all_opp_combos[:2]
+                all_opp_combos = all_opp_combos[:3]
 
             possible_movesets = []
             possible_sims = []
