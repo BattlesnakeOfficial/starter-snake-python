@@ -8,7 +8,7 @@ import time
 from collections import Counter
 
 logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
-logging.disable(logging.INFO)
+# logging.disable(logging.INFO)
 
 # tree_tracker = {4: [], 3: [], 2: [], 1: [], 0: []}
 
@@ -544,7 +544,7 @@ class Battlesnake:
         # logging.info(f"Done with simulation in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
         return new_game
 
-    def minimax(self, depth, alpha, beta, maximising_snake):
+    def minimax(self, depth, alpha, beta, maximising_snake, TEMP_TAG=False):
         """Implement the minimax algorithm with alpha-beta pruning
 
         :param depth:
@@ -585,6 +585,9 @@ class Battlesnake:
                 possible_moves = self.get_obvious_moves(self.my_id, risk_averse=False, sort_by_peripheral=True)
             if len(possible_moves) == 0:  # RIP
                 possible_moves = ["down"]
+
+            if TEMP_TAG:
+                possible_moves = possible_moves[:2]
 
             best_val, best_move = -np.inf, None
             for num, move in enumerate(possible_moves):
@@ -693,7 +696,7 @@ class Battlesnake:
                 logging.info(f"Running minimax for OPPONENT SNAKES moving {possible_movesets[num]}")
                 SIMULATED_BOARD_INSTANCE.display_board()
                 clock_in2 = time.time_ns()
-                node_val, node_move = SIMULATED_BOARD_INSTANCE.minimax(depth - 1, alpha, beta, True)
+                node_val, node_move = SIMULATED_BOARD_INSTANCE.minimax(depth - 1, alpha, beta, True, TEMP_TAG=True)
 
                 logging.info("=" * 50)
                 logging.info(f"BACK AT DEPTH = {depth} OPPONENT SNAKES")
