@@ -7,7 +7,7 @@ import time
 from collections import Counter
 
 logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
-# logging.disable(logging.INFO)
+logging.disable(logging.INFO)
 
 # tree_tracker = {4: [], 3: [], 2: [], 1: [], 0: []}
 
