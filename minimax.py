@@ -390,8 +390,8 @@ class Battlesnake:
         logging.info(f"In centre: {in_centre}")
         logging.info(f"Length: {self.my_length}")
 
-        # (available_space * space_weight) + \
-        h = (peripheral_weight * available_peripheral) + \
+        h = (available_space * space_weight) + \
+            (peripheral_weight * available_peripheral) + \
             (enemy_left_weight / (opponents_left + 1)) + \
             (threat_proximity_weight * num_threats) + \
             (food_weight / (dist_food + 1)) + \
