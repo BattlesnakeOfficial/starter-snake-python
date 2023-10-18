@@ -332,6 +332,10 @@ class Battlesnake:
 
         # Determine available space via flood fill
         available_space = self.flood_fill(self.my_id, risk_averse=True)
+        if available_space < 4:
+            space_penalty = -200
+        else:
+            space_penalty = 0
 
         # Estimate the space we have in our peripheral vision
         available_peripheral = self.flood_fill(self.my_id, confined_area="auto")
@@ -390,7 +394,7 @@ class Battlesnake:
         logging.info(f"In centre: {in_centre}")
         logging.info(f"Length: {self.my_length}")
 
-        h = (available_space * space_weight) + \
+        h = (available_space * space_weight) + space_penalty + \
             (peripheral_weight * available_peripheral) + \
             (enemy_left_weight / (opponents_left + 1)) + \
             (threat_proximity_weight * num_threats) + \
