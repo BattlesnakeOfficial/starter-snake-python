@@ -585,7 +585,7 @@ class Battlesnake:
             if len(possible_moves) == 0:  # RIP
                 possible_moves = ["down"]
 
-            if TEMP_TAG:
+            if TEMP_TAG and len(possible_moves) > 2:
                 possible_moves = possible_moves[:2]
 
             best_val, best_move = -np.inf, None
@@ -668,7 +668,7 @@ class Battlesnake:
             if len(all_opp_combos) > 2 and len(self.opponents) > 2:
                 logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
                 all_opp_combos = all_opp_combos[:2]
-            elif len(all_opp_combos) > 3:
+            elif len(all_opp_combos) > 2:
                 logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
                 all_opp_combos = all_opp_combos[:2]
 
