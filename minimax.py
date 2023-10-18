@@ -2,12 +2,15 @@ import copy
 import itertools
 import logging
 import numpy as np
+import pandas as pd
 import sys
 import time
 from collections import Counter
 
 logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
-# logging.disable(logging.INFO)
+logging.disable(logging.INFO)
+
+# tree_tracker = {4: [], 3: [], 2: [], 1: [], 0: []}
 
 
 class Battlesnake:
@@ -102,7 +105,7 @@ class Battlesnake:
             for num, snake_sq in enumerate(snake_body):
                 self.board[snake_sq["x"], snake_sq["y"]] = "$" if num == 0 else "X"
 
-    def display_board(self, board=None):
+    def display_board(self, board=None, return_string=False):
         """Print out a nicely formatted board for convenient debugging"""
         render_board = board if board is not None else self.board
         for j in range(1, len(render_board[0]) + 1):
@@ -110,6 +113,15 @@ class Battlesnake:
             for i in range(0, len(render_board)):
                 display_row += f"{render_board[i][-j]}| "
             logging.info(display_row)
+
+        if return_string:
+            board_str = ""
+            for j in range(1, len(render_board[0]) + 1):
+                display_row = ""
+                for i in range(0, len(render_board)):
+                    display_row += f"{render_board[i][-j]}| "
+                board_str += display_row + "\n"
+            return board_str
 
     @staticmethod
     def look_ahead(head, move):
@@ -349,7 +361,7 @@ class Battlesnake:
         # Determine the closest safe distance to food
         dist_food = self.dist_to_nearest_food()
         health_flag = True if self.my_health < 40 else False
-        shortest_flag = True if sum([self.my_length <= snake["length"] for snake in self.opponents.values()]) >= 2 else False
+        shortest_flag = True if sum([self.my_length <= snake["length"] for snake in self.opponents.values()]) >= min([2, len(self.opponents)]) else False
 
 
         # Are we in the centre of the board? Maximise control
@@ -529,7 +541,7 @@ class Battlesnake:
                             new_game.all_snakes_dict.pop(rm_id)
 
         new_game.update_board()
-        logging.info(f"Done with simulation in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
+        # logging.info(f"Done with simulation in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
         return new_game
 
     def minimax(self, depth, alpha, beta, maximising_snake):
@@ -581,6 +593,11 @@ class Battlesnake:
                 logging.info(f"{len(possible_moves)} CHILD NODES: VISITING {num + 1} OF {len(possible_moves)}")
                 logging.info(f"Running minimax for OUR SNAKE moving {move}")
                 SIMULATED_BOARD_INSTANCE.display_board()
+
+                board_string = SIMULATED_BOARD_INSTANCE.display_board(return_string=True)
+                # global tree_tracker
+                # tree_tracker[depth].append(board_string)
+
                 clock_in2 = time.time_ns()
                 node_val, node_move = SIMULATED_BOARD_INSTANCE.minimax(depth - 1, alpha, beta, False)
 
@@ -650,8 +667,8 @@ class Battlesnake:
                 logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
                 all_opp_combos = all_opp_combos[:2]
             elif len(all_opp_combos) > 3:
-                logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 3")
-                all_opp_combos = all_opp_combos[:3]
+                logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
+                all_opp_combos = all_opp_combos[:2]
 
             possible_movesets = []
             possible_sims = []
