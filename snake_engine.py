@@ -2,22 +2,22 @@ import copy
 import itertools
 import logging
 import os
+import networkx as nx
 import numpy as np
 import sys
 import time
 from collections import Counter
+from networkx_tree import hierarchy_pos
+from matplotlib import colors, image as mpimg, pyplot as plt
 
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
-# If we're not running locally, then disable any logging
-running_locally = "HDPC6511" in os.popen("hostname").read()
-if not running_locally:
-    logging.disable(logging.INFO)
-
-# tree_tracker = {4: [], 3: [], 2: [], 1: [], 0: []}
+tree_tracker = {4: [], 3: [], 2: [], 1: [], 0: []}
+tree_edges = []
+tree_nodes = []
+tree_node_counter = 1
 
 
 class Battlesnake:
-    def __init__(self, game_state):
+    def __init__(self, game_state, debugging=False):
         # General game data
         self.turn = game_state["turn"]
         self.board_width = game_state["board"]["width"]
@@ -72,6 +72,10 @@ class Battlesnake:
         self.update_board()
         self.minimax_search_depth = 4
         self.peripheral_dim = 3
+        self.debugging = debugging
+        logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
+        if not self.debugging:
+            logging.disable(logging.INFO)
 
     def __copy__(self):
         """Making a deep copy of the game_state dictionary takes too much time, so let's manually build it from
@@ -101,7 +105,7 @@ class Battlesnake:
             "length": self.my_length
         }
         new_game_state = {"turn": self.turn, "board": board, "you": you}
-        return Battlesnake(new_game_state)
+        return Battlesnake(new_game_state, debugging=self.debugging)
 
     def update_board(self):
         """Fill in the board with the locations of all snakes. Our snake will be displayed like "oo£" where "o"
@@ -276,7 +280,7 @@ class Battlesnake:
                      f"{round((time.time_ns() - clock_in) / 1000000, 3)} ms")
         return possible_moves
 
-    def minimax_move(self):
+    def optimal_move(self):
         """Let's run the minimax algorithm with alpha-beta pruning!"""
         # Compute the best score of each move using the minimax algorithm with alpha-beta pruning
         if self.turn <= 4:  # Our first 4 moves are super self-explanatory tbh
@@ -288,7 +292,26 @@ class Battlesnake:
         else:
             search_depth = self.minimax_search_depth
 
-        _, best_move = self.minimax(depth=search_depth, alpha=-np.inf, beta=np.inf, maximising_snake=True)
+        tree_tracker[search_depth].append(0)
+        _, best_move, _ = self.minimax(depth=search_depth, alpha=-np.inf, beta=np.inf, maximising_snake=True)
+
+        # Output a visualisation of the minimax decision tree for debugging
+        if self.debugging:
+            G = nx.Graph()
+            node_labels = {}
+            for node in tree_nodes:
+                G.add_node(node[0])
+                node_labels[node[0]] = node[1]
+            G.add_edges_from(tree_edges)
+            pos = hierarchy_pos(G, 0)
+            edge_colours = [G[u][v]["colour"] for u, v in G.edges()]
+            edge_widths = [G[u][v]["width"] for u, v in G.edges()]
+
+            fig = plt.figure(figsize=(50, 25))
+            nx.draw(G, pos=pos, node_color=["white"] * G.number_of_nodes(), edge_color=edge_colours, width=edge_widths,
+                    labels=node_labels, with_labels=True, node_size=40000, font_size=20)
+            plt.savefig("minimax_tree.png", bbox_inches="tight", pad_inches=0)
+
         return best_move
 
     def is_game_over(self, for_snake_id=None, depth=None):
@@ -354,14 +377,22 @@ class Battlesnake:
         else:
             space_penalty = 0
 
+        # ARE WE TRAPPED???
+        trap_space = None
+        if available_space <= 10:
+            trap_space = available_space - self.flood_fill(self.my_id, estimate_moves=available_space)
+        # Shoot we're trapped
+        if trap_space == 0:
+            space_penalty = -1e7
+
         # Estimate the space we have in our peripheral vision
         available_peripheral = self.flood_fill(self.my_id, confined_area="auto")
 
         # # We want to minimise available space for our opponents via flood fill (but only when there are fewer snakes in
         # # our vicinity)
-        # if len(self.opponents) <= 4 \
-        #         and sum([dist < (self.board_width // 2) for dist in self.dist_from_enemies()]) <= 4 \
-        #         and len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
+        # if len(self.opponents) <= 3:
+        #         # and sum([dist < (self.board_width // 2) for dist in self.dist_from_enemies()]) <= 3 \
+        #         # and len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
         #     self.peripheral_dim = 4
         #     available_enemy_space = self.flood_fill(self.closest_enemy(), confined_area="General")
         # else:
@@ -420,11 +451,18 @@ class Battlesnake:
             (self.my_length * length_weight) + \
             in_centre * centre_control_weight + \
             aggression_weight / (dist_to_enemy + 1)
-            # (enemy_restriction_weight / (available_enemy_space + 1)) + \
+# (enemy_restriction_weight / (available_enemy_space + 1)) + \
 
-        return h
+        return h, {"Heur": round(h, 2),
+                   "Space": available_space,
+                   "Penalty": space_penalty,
+                   "Periph": available_peripheral,
+                   "Food Dist": dist_food,
+                   "Enemy Dist": dist_to_enemy,
+                   "Threats": num_threats,
+                   "Length": self.my_length}
 
-    def flood_fill(self, snake_id, confined_area=None, risk_averse=False):
+    def flood_fill(self, snake_id, confined_area=None, risk_averse=False, estimate_moves=0):
         """Recursive function to get the total area of the current fill selection. Basically, count how many £ symbols
         we can fill while avoiding any $, O, and X symbols (obstacles). Confined_area tells the function to do flood
         fill only on one side of the snake (should be either left/right/up/down)."""
@@ -433,6 +471,12 @@ class Battlesnake:
         # Assume we're doing flood fill for our snake
         if snake_id == self.my_id:
             board = copy.deepcopy(self.board)
+            # Let's simulate entrapment
+            if estimate_moves > 0:
+                for snake in self.all_snakes_dict.values():
+                    tail_removed = snake["body"][-estimate_moves:]
+                    for remove in tail_removed:
+                        board[remove["x"]][remove["y"]] = " "
             # Let's try to avoid any squares that our enemy can go to
             if risk_averse:
                 threats = [other["head"] for other in self.opponents.values() if other["length"] >= self.my_length]
@@ -563,6 +607,30 @@ class Battlesnake:
         # logging.info(f"Done with simulation in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
         return new_game
 
+    @staticmethod
+    def update_tree_visualisation(depth, add_edges=False, add_nodes=False, node_data=None, insert_index=None):
+        global tree_node_counter
+        global tree_tracker
+        if add_edges:
+            # Add the node that we'll be creating the edge to
+            tree_tracker[depth].append(tree_node_counter)
+            # Tuple of (node_1, node_2, node_attributes) where the edge is created between node_1 and node_2
+            global tree_edges
+            tree_edges.append((tree_tracker[depth + 1][-1], tree_tracker[depth][-1], {"colour": "k", "width": 1}))
+            # Now we're going to be on the next node
+            tree_node_counter += 1
+            return len(tree_edges) - 1
+
+        if add_nodes:
+            global tree_nodes
+            if insert_index is not None:
+                node_move = tree_nodes[insert_index][1]
+                formatted_dict = str(node_data).replace(", ", "\n").replace("{", "").replace("}", "").replace("'", "")
+                tree_nodes[insert_index] = (tree_tracker[depth][-1], node_move + "\n" + formatted_dict)
+            else:
+                tree_nodes.append((tree_tracker[depth][-1], str(node_data).replace("'", "")))
+            return len(tree_nodes) - 1
+
     def minimax(self, depth, alpha, beta, maximising_snake):
         """Implement the minimax algorithm with alpha-beta pruning
 
@@ -577,19 +645,21 @@ class Battlesnake:
             game_over, still_alive = self.is_game_over(for_snake_id=self.my_id, depth=depth)
             if not still_alive:
                 logging.info("Our snake died...")
-                return -1e6 + (self.minimax_search_depth - depth), None  # Reward slower deaths
+                heuristic = -1e6 + (self.minimax_search_depth - depth)  # Reward slower deaths
+                return heuristic, None, {"Heur": heuristic}
             # Otherwise, if our snake is ALIVE and is the winner :)
             elif game_over:
                 logging.info("OUR SNAKE WON")
-                return 1e6 + depth, None  # Reward faster kills
+                heuristic = 1e6 + depth  # Reward faster kills
+                return heuristic, None, heuristic
 
         # At the bottom of the decision tree or if we won/lost the game
         if depth == 0:
             logging.info("=" * 50)
             logging.info(f"DEPTH = {depth}")
-            heuristic = self.heuristic(depth_number=depth)
+            heuristic, heuristic_data = self.heuristic(depth_number=depth)
             logging.info(f"Heuristic = {heuristic} at terminal node")
-            return heuristic, None
+            return heuristic, None, heuristic_data
 
         # Our snake's turn
         if maximising_snake:
@@ -606,16 +676,20 @@ class Battlesnake:
                 possible_moves = ["down"]
 
             best_val, best_move = -np.inf, None
+            best_node_data, best_edge = None, None
             for num, move in enumerate(possible_moves):
                 SIMULATED_BOARD_INSTANCE = self.simulate_move(move, self.my_id)
 
                 logging.info(f"{len(possible_moves)} CHILD NODES: VISITING {num + 1} OF {len(possible_moves)}")
                 logging.info(f"Running minimax for OUR SNAKE moving {move}")
-                if running_locally:
+                if self.debugging:
                     SIMULATED_BOARD_INSTANCE.display_board()
 
                 clock_in2 = time.time_ns()
-                node_val, node_move = SIMULATED_BOARD_INSTANCE.minimax(depth - 1, alpha, beta, False)
+                edge_added = self.update_tree_visualisation(add_edges=True, depth=depth - 1)
+                node_added = self.update_tree_visualisation(add_nodes=True, depth=depth - 1, node_data=move)
+                node_val, node_move, node_data = SIMULATED_BOARD_INSTANCE.minimax(depth - 1, alpha, beta, False)
+                self.update_tree_visualisation(add_nodes=True, depth=depth - 1, node_data=node_data, insert_index=node_added)
 
                 logging.info("=" * 50)
                 logging.info(f"BACK AT DEPTH = {depth} OUR SNAKE")
@@ -624,6 +698,7 @@ class Battlesnake:
                 # Update best score and best move
                 if np.argmax([best_val, node_val]) == 1:
                     best_move = move
+                    best_node_data, best_edge = node_data, edge_added
                 best_val = max(best_val, node_val)
                 old_alpha = alpha
                 alpha = max(alpha, best_val)
@@ -636,8 +711,11 @@ class Battlesnake:
                     logging.info(f"PRUNED!!! Alpha = {alpha} >= Beta = {beta}")
                     break
 
+            global tree_edges
+            tree_edges[best_edge][2]["colour"] = "r"
+            tree_edges[best_edge][2]["width"] = 4
             logging.info(f"FINISHED MINIMAX LAYER on our snake in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
-            return best_val, best_move
+            return best_val, best_move, best_node_data
 
         # Opponents' turns
         else:
@@ -703,13 +781,18 @@ class Battlesnake:
 
             clock_in = time.time_ns()
             best_val, best_move = np.inf, None
+            best_node_data, best_edge = None, None
             for num, SIMULATED_BOARD_INSTANCE in enumerate(possible_sims):
                 logging.info(f"{len(possible_sims)} CHILD NODES: VISITING {num + 1} OF {len(possible_sims)}")
                 logging.info(f"Running minimax for OPPONENT SNAKES moving {possible_movesets[num]}")
-                if running_locally:
+                if self.debugging:
                     SIMULATED_BOARD_INSTANCE.display_board()
                 clock_in2 = time.time_ns()
-                node_val, node_move = SIMULATED_BOARD_INSTANCE.minimax(depth - 1, alpha, beta, True)
+                edge_added = self.update_tree_visualisation(add_edges=True, depth=depth - 1)
+                node_added = self.update_tree_visualisation(add_nodes=True, depth=depth - 1, node_data=str(possible_movesets[num]))
+                node_val, node_move, node_data = SIMULATED_BOARD_INSTANCE.minimax(depth - 1, alpha, beta, True)
+                self.update_tree_visualisation(add_nodes=True, depth=depth - 1, node_data=node_data,
+                                               insert_index=node_added)
 
                 logging.info("=" * 50)
                 logging.info(f"BACK AT DEPTH = {depth} OPPONENT SNAKES")
@@ -718,6 +801,7 @@ class Battlesnake:
                 # Update best score and best move
                 if np.argmin([best_val, node_val]) == 1:
                     best_move = possible_movesets[num]
+                    best_node_data, best_edge = node_data, edge_added
                 best_val = min(best_val, node_val)
                 old_beta = beta
                 beta = min(beta, best_val)
@@ -730,8 +814,10 @@ class Battlesnake:
                     logging.info(f"PRUNED!!! Beta = {beta} <= Alpha = {alpha}")
                     break
 
+            tree_edges[best_edge][2]["colour"] = "r"
+            tree_edges[best_edge][2]["width"] = 4
             logging.info(f"FINISHED MINIMAX LAYER on opponents in {(time.time_ns() - clock_in) // 1000000} ms")
-            return best_val, best_move
+            return best_val, best_move, best_node_data
 
 #     def a_star_search(self, food_loc):
 #         """
