@@ -311,6 +311,8 @@ class Battlesnake:
             for node in tree_nodes:
                 G.add_node(node[0])
                 node_labels[node[0]] = node[1]
+            G.add_node(0)
+            node_labels[0] = self.display_board(return_string=True)
             G.add_edges_from(tree_edges)
             pos = hierarchy_pos(G, 0)
             edge_colours = [G[u][v]["colour"] for u, v in G.edges()]
@@ -365,7 +367,7 @@ class Battlesnake:
         return game_over, snake_still_alive
 
     def edge_kill_detection(self):
-        if 0 < self.my_head["x"] < self.board_width and 0 < self.my_head["y"] < self.board_height:
+        if 0 < self.my_head["x"] < self.board_width - 1 and 0 < self.my_head["y"] < self.board_height - 1:
             return False
 
         possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
@@ -822,18 +824,19 @@ class Battlesnake:
             else:
                 cutoff = 3
 
-            covered_ids = [list(opps_moves.keys())[0]]
-            all_opp_combos2 = []
-            while len(all_opp_combos2) < cutoff:
-                combo_counter = 1
-                for s_id, s in opps_moves.items():
-                    if s_id not in covered_ids:
-                        combo_counter = combo_counter * len(s)
-                index_getter = np.arange(len(covered_ids) - 1, len(all_opp_combos), combo_counter)
-                getter = [all_opp_combos[i] for i in index_getter]
-                all_opp_combos2.extend(getter)
+            if len(opps_moves) > 0:
+                covered_ids = [list(opps_moves.keys())[0]]
+                all_opp_combos2 = []
+                while len(all_opp_combos2) < cutoff:
+                    combo_counter = 1
+                    for s_id, s in opps_moves.items():
+                        if s_id not in covered_ids:
+                            combo_counter = combo_counter * len(s)
+                    index_getter = np.arange(len(covered_ids) - 1, len(all_opp_combos), combo_counter)
+                    getter = [all_opp_combos[i] for i in index_getter]
+                    all_opp_combos2.extend(getter)
 
-            all_opp_combos = all_opp_combos2[:cutoff]
+                all_opp_combos = all_opp_combos2[:cutoff]
 
             possible_movesets = []
             possible_sims = []
