@@ -1,6 +1,7 @@
 import copy
 import itertools
 import logging
+import operator
 import os
 import numpy as np
 import sys
@@ -464,7 +465,7 @@ class Battlesnake:
         dist_food = self.dist_to_nearest_food()
         health_flag = True if self.my_health < 40 else False
         shortest_flag = True if sum([self.my_length <= snake["length"] for snake in self.opponents.values()]) >= min([2, len(self.opponents)]) else False
-
+        longest_flag = True if sum([self.my_length > snake["length"] for snake in self.opponents.values()]) == len(self.opponents) else False
 
         # Are we in the centre of the board? Maximise control
         centre = range(self.board_width // 2 - 2, self.board_width // 2 + 3)
@@ -475,12 +476,12 @@ class Battlesnake:
         peripheral_weight = 2
         enemy_left_weight = 1000
         enemy_restriction_weight = 75 if len(self.opponents) > 2 else 200
-        food_weight = 250 if health_flag else 175 if shortest_flag else 75
+        food_weight = 250 if health_flag else 175 if shortest_flag else 25 if longest_flag else 50
         depth_weight = 25
         length_weight = 300
         centre_control_weight = 10
         aggression_weight = 250 if dist_to_enemy > 0 else 0
-        threat_proximity_weight = -45
+        threat_proximity_weight = -25
 
         logging.info(f"Available space: {available_space}")
         logging.info(f"Available peripheral: {available_peripheral}")
@@ -780,8 +781,8 @@ class Battlesnake:
                 search_within = self.board_width * self.board_height
             elif len(self.opponents) <= 3:
                 search_within = self.board_width
-            elif len(self.opponents) < 6:
-                search_within = self.board_width // 2
+            elif len(self.opponents) <= 5:
+                search_within = self.board_width // 2 + 1
             else:
                 search_within = self.board_width // 2
 
@@ -794,12 +795,16 @@ class Battlesnake:
                     opp_move = ["down"]
 
                 # Save time by only searching for snakes within close range
-                if self.manhattan_distance(self.my_head, opp_snake["head"]) <= search_within:
-                    opps_moves[opp_id] = opp_move  # ALL OF THEM
+                dist_opp_to_us = self.manhattan_distance(self.my_head, opp_snake["head"])
+                if dist_opp_to_us <= search_within:
+                    opps_moves[opp_id] = opp_move  # Put all of their moves
                     opps_nearby += 1
                 else:
                     if len(self.opponents) <= 5:
                         opps_moves[opp_id] = [opp_move[0]]
+
+            sorted_opps_by_dists = sorted(self.opponents.keys(), key=lambda opp_id: self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]))
+            opps_moves = dict(sorted(opps_moves.items(), key=lambda pair: sorted_opps_by_dists.index(pair[0])))
 
             logging.info(f"Found {opps_nearby} of {len(self.opponents)} OPPONENT SNAKES within {search_within} "
                          f"squares of us in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
@@ -810,10 +815,25 @@ class Battlesnake:
             all_opp_combos = list(itertools.product(*opps_moves.values()))
             if len(all_opp_combos) > 2 and len(self.opponents) > 2:
                 logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
-                all_opp_combos = all_opp_combos[:2]
+                cutoff = 3
             elif len(all_opp_combos) > 3:
-                logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 2")
-                all_opp_combos = all_opp_combos[:3]
+                logging.info(f"FOUND {len(all_opp_combos)} BOARDS BUT CUTTING DOWN TO 3")
+                cutoff = 3
+            else:
+                cutoff = 3
+
+            covered_ids = [list(opps_moves.keys())[0]]
+            all_opp_combos2 = []
+            while len(all_opp_combos2) < cutoff:
+                combo_counter = 1
+                for s_id, s in opps_moves.items():
+                    if s_id not in covered_ids:
+                        combo_counter = combo_counter * len(s)
+                index_getter = np.arange(len(covered_ids) - 1, len(all_opp_combos), combo_counter)
+                getter = [all_opp_combos[i] for i in index_getter]
+                all_opp_combos2.extend(getter)
+
+            all_opp_combos = all_opp_combos2[:cutoff]
 
             possible_movesets = []
             possible_sims = []
