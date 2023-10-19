@@ -7,8 +7,7 @@
 #
 
 import typing
-
-from minimax import Battlesnake
+from snake_engine import Battlesnake
 
 
 def info() -> typing.Dict:
@@ -45,7 +44,6 @@ def move(game_state: typing.Dict) -> typing.Dict:
     See https://docs.battlesnake.com/api/example-move for available data
     """
     game = Battlesnake(game_state)
-    # Find the safe moves from current position
     optimal_move = game.minimax_move()
     print(f"MOVE {game_state['turn']}: {optimal_move}")
     return {"move": optimal_move}
