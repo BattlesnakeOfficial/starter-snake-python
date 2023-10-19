@@ -2,7 +2,6 @@ import copy
 import itertools
 import logging
 import os
-import networkx as nx
 import numpy as np
 import sys
 import time
@@ -297,6 +296,7 @@ class Battlesnake:
 
         # Output a visualisation of the minimax decision tree for debugging
         if self.debugging:
+            import networkx as nx
             G = nx.Graph()
             node_labels = {}
             for node in tree_nodes:
