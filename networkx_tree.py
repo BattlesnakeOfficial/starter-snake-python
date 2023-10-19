@@ -1,10 +1,8 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import networkx as nx
 import random
 
 
-def hierarchy_pos(G, root=None, width=25., vert_gap=0.1, vert_loc=0, leaf_vs_root_factor=1):
+def hierarchy_pos(G, root=None, width=25., vert_gap=0.025, vert_loc=0, leaf_vs_root_factor=1):
     '''
     If the graph is a tree this will return the positions to plot this in a
     hierarchical layout.
@@ -26,7 +24,7 @@ def hierarchy_pos(G, root=None, width=25., vert_gap=0.1, vert_loc=0, leaf_vs_roo
       Based on this, leaf nodes at higher levels get the same space as leaf
       nodes very deep in the tree.
 
-    We use use both of these approaches simultaneously with ``leaf_vs_root_factor``
+    We use both of these approaches simultaneously with ``leaf_vs_root_factor``
     determining how much of the horizontal space is based on the bottom up
     or top down approaches.  ``0`` gives pure bottom up, while 1 gives pure top
     down.
@@ -125,36 +123,3 @@ def hierarchy_pos(G, root=None, width=25., vert_gap=0.1, vert_loc=0, leaf_vs_roo
     for node in pos:
         pos[node] = (pos[node][0] * width / xmax, pos[node][1])
     return pos
-
-
-# G = nx.Graph()
-# img=mpimg.imread("testgrid.png")
-# G.add_node(4,image=img)
-# G.add_node("1",image=img)
-# G.add_node(2,image=img)
-# G.add_node(3,image=img)
-# fig=plt.figure(figsize=(12,3))
-# ax=plt.subplot(111)
-# G.add_edges_from([("1",2), ("1",3), ("1",4)])
-# pos = hierarchy_pos(G, "1")
-#
-# nx.draw(G, pos=pos, node_color=["white"] * G.number_of_nodes(), with_labels=True)
-# #
-# # x,y=pos[5]
-# # print(x, y)
-# # plt.text(x,y+0.05,s='some text', bbox=dict(facecolor='red', alpha=0.5),horizontalalignment='center')
-#
-# trans=ax.transData.transform
-# trans2=fig.transFigure.inverted().transform
-#
-# piesize=0.4 # this is the image size
-# p2=piesize/2.0
-# for n in G:
-#     xx,yy=trans(pos[n]) # figure coordinates
-#     xa,ya=trans2((xx,yy)) # axes coordinates
-#     a = plt.axes([xa-p2,ya-p2, piesize, piesize])
-#     a.set_aspect('equal')
-#     a.imshow(G.nodes[n]['image'])
-#     a.axis('off')
-# ax.axis('off')
-# plt.show()

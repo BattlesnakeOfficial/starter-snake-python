@@ -87,7 +87,7 @@ class Battlesnake:
                 "body": snake["body"].copy(),
                 "length": snake["length"],
                 "health": snake["health"],
-                "food_eaten": snake["food_eaten"]
+                "food_eaten": snake["food_eaten"] if "food_eaten" in snake.keys() else []
             })
         board = {
             "height": self.board_height,
@@ -282,7 +282,7 @@ class Battlesnake:
     def optimal_move(self):
         """Let's run the minimax algorithm with alpha-beta pruning!"""
         # Compute the best score of each move using the minimax algorithm with alpha-beta pruning
-        if self.turn <= 4:  # Our first 4 moves are super self-explanatory tbh
+        if self.turn < 3:  # Our first 3 moves are super self-explanatory tbh
             search_depth = 1
         elif len(self.opponents) > 6:
             search_depth = 2  # TODO should be risk-averse
@@ -592,7 +592,7 @@ class Battlesnake:
                 lengths = overlapping_snakes[:, 1].astype(int)
                 # Special cases where the snake committed suicide and also killed our snake => don't remove
                 if not (self.my_id in overlapping_snakes[:, 0]
-                        and np.count_nonzero(lengths == self.my_length) > 1):
+                        and np.count_nonzero(lengths == new_game.my_length) > 1):
                     indices_largest_snakes = np.argwhere(lengths == lengths.max()).flatten().tolist()
                     if len(indices_largest_snakes) > 1:
                         winner_id = None
@@ -732,7 +732,7 @@ class Battlesnake:
             elif len(self.opponents) < 6:
                 search_within = self.board_width // 2
             else:
-                search_within = self.board_width // 2 - 1
+                search_within = self.board_width // 2
 
             # Grab possible moves for all opponent snakes
             opps_nearby = 0  # Counter for opponents in our vicinity
@@ -743,7 +743,7 @@ class Battlesnake:
                     opp_move = ["down"]
 
                 # Save time by only searching for snakes within close range
-                if self.manhattan_distance(self.my_head, opp_snake["head"]) < search_within:
+                if self.manhattan_distance(self.my_head, opp_snake["head"]) <= search_within:
                     opps_moves[opp_id] = opp_move  # ALL OF THEM
                     opps_nearby += 1
                 else:
