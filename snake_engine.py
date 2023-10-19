@@ -157,6 +157,21 @@ class Battlesnake:
         end = (end["x"], end["y"])
         return sum(abs(value1 - value2) for value1, value2 in zip(start, end))
 
+    def our_direction(self, snake_id):
+        head = self.all_snakes_dict[snake_id]["head"]
+        neck = self.all_snakes_dict[snake_id]["neck"]
+        if neck["x"] < head["x"]:
+            direction = "right"
+        elif neck["x"] > head["x"]:
+            direction = "left"
+        elif neck["y"] < head["y"]:
+            direction = "up"
+        elif neck["y"] > head["y"]:
+            direction = "down"
+        else:
+            direction = None
+        return direction
+
     def peripheral_vision(self, snake_id, direction):
         """Return [x1, x2] and [y1, y2] of a portion of the board that functions as 'peripheral vision' for the snake"""
         # Our peripheral field of vision when scanning for moves
@@ -165,14 +180,7 @@ class Battlesnake:
         dim = self.peripheral_dim
 
         if direction == "auto":  # Got to figure out the direction ourselves
-            if neck["x"] < head["x"]:
-                direction = "right"
-            elif neck["x"] > head["x"]:
-                direction = "left"
-            elif neck["y"] < head["y"]:
-                direction = "up"
-            elif neck["y"] > head["y"]:
-                direction = "down"
+            direction = self.our_direction(snake_id)
             head = neck.copy()  # Roll back our head location
 
         if direction == "right":  # Neck is left of head, don't move left
@@ -355,6 +363,44 @@ class Battlesnake:
 
         return game_over, snake_still_alive
 
+    def edge_kill_detection(self):
+        if 0 < self.my_head["x"] < self.board_width and 0 < self.my_head["y"] < self.board_height:
+            return False
+
+        possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
+        direction = self.our_direction(self.my_id)
+        if self.my_head["x"] == 0:
+            if "right" not in possible_moves:
+                suspect = [opp_id for opp_id, opp in self.opponents.items()
+                           if opp["head"]["x"] == self.my_head["x"] + 1 and (
+                                   (direction == "up" and opp["head"]["y"] >= self.my_head["y"])
+                                   or (direction == "down" and opp["head"]["y"] <= self.my_head["y"])
+                           )]
+                if len(suspect) > 0:
+                    diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspect])
+                    gaps = [self.opponents[snake_id]["body"][-diff_y:] for snake_id in suspect]  # Would leave space for us to move to
+                    if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
+                        return True
+        if self.my_head["x"] == self.board_width - 1:
+            if "left" not in possible_moves:
+                suspect = [opp_id for opp_id, opp in self.opponents.items()
+                           if opp["head"]["x"] == self.my_head["x"] - 1 and (
+                                   (direction == "up" and opp["head"]["y"] >= self.my_head["y"])
+                                   or (direction == "down" and opp["head"]["y"] <= self.my_head["y"])
+                           )]
+                if len(suspect) > 0:
+                    diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspect])
+                    gaps = [self.opponents[snake_id]["body"][-diff_y:] for snake_id in suspect]  # Would leave space for us to move to
+                    if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
+                        return True
+        if self.my_head["y"] == 0:
+            if "up" not in possible_moves:
+                return True
+        if self.my_head["y"] == self.board_height - 1:
+            if "down" not in possible_moves:
+                return True
+        return False
+
     def heuristic(self, depth_number):
         """Let's figure out a way to evaluate the current board for our snake :)
 
@@ -383,7 +429,12 @@ class Battlesnake:
             trap_space = available_space - self.flood_fill(self.my_id, estimate_moves=available_space)
         # Shoot we're trapped
         if trap_space == 0:
-            space_penalty = -1e7
+            space_penalty = -1e7  # We'd prefer getting killed than getting trapped, so penalise this more
+
+        # ARE WE GOING TO GET EDGE-KILLED???
+        possible_edged = self.edge_kill_detection()
+        if possible_edged:
+            space_penalty = -1e5
 
         # Estimate the space we have in our peripheral vision
         available_peripheral = self.flood_fill(self.my_id, confined_area="auto")
