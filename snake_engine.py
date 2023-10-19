@@ -27,8 +27,7 @@ class Battlesnake:
         self.board = np.full((self.board_width, self.board_height), " ")
 
         # Our snake's data
-        self.my_id = game_state["you"]["id"] + "£££" + game_state["you"]["name"]
-        self.my_name = game_state["you"]["name"]
+        self.my_id = game_state["you"]["id"]
         self.my_head = game_state["you"]["head"]
         self.my_neck = game_state["you"]["body"][1]
         self.my_body = game_state["you"]["body"]
@@ -38,7 +37,7 @@ class Battlesnake:
         # Read snake positions as a dictionary of dictionaries (easier to access than list of dicts)
         self.all_snakes_dict = {}
         for snake in game_state["board"]["snakes"]:
-            self.all_snakes_dict[snake["id"] + "£££" + snake["name"]] = {
+            self.all_snakes_dict[snake["id"]] = {
                 "head": snake["head"],
                 "neck": snake["body"][1],
                 "body": snake["body"],
@@ -49,7 +48,7 @@ class Battlesnake:
             # Weird cases when running locally where the "you" snake is not our actual snake or is empty
             if ("name" in game_state["you"] and game_state["you"]["name"] != "Nightwing"
                     and snake["name"] == "Nightwing"):
-                self.my_id = snake["id"] + "£££" + snake["name"]
+                self.my_id = snake["id"]
                 self.my_head = snake["head"]
                 self.my_neck = snake["body"][1]
                 self.my_body = snake["body"]
@@ -80,8 +79,7 @@ class Battlesnake:
         all_snakes = []
         for snake_id, snake in self.all_snakes_dict.items():
             all_snakes.append({
-                "id": snake_id.split("£££")[0],
-                "name": snake_id.split("£££")[1],
+                "id": snake_id,
                 "head": snake["head"],
                 "body": snake["body"].copy(),
                 "length": snake["length"],
@@ -97,7 +95,6 @@ class Battlesnake:
         }
         you = {
             "id": self.my_id,
-            "name": self.my_name,
             "health": self.my_health,
             "body": self.my_body.copy(),
             "head": self.my_head,
