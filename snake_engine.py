@@ -1,8 +1,6 @@
 import copy
 import itertools
 import logging
-import operator
-import os
 import numpy as np
 import sys
 import time
