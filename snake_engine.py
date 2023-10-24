@@ -1,3 +1,4 @@
+from __future__ import annotations
 import copy
 import itertools
 import logging
@@ -5,9 +6,12 @@ import numpy as np
 import sys
 import time
 from collections import Counter
-from networkx_tree import hierarchy_pos
 from matplotlib import colors, image as mpimg, pyplot as plt
+from networkx_tree import hierarchy_pos
+from typing import Optional
 
+my_name = "Nightwing"
+# Use these global variables to add data for visualising the minimax decision tree
 tree_tracker = {4: [], 3: [], 2: [], 1: [], 0: []}
 tree_edges = []
 tree_nodes = []
@@ -15,7 +19,13 @@ tree_node_counter = 1
 
 
 class Battlesnake:
-    def __init__(self, game_state, debugging=False):
+    def __init__(self, game_state: dict, debugging: Optional[bool] = False):
+        """
+        Represents our Battlesnake in any given game state and includes all our decision-making methods
+
+        :param game_state: The move API request (https://docs.battlesnake.com/api/example-move#move-api-response)
+        :param debugging: Set to True if you want to view a log of what's happening behind the minimax algorithm
+        """
         # General game data
         self.turn = game_state["turn"]
         self.board_width = game_state["board"]["width"]
@@ -33,7 +43,7 @@ class Battlesnake:
         self.my_health = game_state["you"]["health"]
 
         # Read snake positions as a dictionary of dictionaries (easier to access than list of dicts)
-        self.all_snakes_dict = {}
+        self.all_snakes_dict: dict[str, dict] = {}
         for snake in game_state["board"]["snakes"]:
             self.all_snakes_dict[snake["id"]] = {
                 "head": snake["head"],
@@ -44,8 +54,7 @@ class Battlesnake:
                 "food_eaten": snake["food_eaten"] if "food_eaten" in snake.keys() else []
             }
             # Weird cases when running locally where the "you" snake is not our actual snake or is empty
-            if ("name" in game_state["you"] and game_state["you"]["name"] != "Nightwing"
-                    and snake["name"] == "Nightwing"):
+            if "name" in game_state["you"] and game_state["you"]["name"] != my_name and snake["name"] == my_name:
                 self.my_id = snake["id"]
                 self.my_head = snake["head"]
                 self.my_neck = snake["body"][1]
@@ -68,16 +77,20 @@ class Battlesnake:
 
         # Finish up our constructor
         self.update_board()
-        self.minimax_search_depth = 4
-        self.peripheral_dim = 3
+        self.minimax_search_depth = 4  # Depth for minimax algorithm
+        self.peripheral_size = 3  # Length of our snake's "peripheral vision"
         self.debugging = debugging
         logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
         if not self.debugging:
             logging.disable(logging.INFO)
 
-    def __copy__(self):
-        """Making a deep copy of the game_state dictionary takes too much time, so let's manually build it from
-        scratch. That way, we can modify a copied instance of the class without affecting the original instance."""
+    def __copy__(self) -> Battlesnake:
+        """
+        Making a deep copy of the game_state dictionary takes too much time, so let's manually build it from
+        scratch. That way, we can modify a copied instance of the class without affecting the original instance.
+
+        :return: A new instance of our Battlesnake class
+        """
         all_snakes = []
         for snake_id, snake in self.all_snakes_dict.items():
             all_snakes.append({
@@ -106,18 +119,38 @@ class Battlesnake:
         return Battlesnake(new_game_state, debugging=self.debugging)
 
     def update_board(self):
-        """Fill in the board with the locations of all snakes. Our snake will be displayed like "oo£" where "o"
-        represents the body and "£" represents the head. Opponents will be displayed as "xx£" in the same manner"""
+        """
+        Fill in the board with the locations of all snakes. Our snake will be displayed like "oo£" where "o"
+        represents the body and "£" represents the head. Opponents will be displayed as "xx£" in the same manner.
+        """
         self.board = np.full((self.board_width, self.board_height), " ")
         for num, my_square in enumerate(self.my_body):
-            self.board[my_square["x"], my_square["y"]] = "£" if num == 0 else "O"
+            self.board[my_square["x"], my_square["y"]] = "£" if num == 0 else "o"
         for opponent in self.opponents.values():
             snake_body = opponent["body"]
             for num, snake_sq in enumerate(snake_body):
-                self.board[snake_sq["x"], snake_sq["y"]] = "$" if num == 0 else "X"
+                self.board[snake_sq["x"], snake_sq["y"]] = "$" if num == 0 else "x"
 
-    def display_board(self, board=None, return_string=False):
-        """Print out a nicely formatted board for convenient debugging"""
+    def display_board(self, board: Optional[np.array] = None, return_string: Optional[bool] = False):
+        """
+        Print out a nicely formatted board for convenient debugging e.g.
+
+         |  |  |  |  |  |  |  |  |  |  |
+         |  |  |  |  |  |  |  |  |  |  |
+         |  |  |  |  | o| o| o| o| o| o|
+         |  |  |  |  | o| o|  |  |  | o|
+        x| x|  |  |  |  |  |  |  |  | o|
+        x|  |  |  |  |  |  |  |  |  | o|
+        x|  |  |  |  |  |  |  |  |  | o|
+        x|  |  |  | £| o| o| o| o| o| o|
+        x|  |  | $| x| x| x|  |  |  |  |
+        x| x| x| x| x| x| x|  |  |  |  |
+         |  |  |  |  |  |  |  |  |  |  |
+
+        :param board: Calling display_board() will print out the current board, but for debugging purposes, you can feed
+            in a different board variable to display
+        :param return_string: You can optionally choose to return the board as a string for you to print later
+        """
         render_board = board if board is not None else self.board
         for j in range(1, len(render_board[0]) + 1):
             display_row = ""
@@ -125,19 +158,29 @@ class Battlesnake:
                 display_row += f"{render_board[i][-j]}| "
             logging.info(display_row)
 
-        # Do you want to return the board as a string instead of printing it out?
+        # Return the board as a string instead of printing it out
         if return_string:
             board_str = ""
             for j in range(1, len(render_board[0]) + 1):
                 display_row = ""
                 for i in range(0, len(render_board)):
-                    display_row += f"{render_board[i][-j]}| "
+                    if render_board[i][-j] == " ":  # Adjust for difference in sizes between spaces and x/o's
+                        display_row += f"  | "
+                    else:
+                        display_row += f"{render_board[i][-j]}| "
                 board_str += display_row + "\n"
             return board_str
 
     @staticmethod
-    def look_ahead(head, move):
-        """Given a possible move, return the snake's new coordinates if it were headed that way"""
+    def look_ahead(head: dict, move: str) -> dict:
+        """
+        Given a possible move, return the snake's new coordinates if it were headed that way
+
+        :param head: The location of the snake's head as a dictionary e.g. {"x": 5, "y": 10}
+        :param move: Either "left", "right", "up", or "down"
+
+        :return: The new location of the snake's head if it were to move in said direction e.g. {"x": 4, "y": 10}
+        """
         snake_head = head.copy()
         if move == "up":
             snake_head["y"] += 1
@@ -150,15 +193,29 @@ class Battlesnake:
         return snake_head
 
     @staticmethod
-    def manhattan_distance(start, end):
-        """Return the Manhattan distance for two positions"""
+    def manhattan_distance(start: dict, end: dict) -> int:
+        """
+        Return the Manhattan distance for two positions
+
+        :param start: A location on the board as a dictionary e.g. {"x": 5, "y": 10}
+        :param end: A different location on the board
+
+        :return: The Manhattan distance between the start and end inputs
+        """
         start = (start["x"], start["y"])
         end = (end["x"], end["y"])
         return sum(abs(value1 - value2) for value1, value2 in zip(start, end))
 
-    def our_direction(self, snake_id):
-        head = self.all_snakes_dict[snake_id]["head"]
-        neck = self.all_snakes_dict[snake_id]["neck"]
+    @staticmethod
+    def snake_compass(head: dict, neck: dict) -> str:
+        """
+        Return the direction a snake is facing in the current board
+
+        :param head: The location of the snake's head as a dictionary e.g. {"x": 5, "y": 10}
+        :param neck: The location of the snake's neck as a dictionary e.g. {"x": 6, "y": 10}
+
+        :return: Either "left", "right", "up", or "down" e.g. "right" for the above inputs
+        """
         if neck["x"] < head["x"]:
             direction = "right"
         elif neck["x"] > head["x"]:
@@ -168,113 +225,186 @@ class Battlesnake:
         elif neck["y"] > head["y"]:
             direction = "down"
         else:
-            direction = None
+            direction = "none"  # At the beginning of the game when snakes are coiled
         return direction
 
-    def peripheral_vision(self, snake_id, direction):
-        """Return [x1, x2] and [y1, y2] of a portion of the board that functions as 'peripheral vision' for the snake"""
+    def peripheral_vision(self, snake_id: str, direction: str) -> tuple[tuple, tuple, dict]:
+        """
+        Calculate our snake's peripheral vision aka the portion of the board that is closest to our snake in a certain
+        direction. E.g. the space bounded by [x1, x2] and [y1, y2] in the following example board. Notice that the space
+        extends 3 squares above, below, and to the left of the snake, assuming we specified direction="left". Also
+        notice that the head of the snake doesn't actually enter the 3x7 peripheral field - the hypothetical new head is
+        returned as an output for convenience.
+
+         |  |  |
+         |  |  |
+         |  |  |
+         |  |  | £|
+         |  | $|
+         | x| x|
+         |  |  |
+
+        :param snake_id: The ID of the desired snake we want to find the peripheral field for
+        :param direction: The direction you'd like to point the snake towards (either "left", "right", "up", or "down",
+            but use "auto" if you want to just use the direction the snake is facing in the current board)
+
+        :return:
+            [x1, x2] of a portion of the board that functions as the snake's peripheral vision
+            [y1, y2] of the same portion
+            The position of the snake's head if it hypothetically moved into its peripheral field (used to perform
+                flood-fill on the peripheral field)
+        """
         # Our peripheral field of vision when scanning for moves
         head = self.all_snakes_dict[snake_id]["head"].copy()
         neck = self.all_snakes_dict[snake_id]["neck"].copy()
-        dim = self.peripheral_dim
+        dim = self.peripheral_size
 
-        if direction == "auto":  # Got to figure out the direction ourselves
-            direction = self.our_direction(snake_id)
+        # Got to figure out the direction ourselves
+        if direction == "auto":
+            direction = self.snake_compass(head, neck)
             head = neck.copy()  # Roll back our head location
 
-        if direction == "right":  # Neck is left of head, don't move left
+        # Construct the bounds of the peripheral field depending on the requested direction
+        if direction == "right":
             peripheral_box_x = head["x"] + 1, min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = max(head["y"] - dim, 0), min(head["y"] + dim + 1, self.board_height)
             head["x"], head["y"] = 0, head["y"] - peripheral_box_y[0]
-        elif direction == "left":  # Neck is right of head, don't move right
+        elif direction == "left":
             peripheral_box_x = max(head["x"] - dim, 0), head["x"]
             peripheral_box_y = max(head["y"] - dim, 0), min(head["y"] + dim + 1, self.board_height)
             head["x"], head["y"] = max(head["x"] - peripheral_box_x[0] - 1, 0), head["y"] - peripheral_box_y[0]
-        elif direction == "up":  # Neck is below head, don't move down
+        elif direction == "up":
             peripheral_box_x = max(head["x"] - dim, 0), min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = head["y"] + 1, min(head["y"] + dim + 1, self.board_height)
             head["x"], head["y"] = head["x"] - peripheral_box_x[0], 0
-        elif direction == "down":  # Neck is above head, don't move up
+        elif direction == "down":
             peripheral_box_x = max(head["x"] - dim, 0), min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = max(head["y"] - dim, 0), head["y"]
             head["x"], head["y"] = head["x"] - peripheral_box_x[0], max(head["y"] - peripheral_box_y[0] - 1, 0)
-        else:  # Centred around our snake's head
+        else:  # Centre it around our snake's head
             peripheral_box_x = max(head["x"] - dim, 0), min(head["x"] + dim + 1, self.board_width)
             peripheral_box_y = max(head["y"] - dim, 0), min(head["y"] + dim + 1, self.board_height)
             head["x"], head["y"] = head["x"] - peripheral_box_x[0], head["y"] - peripheral_box_y[0]
 
         return peripheral_box_x, peripheral_box_y, head
 
-    def get_obvious_moves(self, snake_id, risk_averse=True, sort_by_dist_to=None, sort_by_peripheral=False):
-        """Return a list of valid moves for any hypothetical snake. If risk_averse is True, avoid any moves that may
-        potentially cause a collision (but only if the snake is shorter)
-
-        Use cases:
-        - self.get_obvious_moves(snake_id) will return moves for any opponent snake for the current board
-        - self.get_obvious_moves(risk_averse=True) will return possible moves that avoid death-inducing collisions with
-        our snake. Set False to assume our opponents are out to get us (paranoid minimax)
-        - self.get_obvious_moves(sort_by_dist_to=snake["id"]) will return all possible moves, but sorted by the distance
-        from our snake post-move to the head of the snake whose ID is given as the parameter input
-        - self.get_obvious_moves(sort_by_peripheral=True) will return all possible moves, but sorted by the amount of
-        space that each move is estimated to give us in our "peripheral vision"
+    def is_move_safe(
+            self,
+            move: dict,
+            snake_id: str,
+            turn: Optional[str] = "done"
+    ) -> tuple[bool, bool]:
         """
-        risky_moves = []  # Initialise a set of possible risky moves
-        possible_moves = {"up", "down", "left", "right"}  # Initialise a set of possible moves
+        Determine if a location on the board is safe (e.g. if it's out-of-bounds or hits a different snake) or risky
+        (e.g. if there's a chance of a head-to-head collision). Can be used in the middle of running the minimax
+        algorithm (but specify the "turn_over" parameter).
 
-        head = self.all_snakes_dict[snake_id]["head"]
-        neck = self.all_snakes_dict[snake_id]["neck"]
-        length = self.all_snakes_dict[snake_id]["length"]
+        :param move: The location of the snake's hypothetical head as a dictionary e.g. {"x": 5, "y": 10}
+        :param snake_id: The ID of the desired snake we're evaluating a move for
+        :param turn: Either "ours", "opponents", or "done". Addresses nuances with running this function during the
+            minimax algorithm or outside of it. If "ours", this means we're at a depth where our snake has to make a
+            move. If "opponents", then we're at a depth where we've made a move but the opponent snakes haven't. If
+            "done", then both our snake and the opponent snakes have made moves (and one complete turn
+            has been completed).
 
-        clock_in = time.time_ns()
-        if neck["x"] < head["x"]:  # Neck is left of head, don't move left
-            possible_moves.discard("left")
-        elif neck["x"] > head["x"]:  # Neck is right of head, don't move right
-            possible_moves.discard("right")
-        elif neck["y"] < head["y"]:  # Neck is below head, don't move down
-            possible_moves.discard("down")
-        elif neck["y"] > head["y"]:  # Neck is above head, don't move up
-            possible_moves.discard("up")
-
+        :return:
+            True if the square is safe, False otherwise
+            True if the square is risky, False otherwise
+        """
         # Prevent snake from moving out of bounds
-        if head["x"] == 0:
-            possible_moves.discard("left")
-        if head["x"] + 1 == self.board_height:
-            possible_moves.discard("right")
-        if head["y"] == 0:
-            possible_moves.discard("down")
-        if head["y"] + 1 == self.board_width:
-            possible_moves.discard("up")
+        if move["x"] < 0 or move["x"] >= self.board_width:
+            return False, True
+        if move["y"] < 0 or move["y"] >= self.board_height:
+            return False, True
 
         # Prevent snake from colliding with other snakes
-        for opp_snake_id, opp_snake in self.all_snakes_dict.items():
-            for move in possible_moves.copy():  # Remaining moves
-                possible_hit = self.look_ahead(head, move)
-                # If the potential move hits a snake's body, it's invalid (exclude the tail since it moves forward)
-                if snake_id == self.my_id and possible_hit in opp_snake["body"][:-1]:
-                    possible_moves.discard(move)
-                elif snake_id != self.my_id and possible_hit != self.my_head and (
-                        (possible_hit in opp_snake["body"][:-1] and opp_snake_id != self.my_id)
-                        or (possible_hit in opp_snake["body"] and opp_snake_id == self.my_id)):
-                    possible_moves.discard(move)
-                # If the snake is risk-averse, avoid any chance of head-on collisions only if our snake is shorter
-                elif snake_id != opp_snake_id and length <= opp_snake["length"] \
-                        and self.manhattan_distance(possible_hit, opp_snake["head"]) <= 1:
-                    # Allow opponents to be suicidal (so our snakes are the same size)
-                    if not (snake_id != self.my_id and opp_snake_id == self.my_id and length == opp_snake["length"]):
-                        risky_moves.append(move)
-                    if risk_averse:
-                        possible_moves.discard(move)
+        length = self.all_snakes_dict[snake_id]["length"]
+        risky_flag = False
+        for opp_id, opp_snake in self.all_snakes_dict.items():
+            # Different rules apply during the middle of running minimax, depending on whose turn it is since our snake
+            # makes moves separately from opponent snakes
+            if turn == "ours":
+                # We can run into the tail of any snake since it will have to move
+                if move in opp_snake["body"][:-1] and snake_id != opp_id:
+                    return False, True
+                elif move in opp_snake["body"][1:] and snake_id == opp_id:
+                    return False, True
+                elif (snake_id != opp_id  # Skip the same snake we're evaluating
+                      and length <= opp_snake["length"]  # Only if the other snake is the same length or longer
+                      and self.manhattan_distance(move, opp_snake["head"]) == 1):  # Only if we're collision-bound
+                    risky_flag = True
+
+            elif turn == "opponents":
+                if opp_id == self.my_id:
+                    if move in opp_snake["body"][1:]:  # Our snake's tail is off-limits since we already moved
+                        return False, True
+                    # Suicidal head-to-head collisions with our snake are fine (if the lengths are the same)
+                    elif move == opp_snake["head"] and length < opp_snake["length"]:
+                        return False, True
+                else:
+                    if move in opp_snake["body"][:-1]:  # Tail is fine against other opponents
+                        return False, True
+                    elif (snake_id != opp_id  # Skip the same snake we're evaluating
+                          and length <= opp_snake["length"]  # Only if the other snake is the same length or longer
+                          and self.manhattan_distance(move, opp_snake["head"]) == 1):  # Only if we're collision-bound
+                        risky_flag = True
+
+            elif turn == "done":
+                # Move is invalid if it collides with the body of a snake
+                if move in opp_snake["body"][1:]:
+                    return False, True
+                # Move is invalid if it collides with the head of a snake that is the same length or longer
+                elif snake_id != opp_id and move == opp_snake["head"] and length <= opp_snake["length"]:
+                    return False, True
+
+        return True, risky_flag
+
+    def get_obvious_moves(
+            self,
+            snake_id: str,
+            risk_averse: Optional[bool] = True,
+            sort_by_dist_to: Optional[str] = None,
+            sort_by_peripheral: Optional[bool] = False
+    ) -> list:
+        """
+        Return a list of valid moves for any hypothetical snake.
+
+        :param snake_id: The ID of the desired snake we want to find moves for (can also be any opponent snake).
+        :param risk_averse: Return possible moves that avoid death-inducing collisions (essentially we're assuming our
+            opponents are out to get us, but only if we're shorter). Set False to include any risky moves towards other
+            snakes that might kill us.
+        :param sort_by_dist_to: Input any snake ID here. This will return all possible moves, but sort the moves by the
+            distance from our snake (after making the move) to the head of the snake whose ID was inputted. Very useful
+            for discerning which moves are more threatening/bring us closer to a different snake.
+        :param sort_by_peripheral: If True, return all possible moves, but sort the moves by the amount of space that
+            each move will give us in our "peripheral vision". Very useful for discerning which moves allow us more
+            immediate space.
+
+        :return: A list of possible moves for the given snake
+        """
+        # Loop through possible moves and remove from consideration if it's invalid
+        possible_moves = ["up", "down", "left", "right"]
+        risky_moves = []
+        head = self.all_snakes_dict[snake_id]["head"]
+        for move in possible_moves.copy():
+            is_safe, is_risky = self.is_move_safe(
+                self.look_ahead(head, move),
+                snake_id,
+                turn="ours" if snake_id == self.my_id else "opponents"
+            )
+            if not is_safe:
+                possible_moves.remove(move)
+            if is_risky:
+                risky_moves.append(move)
 
         if sort_by_dist_to is not None:
             head2 = self.all_snakes_dict[sort_by_dist_to]["head"]
-            possible_moves = sorted(possible_moves,  # This converts a set to a list anyway
+            possible_moves = sorted(possible_moves,
                                     key=lambda move2: self.manhattan_distance(head2, self.look_ahead(head, move2)))
         elif sort_by_peripheral:
-            possible_moves = sorted(possible_moves,  # This converts a set to a list anyway
+            possible_moves = sorted(possible_moves,
                                     key=lambda move2: self.flood_fill(snake_id, confined_area=move2),
                                     reverse=True)
-        else:
-            possible_moves = list(possible_moves)
 
         # De-prioritise any risky moves and send them to the back
         if len(risky_moves) > 0:
@@ -282,80 +412,36 @@ class Battlesnake:
                 if risky in possible_moves:
                     possible_moves.append(possible_moves.pop(possible_moves.index(risky)))
 
-        logging.info(f"Identified obvious moves {list(possible_moves)} in "
-                     f"{round((time.time_ns() - clock_in) / 1000000, 3)} ms")
+        logging.info(f"Found obvious moves {possible_moves}")
         return possible_moves
 
-    def optimal_move(self):
-        """Let's run the minimax algorithm with alpha-beta pruning!"""
-        # Compute the best score of each move using the minimax algorithm with alpha-beta pruning
-        if self.turn < 3:  # Our first 3 moves are super self-explanatory tbh
-            search_depth = 1
-        elif len(self.opponents) > 6:
-            search_depth = 2  # TODO should be risk-averse
-        elif len(self.opponents) >= 4:
-            search_depth = 4
-        else:
-            search_depth = self.minimax_search_depth
+    def is_game_over(self, for_snake_id: str | list, depth: Optional[int] = None) -> tuple[bool, bool]:
+        """
+        Determine if the game ended for certain snakes or not. Mostly use to know whether our snake died, but can
+        optionally be used to determine any number of opponent snakes' statuses.
 
-        tree_tracker[search_depth].append(0)
-        _, best_move, _ = self.minimax(depth=search_depth, alpha=-np.inf, beta=np.inf, maximising_snake=True)
+        :param for_snake_id: The ID of the desired snake we want to know died or not
+        :param depth: During minimax, things get complicated when we call this function right after making a move for
+            our snake but before the opponent snakes have made moves. We only want to return True when a complete turn
+            is done (e.g. our snake made a move and our opponents did as well). Thus, we need the current depth that
+            minimax is on to determine this.
 
-        # Output a visualisation of the minimax decision tree for debugging
-        if self.debugging:
-            import networkx as nx
-            G = nx.Graph()
-            node_labels = {}
-            for node in tree_nodes:
-                G.add_node(node[0])
-                node_labels[node[0]] = node[1]
-            G.add_node(0)
-            node_labels[0] = self.display_board(return_string=True)
-            G.add_edges_from(tree_edges)
-            pos = hierarchy_pos(G, 0)
-            edge_colours = [G[u][v]["colour"] for u, v in G.edges()]
-            edge_widths = [G[u][v]["width"] for u, v in G.edges()]
+        :return:
+            True if the overall game has a winner or if our snake is dead, False otherwise
+            True if the snake associated with the input snake ID is alive, False otherwise
+        """
+        # Skip if we're at the beginning of the game when all snakes are still coiled up
+        if self.turn == 0:
+            return False, True
 
-            fig = plt.figure(figsize=(50, 25))
-            nx.draw(G, pos=pos, node_color=["white"] * G.number_of_nodes(), edge_color=edge_colours, width=edge_widths,
-                    labels=node_labels, with_labels=True, node_size=40000, font_size=20)
-            plt.savefig("minimax_tree.png", bbox_inches="tight", pad_inches=0)
-
-        return best_move
-
-    def is_game_over(self, for_snake_id=None, depth=None):
-        """Return True if the game ended for our snake, False otherwise. Use for_snake_id to return a boolean for a
-        specific snake's status (can be one or multiple)."""
         snake_monitor = {}  # A dictionary for each snake showing whether they're alive
         for snake_id, snake in self.all_snakes_dict.items():
-            snake_monitor[snake_id] = True
-
-            head = snake["head"]
-            # Prevent snake from moving out of bounds
-            if head["x"] < 0 or head["x"] >= self.board_height:
-                snake_monitor[snake_id] = False
-            if head["y"] < 0 or head["y"] >= self.board_width:
-                snake_monitor[snake_id] = False
-
-            # Skip this if we're at the beginning of the game when all snakes are still coiled up
-            if not (snake["length"] == 3 and snake["body"][-2] == snake["body"][-1]):
-                # Prevent snake from colliding with any other snakes
-                for opp_snake_id, opp_snake in self.all_snakes_dict.items():
-                    # Depending on the depth, exclude the tail if the turn technically isn't over (all players need to
-                    # have made a move)
-                    check_body = opp_snake["body"][1:-1] if depth % 2 == 1 else opp_snake["body"][1:]
-
-                    # If the potential move hits a snake's body, it's invalid
-                    if head in check_body:
-                        snake_monitor[snake_id] = False
-                    # If the potential move hits a snake's head, it's invalid only if our snake is shorter
-                    if snake_id != opp_snake_id:
-                        if head == opp_snake["head"] and snake["length"] <= opp_snake["length"]:
-                            snake_monitor[snake_id] = False
+            # Check if each snake's head is in a safe square, depending on if we're at a depth where only we made a move
+            is_safe, _ = self.is_move_safe(snake["head"], snake_id, turn="done" if depth % 2 == 0 else "ours")
+            snake_monitor[snake_id] = is_safe
 
         # Game is over if there's only one snake remaining or if our snake died
         game_over = True if (sum(snake_monitor.values()) == 1 or not snake_monitor[self.my_id]) else False
-
         # See if a specific snake is alive or not
         if isinstance(for_snake_id, (list, tuple)):
             snake_still_alive = [snake_monitor[snake_id] for snake_id in for_snake_id]
@@ -369,7 +455,7 @@ class Battlesnake:
             return False
 
         possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
-        direction = self.our_direction(self.my_id)
+        direction = self.snake_compass(self.my_head, self.my_neck)
         if self.my_head["x"] == 0:
             if "right" not in possible_moves:
                 suspect = [opp_id for opp_id, opp in self.opponents.items()
@@ -394,12 +480,12 @@ class Battlesnake:
                     gaps = [self.opponents[snake_id]["body"][-diff_y:] for snake_id in suspect]  # Would leave space for us to move to
                     if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
                         return True
-        if self.my_head["y"] == 0:
-            if "up" not in possible_moves:
-                return True
-        if self.my_head["y"] == self.board_height - 1:
-            if "down" not in possible_moves:
-                return True
+        # if self.my_head["y"] == 0:
+        #     if "up" not in possible_moves:
+        #         return True
+        # if self.my_head["y"] == self.board_height - 1:
+        #     if "down" not in possible_moves:
+        #         return True
         return False
 
     def heuristic(self, depth_number):
@@ -436,6 +522,7 @@ class Battlesnake:
         possible_edged = self.edge_kill_detection()
         if possible_edged:
             space_penalty = -1e5
+            self.edge_kill_detection()
 
         # Estimate the space we have in our peripheral vision
         available_peripheral = self.flood_fill(self.my_id, confined_area="auto")
@@ -445,7 +532,7 @@ class Battlesnake:
         # if len(self.opponents) <= 3:
         #         # and sum([dist < (self.board_width // 2) for dist in self.dist_from_enemies()]) <= 3 \
         #         # and len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
-        #     self.peripheral_dim = 4
+        #     self.peripheral_size = 4
         #     available_enemy_space = self.flood_fill(self.closest_enemy(), confined_area="General")
         # else:
         #     available_enemy_space = 0
@@ -543,11 +630,11 @@ class Battlesnake:
         else:
             board = np.full((self.board_width, self.board_height), " ")
             for num, square in enumerate(self.all_snakes_dict[snake_id]["body"]):
-                board[square["x"], square["y"]] = "£" if num == 0 else "O"
+                board[square["x"], square["y"]] = "£" if num == 0 else "o"
             for other_id, other_snake in self.all_snakes_dict.items():
                 if other_id != snake_id:
                     for num, other_square in enumerate(other_snake["body"]):
-                        board[other_square["x"], other_square["y"]] = "$" if num == 0 else "X"
+                        board[other_square["x"], other_square["y"]] = "$" if num == 0 else "x"
 
         if confined_area is not None:
             xs, ys, head = self.peripheral_vision(snake_id, confined_area)
@@ -556,9 +643,9 @@ class Battlesnake:
             #     self.peripheral_vision(snake_id, confined_area)
 
         def fill(x, y, board, initial_square):
-            if board[x][y] in ["X", "$"]:  # Snakes or hazards
+            if board[x][y] in ["x", "$"]:  # Snakes or hazards
                 return
-            if board[x][y] in ["O"]:  # Us
+            if board[x][y] in ["o"]:  # Us
                 return
             if board[x][y] == "£" and not initial_square:  # Already filled
                 return
@@ -713,6 +800,7 @@ class Battlesnake:
             logging.info(f"Heuristic = {heuristic} at terminal node")
             return heuristic, None, heuristic_data
 
+        global tree_edges
         # Our snake's turn
         if maximising_snake:
             logging.info("=" * 50)
@@ -763,7 +851,6 @@ class Battlesnake:
                     logging.info(f"PRUNED!!! Alpha = {alpha} >= Beta = {beta}")
                     break
 
-            global tree_edges
             tree_edges[best_edge][2]["colour"] = "r"
             tree_edges[best_edge][2]["width"] = 4
             logging.info(f"FINISHED MINIMAX LAYER on our snake in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
@@ -822,7 +909,7 @@ class Battlesnake:
             else:
                 cutoff = 3
 
-            if len(opps_moves) > 0:
+            if len(opps_moves) > 0 and len(all_opp_combos) > cutoff:
                 covered_ids = [list(opps_moves.keys())[0]]
                 all_opp_combos2 = []
                 while len(all_opp_combos2) < cutoff:
@@ -890,6 +977,43 @@ class Battlesnake:
             tree_edges[best_edge][2]["width"] = 4
             logging.info(f"FINISHED MINIMAX LAYER on opponents in {(time.time_ns() - clock_in) // 1000000} ms")
             return best_val, best_move, best_node_data
+
+    def optimal_move(self):
+        """Let's run the minimax algorithm with alpha-beta pruning!"""
+        # Compute the best score of each move using the minimax algorithm with alpha-beta pruning
+        if self.turn < 3:  # Our first 3 moves are super self-explanatory tbh
+            search_depth = 1
+        elif len(self.opponents) > 6:
+            search_depth = 2  # TODO should be risk-averse
+        elif len(self.opponents) >= 4:
+            search_depth = 4
+        else:
+            search_depth = self.minimax_search_depth
+
+        tree_tracker[search_depth].append(0)
+        _, best_move, _ = self.minimax(depth=search_depth, alpha=-np.inf, beta=np.inf, maximising_snake=True)
+
+        # Output a visualisation of the minimax decision tree for debugging
+        if self.debugging:
+            import networkx as nx
+            G = nx.Graph()
+            node_labels = {}
+            for node in tree_nodes:
+                G.add_node(node[0])
+                node_labels[node[0]] = node[1]
+            G.add_node(0)
+            node_labels[0] = self.display_board(return_string=True)
+            G.add_edges_from(tree_edges)
+            pos = hierarchy_pos(G, 0)
+            edge_colours = [G[u][v]["colour"] for u, v in G.edges()]
+            edge_widths = [G[u][v]["width"] for u, v in G.edges()]
+
+            fig = plt.figure(figsize=(50, 25))
+            nx.draw(G, pos=pos, node_color=["white"] * G.number_of_nodes(), edge_color=edge_colours, width=edge_widths,
+                    labels=node_labels, with_labels=True, node_size=40000, font_size=20)
+            plt.savefig("minimax_tree.png", bbox_inches="tight", pad_inches=0)
+
+        return best_move
 
 #     def a_star_search(self, food_loc):
 #         """
