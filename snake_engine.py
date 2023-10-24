@@ -451,23 +451,26 @@ class Battlesnake:
         return game_over, snake_still_alive
 
     def edge_kill_detection(self):
+        """
+        Determine if our snake is in a position where it can get edge-killed
+        """
         if 0 < self.my_head["x"] < self.board_width - 1 and 0 < self.my_head["y"] < self.board_height - 1:
             return False
 
         possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
         direction = self.snake_compass(self.my_head, self.my_neck)
-        if self.my_head["x"] == 0:
-            if "right" not in possible_moves:
-                suspect = [opp_id for opp_id, opp in self.opponents.items()
-                           if opp["head"]["x"] == self.my_head["x"] + 1 and (
-                                   (direction == "up" and opp["head"]["y"] >= self.my_head["y"])
-                                   or (direction == "down" and opp["head"]["y"] <= self.my_head["y"])
-                           )]
-                if len(suspect) > 0:
-                    diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspect])
-                    gaps = [self.opponents[snake_id]["body"][-diff_y:] for snake_id in suspect]  # Would leave space for us to move to
-                    if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
-                        return True
+        if self.my_head["x"] == 0 and "right" not in possible_moves:
+            # Find snakes that can possibly edge-kill us
+            suspect = [opp_id for opp_id, opp in self.opponents.items()
+                       if opp["head"]["x"] == self.my_head["x"] + 1 and (
+                               (direction == "up" and opp["head"]["y"] >= self.my_head["y"])
+                               or (direction == "down" and opp["head"]["y"] <= self.my_head["y"])
+                       )]
+            if len(suspect) > 0:
+                diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspect])
+                gaps = [self.opponents[snake_id]["body"][-diff_y:] for snake_id in suspect]  # Would leave space for us to move to
+                if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
+                    return True
         if self.my_head["x"] == self.board_width - 1:
             if "left" not in possible_moves:
                 suspect = [opp_id for opp_id, opp in self.opponents.items()
@@ -527,15 +530,20 @@ class Battlesnake:
         # Estimate the space we have in our peripheral vision
         available_peripheral = self.flood_fill(self.my_id, confined_area="auto")
 
-        # # We want to minimise available space for our opponents via flood fill (but only when there are fewer snakes in
-        # # our vicinity)
-        # if len(self.opponents) <= 3:
-        #         # and sum([dist < (self.board_width // 2) for dist in self.dist_from_enemies()]) <= 3 \
-        #         # and len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
-        #     self.peripheral_size = 4
-        #     available_enemy_space = self.flood_fill(self.closest_enemy(), confined_area="General")
-        # else:
-        #     available_enemy_space = 0
+        # We want to minimise available space for our opponents via flood fill (but only when there are fewer snakes in
+        # our vicinity)
+        if len(self.opponents) <= 3:
+                # and sum([dist < (self.board_width // 2) for dist in self.dist_from_enemies()]) <= 3 \
+                # and len(self.opponents) == sum([self.my_length > s["length"] for s in self.opponents.values()]):
+            self.peripheral_size = 4
+            available_enemy_space = self.flood_fill(self.closest_enemy(), confined_area="General")
+            if available_enemy_space < 4:
+                kill_bonus = 1000
+            else:
+                kill_bonus = 0
+        else:
+            available_enemy_space = 0
+            kill_bonus = 0
 
         # Get closer to enemy snakes if we're longer by 3
         if 2 >= len(self.opponents) == sum([self.my_length > s["length"] + 3 for s in self.opponents.values()]):
@@ -577,7 +585,8 @@ class Battlesnake:
         logging.info(f"Distance to nearest enemy: {dist_to_enemy}")
         logging.info(f"Distance to nearest food: {dist_food}")
         logging.info(f"Layers deep in search tree: {layers_deep}")
-        # logging.info(f"Available enemy space: {available_enemy_space}")
+        logging.info(f"Available enemy space: {available_enemy_space}")
+        logging.info(f"Kill bonus: {kill_bonus}")
         logging.info(f"In centre: {in_centre}")
         logging.info(f"Length: {self.my_length}")
 
@@ -589,8 +598,9 @@ class Battlesnake:
             (layers_deep * depth_weight) + \
             (self.my_length * length_weight) + \
             in_centre * centre_control_weight + \
-            aggression_weight / (dist_to_enemy + 1)
-# (enemy_restriction_weight / (available_enemy_space + 1)) + \
+            aggression_weight / (dist_to_enemy + 1) + \
+            (enemy_restriction_weight / (available_enemy_space + 1)) + kill_bonus
+
 
         return h, {"Heur": round(h, 2),
                    "Space": available_space,
@@ -598,6 +608,7 @@ class Battlesnake:
                    "Periph": available_peripheral,
                    "Food Dist": dist_food,
                    "Enemy Dist": dist_to_enemy,
+                   "Enemy Kill": available_enemy_space + kill_bonus,
                    "Threats": num_threats,
                    "Length": self.my_length}
 
