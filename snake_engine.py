@@ -321,6 +321,7 @@ class Battlesnake:
         length = self.all_snakes_dict[snake_id]["length"]
         risky_flag = False
         for opp_id, opp_snake in self.all_snakes_dict.items():
+
             # Different rules apply during the middle of running minimax, depending on whose turn it is since our snake
             # makes moves separately from opponent snakes
             if turn == "ours":
@@ -405,7 +406,6 @@ class Battlesnake:
             possible_moves = sorted(possible_moves,
                                     key=lambda move2: self.flood_fill(snake_id, confined_area=move2),
                                     reverse=True)
-
         # De-prioritise any risky moves and send them to the back
         if len(risky_moves) > 0:
             for risky in risky_moves:
@@ -508,7 +508,10 @@ class Battlesnake:
 
         # Determine available space via flood fill
         available_space = self.flood_fill(self.my_id, risk_averse=True)
-        if available_space < 4:
+        available_space_ra = self.flood_fill(self.my_id, risk_averse=False)
+        if available_space_ra < 4:
+            space_penalty = -500
+        elif available_space < 4:
             space_penalty = -200
         else:
             space_penalty = 0
@@ -636,7 +639,7 @@ class Battlesnake:
                     for n in avoid_sq:
                         if not (n[0] == head["x"] and n[1] == head["y"]) and \
                                 (0 <= n[0] < self.board_width and 0 <= n[1] < self.board_height):
-                            board[n[0]][n[1]] = "X"
+                            board[n[0]][n[1]] = "x"
         # Otherwise, generate a new board and pretend the opponent snake is our snake (in order to compute flood fill)
         else:
             board = np.full((self.board_width, self.board_height), " ")
