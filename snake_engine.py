@@ -215,7 +215,7 @@ class Battlesnake:
         end = (end["x"], end["y"])
         return sum(abs(value1 - value2) for value1, value2 in zip(start, end))
 
-    def dijkstra_shortest_path(self, start, end):
+    def dijkstra_shortest_path(self, start: dict, end: dict) -> int:
         """
         Return the shortest path between two positions using Dijkstra's algorithm implemented in networkx
 
@@ -226,14 +226,22 @@ class Battlesnake:
         """
         start = (start["x"], start["y"])
         end = (end["x"], end["y"])
-        self.graph.add_node(end)
+
+        # If the desired location is on a hazard or snake, then it's absent from the graph - add it in but remove later
+        temp_node = False
+        if end not in self.graph.nodes():
+            self.graph.add_node(end)
+            temp_node = True
+
         try:
             path = nx.shortest_path(self.graph, start, end)
-            self.graph.remove_node(end)
-            return len(path)
+            shortest = len(path)
         except nx.exception.NetworkXNoPath:
+            shortest =  1e6
+
+        if temp_node:
             self.graph.remove_node(end)
-            return 1e6
+        return shortest
 
     @staticmethod
     def snake_compass(head: dict, neck: dict) -> str:
@@ -658,41 +666,68 @@ class Battlesnake:
         """
         Determine if our snake is in a position where it can get edge-killed
         """
+        # Ignore if we're not on the edge of the board
         if 0 < self.my_head["x"] < self.board_width - 1 and 0 < self.my_head["y"] < self.board_height - 1:
             return False
 
-        possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
-        direction = self.snake_compass(self.my_head, self.my_neck)
-        if self.my_head["x"] == 0 and "right" not in possible_moves:
-            # Find snakes that can possibly edge-kill us
-            suspect = [opp_id for opp_id, opp in self.opponents.items()
-                       if opp["head"]["x"] == self.my_head["x"] + 1 and (
-                               (direction == "up" and opp["head"]["y"] >= self.my_head["y"])
-                               or (direction == "down" and opp["head"]["y"] <= self.my_head["y"])
-                       )]
-            if len(suspect) > 0:
-                diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspect])
-                gaps = [self.opponents[snake_id]["body"][-diff_y:] for snake_id in suspect]  # Would leave space for us to move to
-                if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
-                    return True
-        if self.my_head["x"] == self.board_width - 1:
-            if "left" not in possible_moves:
-                suspect = [opp_id for opp_id, opp in self.opponents.items()
-                           if opp["head"]["x"] == self.my_head["x"] - 1 and (
-                                   (direction == "up" and opp["head"]["y"] >= self.my_head["y"])
-                                   or (direction == "down" and opp["head"]["y"] <= self.my_head["y"])
-                           )]
-                if len(suspect) > 0:
-                    diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspect])
-                    gaps = [self.opponents[snake_id]["body"][-diff_y:] for snake_id in suspect]  # Would leave space for us to move to
-                    if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
-                        return True
-        # if self.my_head["y"] == 0:
-        #     if "up" not in possible_moves:
-        #         return True
-        # if self.my_head["y"] == self.board_height - 1:
-        #     if "down" not in possible_moves:
-        #         return True
+        # possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
+        # direction = self.snake_compass(self.my_head, self.my_neck)
+        # dir_dict = {
+        #     "vertical": {
+        #         "bounds": [0, self.board_width],
+        #         "escape_dirs": ["left", "right"],
+        #         "axis": "x",
+        #         "axis_dir": "y",
+        #         "scan_dir": +1 if direction == "up" else -1
+        #     },
+        #     "horizontal": {
+        #         "bounds": [0, self.board_height],
+        #         "escape_dirs": ["down", "up"],
+        #         "axis": "y",
+        #         "axis_dir": "x",
+        #         "scan_dir": +1 if direction == "right" else -1
+        #     },
+        # }
+        # dir_data = dir_dict["horizontal"] if direction in ["left", "right"] else dir_dict["vertical"]
+        # bounds = dir_data["bounds"]
+        # escape_dirs = dir_data["escape_dirs"]
+        # ax = dir_data["axis"]
+        # ax_dir = dir_data["axis_dir"]
+        # scan_dir = dir_data["scan_dir"]
+        #
+        # # If we can't escape (e.g. we're heading right, but can't move up or down)
+        # if len(set(escape_dirs).intersection(possible_moves)) == 0:
+        #     trapped_sides = [False, False]
+        #     for num, escape_dir in enumerate(escape_dirs):
+        #         look = -1 if num == 0 else +1
+        #         # Scan the column/row to each side of us in ascending order
+        #         if escape_dir in ["left", "right"]:
+        #             esc_attempt = self.my_head[ax] + look
+        #             if 0 <= esc_attempt < self.board_width:
+        #                 strip = self.board[esc_attempt, self.my_head[ax_dir]:]
+        #                 # Check if there's free space ahead of us, we're trapped if there's none
+        #                 if np.count_nonzero(strip != " ") == 0:
+        #                     trapped_sides[num] = True
+        #
+        #             threats = [opp_id for opp_id, opp in self.opponents.items()
+        #                        if (opp["head"][ax] == esc_attempt)
+        #                        and (opp["head"][ax_dir] >= self.my_head[ax_dir] if look == 1
+        #                             else opp["head"][ax_dir] <= self.my_head[ax_dir]
+        #                             )]
+        #
+        #     # # Find snakes that can possibly edge-kill us
+        #     # suspects = [opp_id for opp_id, opp in self.opponents.items()
+        #     #             if opp["head"][ax] == self.my_head[ax] + dir_data["adj_col"] and (
+        #     #                     opp["head"][dir_data["axis_dir"]] >= self.my_head[dir_data["axis_dir"]] if dir_data["scan_dir"] == 1
+        #     #                     else opp["head"][dir_data["axis_dir"]] <= self.my_head[dir_data["axis_dir"]])
+        #     #             ]
+        #     # if len(suspects) > 0:
+        #     #     diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspects])
+        #     #     if diff_y == 0:
+        #     #         return True
+        #     #     gaps = [self.opponents[opp_id]["body"][-diff_y:] for opp_id in suspects]  # Would leave space for us to move to
+        #     #     if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
+        #     #         return True
         return False
 
     def heuristic(self, depth_number):
