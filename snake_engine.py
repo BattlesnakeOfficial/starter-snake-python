@@ -228,18 +228,27 @@ class Battlesnake:
         end = (end["x"], end["y"])
 
         # If the desired location is on a hazard or snake, then it's absent from the graph - add it in but remove later
-        temp_node = False
+        temp_start_node = False
+        temp_end_node = False
+        if start not in self.graph.nodes():
+            self.graph.add_node(start)
+            temp_start_node = True
         if end not in self.graph.nodes():
             self.graph.add_node(end)
-            temp_node = True
+            temp_end_node = True
 
+        # Run networkx's Dijkstra method (it'll error out if no path is possible)
         try:
+            self.display_board()
             path = nx.shortest_path(self.graph, start, end)
             shortest = len(path)
         except nx.exception.NetworkXNoPath:
             shortest =  1e6
 
-        if temp_node:
+        # Remove any nodes that were temporarily added in
+        if temp_start_node:
+            self.graph.remove_node(start)
+        if temp_end_node:
             self.graph.remove_node(end)
         return shortest
 
