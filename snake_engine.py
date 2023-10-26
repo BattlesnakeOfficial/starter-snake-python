@@ -127,15 +127,15 @@ class Battlesnake:
         """
         self.board = np.full((self.board_width, self.board_height), " ")
         self.graph = nx.grid_2d_graph(self.board_width, self.board_height)
-        for num, my_square in enumerate(self.my_body):
-            self.board[my_square["x"], my_square["y"]] = "£" if num == 0 else "o"
-            if num > 0:
-                self.graph.remove_nodes_from([(my_square["x"], my_square["y"])])
         for opponent in self.opponents.values():
             snake_body = opponent["body"]
             for num, snake_sq in enumerate(snake_body):
                 self.board[snake_sq["x"], snake_sq["y"]] = "$" if num == 0 else "x"
                 self.graph.remove_nodes_from([(snake_sq["x"], snake_sq["y"])])
+        for num, my_square in enumerate(self.my_body):
+            self.board[my_square["x"], my_square["y"]] = "£" if num == 0 else "o"
+            if num > 0:
+                self.graph.remove_nodes_from([(my_square["x"], my_square["y"])])
 
     def display_board(self, board: Optional[np.array] = None, return_string: Optional[bool] = False):
         """
@@ -239,7 +239,6 @@ class Battlesnake:
 
         # Run networkx's Dijkstra method (it'll error out if no path is possible)
         try:
-            self.display_board()
             path = nx.shortest_path(self.graph, start, end)
             shortest = len(path)
         except nx.exception.NetworkXNoPath:
@@ -457,7 +456,7 @@ class Battlesnake:
         if sort_by_dist_to is not None:
             head2 = self.all_snakes_dict[sort_by_dist_to]["head"]
             possible_moves = sorted(possible_moves,
-                                    key=lambda move2: self.dijkstra_shortest_path(head2, self.look_ahead(head, move2)))
+                                    key=lambda move2: self.manhattan_distance(head2, self.look_ahead(head, move2)))
         if sort_by_peripheral:
             possible_moves = sorted(possible_moves,
                                     key=lambda move2: self.flood_fill(snake_id, confined_area=move2),
@@ -1003,7 +1002,7 @@ class Battlesnake:
                     opp_move = ["down"]
 
                 # Save time by only searching for snakes within close range
-                dist_opp_to_us = self.dijkstra_shortest_path(self.my_head, opp_snake["head"])
+                dist_opp_to_us = self.manhattan_distance(self.my_head, opp_snake["head"])
                 if dist_opp_to_us <= search_within:
                     opps_moves[opp_id] = opp_move  # Put all of their moves
                     opps_nearby += 1
@@ -1011,7 +1010,8 @@ class Battlesnake:
                     if len(self.opponents) <= 5:
                         opps_moves[opp_id] = [opp_move[0]]
 
-            sorted_opps_by_dists = sorted(self.opponents.keys(), key=lambda opp_id: self.dijkstra_shortest_path(self.my_head, self.opponents[opp_id]["head"]))
+            # Use Manhattan distance since Dijkstra's fails if there's no actual path
+            sorted_opps_by_dists = sorted(self.opponents.keys(), key=lambda opp_id: self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]))
             opps_moves = dict(sorted(opps_moves.items(), key=lambda pair: sorted_opps_by_dists.index(pair[0])))
 
             logging.info(f"Found {opps_nearby} of {len(self.opponents)} OPPONENT SNAKES within {search_within} "
