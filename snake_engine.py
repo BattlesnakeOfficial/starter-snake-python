@@ -18,6 +18,9 @@ tree_edges = []
 tree_nodes = []
 tree_node_counter = 1
 
+tot_time_graph = 0
+counter_graph = 0
+
 
 class Battlesnake:
     def __init__(self, game_state: dict, debugging: Optional[bool] = False):
@@ -33,8 +36,8 @@ class Battlesnake:
         self.board_height = game_state["board"]["height"]
         self.food = game_state["board"]["food"]
         self.hazards = game_state["board"]["hazards"]
-        self.board = None  # Generated later with update_board()
-        self.graph = None  # Generated later with update_board()
+        self.board = np.full((self.board_width, self.board_height), " ")  # Generated later with update_board()
+        self.graph = nx.grid_2d_graph(self.board_width, self.board_height)
 
         # Our snake's data
         self.my_id = game_state["you"]["id"]
@@ -53,7 +56,7 @@ class Battlesnake:
                 "body": snake["body"],
                 "length": snake["length"],
                 "health": snake["health"],
-                "food_eaten": snake["food_eaten"] if "food_eaten" in snake.keys() else []
+                "food_eaten": snake["food_eaten"] if "food_eaten" in snake.keys() else None
             }
             # Weird cases when running locally where the "you" snake is not our actual snake or is empty
             if "name" in game_state["you"] and game_state["you"]["name"] != my_name and snake["name"] == my_name:
@@ -101,7 +104,7 @@ class Battlesnake:
                 "body": snake["body"].copy(),
                 "length": snake["length"],
                 "health": snake["health"],
-                "food_eaten": snake["food_eaten"] if "food_eaten" in snake.keys() else []
+                "food_eaten": snake["food_eaten"] if "food_eaten" in snake.keys() else None
             })
         board = {
             "height": self.board_height,
@@ -125,17 +128,24 @@ class Battlesnake:
         Fill in the board with the locations of all snakes. Our snake will be displayed like "oo£" where "o"
         represents the body and "£" represents the head. Opponents will be displayed as "xx£" in the same manner.
         """
-        self.board = np.full((self.board_width, self.board_height), " ")
-        self.graph = nx.grid_2d_graph(self.board_width, self.board_height)
+        global tot_time_graph
+        global counter_graph
         for opponent in self.opponents.values():
             snake_body = opponent["body"]
             for num, snake_sq in enumerate(snake_body):
                 self.board[snake_sq["x"], snake_sq["y"]] = "$" if num == 0 else "x"
+                clock_in = time.time_ns()
                 self.graph.remove_nodes_from([(snake_sq["x"], snake_sq["y"])])
+                counter_graph += 1
+                tot_time_graph += round((time.time_ns() - clock_in) / 1000000, 3)
         for num, my_square in enumerate(self.my_body):
             self.board[my_square["x"], my_square["y"]] = "£" if num == 0 else "o"
             if num > 0:
+                clock_in = time.time_ns()
                 self.graph.remove_nodes_from([(my_square["x"], my_square["y"])])
+                counter_graph += 1
+                tot_time_graph += round((time.time_ns() - clock_in) / 1000000, 3)
+
 
     def display_board(self, board: Optional[np.array] = None, return_string: Optional[bool] = False):
         """
@@ -236,6 +246,11 @@ class Battlesnake:
         if end not in self.graph.nodes():
             self.graph.add_node(end)
             temp_end_node = True
+
+            new_graph = nx.grid_2d_graph(self.board_width, self.board_height)
+            new_graph.add_nodes_from(sorted(self.graph.nodes()))
+            self.graph = new_graph
+
 
         # Run networkx's Dijkstra method (it'll error out if no path is possible)
         try:
@@ -505,43 +520,93 @@ class Battlesnake:
 
         return game_over, snake_still_alive
 
-    def simulate_move(self, move: str, snake_id: str, evaluate_deaths: Optional[bool] = False) -> Battlesnake:
+    def simulate_move(self, move_dict: dict, evaluate_deaths: Optional[bool] = False) -> Battlesnake:
         """
-        Create a new Battlesnake instance that simulates a move for a given snake
+        Create a new Battlesnake instance that simulates a move for a given snake. To increase speed, this function
+        builds a new game_state dictionary from scratch to generate the new instance without affecting the original
+        instance.
 
-        :param move: The direction you'd like the snake to move towards (either "left", "right", "up", or "down")
-        :param snake_id: The ID of the desired snake we want to simulate a move for
+        :param move_dict: Given the ID of a desired snake, specify the direction you'd like it to move towards e.g.
+            {self.my_id: "left", other_snake_id: "right"}
         :param evaluate_deaths: If True, remove any snakes that died as a result of the simulated move (exclusively via
             head-to-head collisions)
 
         :return: A Battlesnake instance incorporating the simulated move in a new game state
         """
-        # clock_in = time.time_ns()
-        new_game = self.__copy__()
+        # Initialise our snake's data
+        you = {
+            "id": self.my_id,
+            "health": self.my_health,
+            "body": self.my_body.copy(),
+            "head": self.my_head,
+            "length": self.my_length
+        }
 
-        # Simulate the new head position
-        old_head = self.all_snakes_dict[snake_id]["head"]
-        new_head = self.look_ahead(old_head, move)
+        # Loop through all snakes and simulate a move for the relevant snake if provided
+        all_snakes = []
+        for snake_id, snake in self.all_snakes_dict.items():
+            if snake_id in move_dict:
+                # Update the head, body, and health of the snake to reflect the simulated move
+                new_head = self.look_ahead(snake["head"], move_dict[snake_id])
+                all_snakes.append({
+                    "id": snake_id,
+                    "head": new_head,
+                    "body": [new_head] + snake["body"][:-1].copy(),
+                    "length": snake["length"],
+                    "health": snake["health"] - 1,
+                    "food_eaten": new_head if new_head in self.food else None
+                })
+                # Repeat for our snake's specific attributes
+                if snake_id == self.my_id:
+                    you["head"] = new_head
+                    you["body"] = [new_head] + self.my_body[:-1].copy()
+                    you["health"] = self.my_health - 1
+            else:
+                # No changes needed
+                all_snakes.append({
+                    "id": snake_id,
+                    "head": snake["head"],
+                    "body": snake["body"].copy(),
+                    "length": snake["length"],
+                    "health": snake["health"],
+                    "food_eaten": snake["food_eaten"] if "food_eaten" in snake.keys() else None
+                })
 
-        # Insert the simulated snake position into the new instance
-        new_game.all_snakes_dict[snake_id]["body"] = [new_head] + new_game.all_snakes_dict[snake_id]["body"][:-1]
-        new_game.all_snakes_dict[snake_id]["head"] = new_head
-        new_game.all_snakes_dict[snake_id]["health"] -= 1
-        # Repeat for our snake's specific attributes
-        if snake_id == self.my_id:
-            new_game.my_body = [new_head] + new_game.my_body[:-1]
-            new_game.my_head = new_head
-            new_game.my_health -= 1
+        board = {
+            "height": self.board_height,
+            "width": self.board_width,
+            "food": self.food.copy(),
+            "hazards": self.hazards.copy(),
+            "snakes": all_snakes
+        }
+        new_game = Battlesnake({"turn": self.turn, "board": board, "you": you}, debugging=self.debugging)
 
-        # Track if food was consumed - this elongates the snake from the tail and restores health
-        if new_head in self.food:
-            new_game.all_snakes_dict[snake_id]["food_eaten"] = new_head
+        # # clock_in = time.time_ns()
+        # new_game = self.__copy__()
+        #
+        # # Simulate the new head position
+        # old_head = self.all_snakes_dict[snake_id]["head"]
+        # new_head = self.look_ahead(old_head, move)
+        #
+        # # Insert the simulated snake position into the new instance
+        # new_game.all_snakes_dict[snake_id]["body"] = [new_head] + new_game.all_snakes_dict[snake_id]["body"][:-1]
+        # new_game.all_snakes_dict[snake_id]["head"] = new_head
+        # new_game.all_snakes_dict[snake_id]["health"] -= 1
+        # # Repeat for our snake's specific attributes
+        # if snake_id == self.my_id:
+        #     new_game.my_body = [new_head] + new_game.my_body[:-1]
+        #     new_game.my_head = new_head
+        #     new_game.my_health -= 1
+        #
+        # # Track if food was consumed - this elongates the snake from the tail and restores health
+        # if new_head in self.food:
+        #     new_game.all_snakes_dict[snake_id]["food_eaten"] = new_head
 
         # Check if any snakes died from this simulated move and remove them from the game
         if evaluate_deaths:
             # First update snake lengths from any food eaten
             for update_id, snake in new_game.all_snakes_dict.items():
-                if len(snake["food_eaten"]) > 0:
+                if snake["food_eaten"] is not None:
                     new_game.all_snakes_dict[update_id]["length"] += 1
                     new_game.all_snakes_dict[update_id]["health"] = 100
                     new_game.all_snakes_dict[update_id]["body"] += [new_game.all_snakes_dict[update_id]["body"][-1]]
@@ -553,7 +618,7 @@ class Battlesnake:
                         new_game.my_health = 100
                         new_game.my_body += [new_game.my_body[-1]]
                     # Reset the food tracker
-                    new_game.all_snakes_dict[update_id]["food_eaten"] = []
+                    new_game.all_snakes_dict[update_id]["food_eaten"] = None
 
             # Did any snakes die from head-to-head collisions?
             all_heads = [(snake["head"]["x"], snake["head"]["y"]) for snake in new_game.all_snakes_dict.values()]
@@ -578,7 +643,6 @@ class Battlesnake:
                         if rm_id != winner_id:
                             new_game.all_snakes_dict.pop(rm_id)
 
-        new_game.update_board()
         # logging.info(f"Done with simulation in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
         return new_game
 
@@ -587,8 +651,9 @@ class Battlesnake:
             snake_id: str,
             confined_area: Optional[str] = None,
             risk_averse: Optional[bool] = False,
-            fast_forward: Optional[int] = 0
-    ) -> int:
+            fast_forward: Optional[int] = 0,
+            return_touching_opps: Optional[bool] = False
+    ) -> int | tuple[int, list]:
         """
         Recursive function to get the total available space for a given snake. Basically, count how many £ symbols
         we can fill while avoiding any $, o, and x symbols (obstacles).
@@ -600,6 +665,7 @@ class Battlesnake:
         :param fast_forward: Hypothetical scenarios where we want to see how much space we still have after moving
             X turns ahead. E.g. if we set it to 5, then we remove 5 squares from all snake's tails before doing flood
             fill - this is only useful when we suspect we'll be trapped by an opponent snake.
+        :param return_touching_opps: Option to return a list of other snakes whose heads our flood fill is touching
 
         :return: The total area of the flood fill selection
         """
@@ -638,9 +704,10 @@ class Battlesnake:
             board = board[xs[0]:xs[1], ys[0]:ys[1]]
 
         def fill(x, y, board, initial_square):
-            if board[x][y] in ["x", "$"]:  # Snakes or hazards
+            if board[x][y] == "$":  # Opponent snake heads
+                opp_heads_in_contact.append({"x": x, "y": y})
                 return
-            if board[x][y] in ["o"]:  # Our snake
+            if board[x][y] in ["x", "o"]:  # Off-limit squares
                 return
             if board[x][y] == "£" and not initial_square:  # Already filled
                 return
@@ -650,9 +717,15 @@ class Battlesnake:
                 if 0 <= n[0] < len(board) and 0 <= n[1] < len(board[0]):
                     fill(n[0], n[1], board, initial_square=False)
 
+        opp_heads_in_contact = []
         fill(head["x"], head["y"], board, initial_square=True)
         filled = sum((row == "£").sum() for row in board)
-        return filled - 1 if filled > 0 else filled  # Exclude the head from the count, but cannot ever be negative
+        flood_fill = max(filled - 1, 0)  # Exclude the head from the count, but cannot ever be negative
+
+        if return_touching_opps:
+            return flood_fill, opp_heads_in_contact
+        else:
+            return flood_fill
 
     def dist_to_nearest_food(self) -> int:
         """
@@ -674,69 +747,55 @@ class Battlesnake:
         """
         Determine if our snake is in a position where it can get edge-killed
         """
-        # Ignore if we're not on the edge of the board
-        if 0 < self.my_head["x"] < self.board_width - 1 and 0 < self.my_head["y"] < self.board_height - 1:
-            return False
+        # # Ignore if we're not on the edge of the board
+        # if 0 < self.my_head["x"] < self.board_width - 1 and 0 < self.my_head["y"] < self.board_height - 1:
+        #     return False
 
-        # possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
-        # direction = self.snake_compass(self.my_head, self.my_neck)
-        # dir_dict = {
-        #     "vertical": {
-        #         "bounds": [0, self.board_width],
-        #         "escape_dirs": ["left", "right"],
-        #         "axis": "x",
-        #         "axis_dir": "y",
-        #         "scan_dir": +1 if direction == "up" else -1
-        #     },
-        #     "horizontal": {
-        #         "bounds": [0, self.board_height],
-        #         "escape_dirs": ["down", "up"],
-        #         "axis": "y",
-        #         "axis_dir": "x",
-        #         "scan_dir": +1 if direction == "right" else -1
-        #     },
-        # }
-        # dir_data = dir_dict["horizontal"] if direction in ["left", "right"] else dir_dict["vertical"]
-        # bounds = dir_data["bounds"]
-        # escape_dirs = dir_data["escape_dirs"]
-        # ax = dir_data["axis"]
-        # ax_dir = dir_data["axis_dir"]
-        # scan_dir = dir_data["scan_dir"]
-        #
-        # # If we can't escape (e.g. we're heading right, but can't move up or down)
-        # if len(set(escape_dirs).intersection(possible_moves)) == 0:
-        #     trapped_sides = [False, False]
-        #     for num, escape_dir in enumerate(escape_dirs):
-        #         look = -1 if num == 0 else +1
-        #         # Scan the column/row to each side of us in ascending order
-        #         if escape_dir in ["left", "right"]:
-        #             esc_attempt = self.my_head[ax] + look
-        #             if 0 <= esc_attempt < self.board_width:
-        #                 strip = self.board[esc_attempt, self.my_head[ax_dir]:]
-        #                 # Check if there's free space ahead of us, we're trapped if there's none
-        #                 if np.count_nonzero(strip != " ") == 0:
-        #                     trapped_sides[num] = True
-        #
-        #             threats = [opp_id for opp_id, opp in self.opponents.items()
-        #                        if (opp["head"][ax] == esc_attempt)
-        #                        and (opp["head"][ax_dir] >= self.my_head[ax_dir] if look == 1
-        #                             else opp["head"][ax_dir] <= self.my_head[ax_dir]
-        #                             )]
-        #
-        #     # # Find snakes that can possibly edge-kill us
-        #     # suspects = [opp_id for opp_id, opp in self.opponents.items()
-        #     #             if opp["head"][ax] == self.my_head[ax] + dir_data["adj_col"] and (
-        #     #                     opp["head"][dir_data["axis_dir"]] >= self.my_head[dir_data["axis_dir"]] if dir_data["scan_dir"] == 1
-        #     #                     else opp["head"][dir_data["axis_dir"]] <= self.my_head[dir_data["axis_dir"]])
-        #     #             ]
-        #     # if len(suspects) > 0:
-        #     #     diff_y = min([self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]) - 1 for opp_id in suspects])
-        #     #     if diff_y == 0:
-        #     #         return True
-        #     #     gaps = [self.opponents[opp_id]["body"][-diff_y:] for opp_id in suspects]  # Would leave space for us to move to
-        #     #     if self.look_ahead(self.my_head, "right") not in list(itertools.chain(*gaps)):
-        #     #         return True
-        return False
+        possible_moves = self.get_obvious_moves(self.my_id, risk_averse=True)
+        direction = self.snake_compass(self.my_head, self.my_neck)
+        dir_dict = {
+            "vertical": {
+                "bounds": [0, self.board_width],
+                "escape_dirs": ["left", "right"],
+                "axis": "x",
+                "axis_dir": "y",
+                "scan_dir": +1 if direction == "up" else -1
+            },
+            "horizontal": {
+                "bounds": [0, self.board_height],
+                "escape_dirs": ["down", "up"],
+                "axis": "y",
+                "axis_dir": "x",
+                "scan_dir": +1 if direction == "right" else -1
+            },
+        }
+        dir_data = dir_dict["horizontal"] if direction in ["left", "right"] else dir_dict["vertical"]
+        bounds = dir_data["bounds"]
+        escape_dirs = dir_data["escape_dirs"]
+        ax = dir_data["axis"]
+        ax_dir = dir_data["axis_dir"]
+        scan_dir = dir_data["scan_dir"]
+
+        # If we can't escape (e.g. we're heading right, but can't move up or down)
+        trapped_sides = [False, False]
+        if len(set(escape_dirs).intersection(possible_moves)) == 0:
+            for num, escape_dir in enumerate(escape_dirs):
+                look = -1 if num == 0 else +1
+                # Scan the column/row to each side of us in ascending order
+                if escape_dir in ["left", "right"]:
+                    esc_attempt = self.my_head[ax] + look
+                    if bounds[0] <= esc_attempt < bounds[1]:
+                        # Look at the space in the column/row ahead of us 
+                        strip = self.board[esc_attempt, self.my_head[ax_dir]:] if scan_dir == +1 \
+                            else self.board[esc_attempt, :self.my_head[ax_dir]]
+                        danger_strip = strip[:np.where(strip == "$")[0][0]] if "$" in strip else strip
+                        # Check if there's free space ahead of us, we're trapped if there's none
+                        if np.count_nonzero(danger_strip == " ") == 0:
+                            trapped_sides[num] = True
+                    else:
+                        trapped_sides[num] = True
+        # If both sides of the snake are blocked in, then we're trapped
+        return True if sum(trapped_sides) == 2 else False
 
     def heuristic(self, depth_number):
         """Let's figure out a way to evaluate the current board for our snake :)
@@ -764,18 +823,28 @@ class Battlesnake:
             space_penalty = 0
 
         # ARE WE TRAPPED???
-        trap_space = None
+        edge_kill_check = True
         if available_space <= 10:
-            trap_space = available_space - self.flood_fill(self.my_id, fast_forward=available_space)
-        # Shoot we're trapped
-        if trap_space == 0:
-            space_penalty = -1e7  # We'd prefer getting killed than getting trapped, so penalise this more
+            fast_forward_space, opp_heads = self.flood_fill(self.my_id, fast_forward=available_space, return_touching_opps=True)
+            trap_space = available_space - fast_forward_space
+            dist_to_trapped_opp = self.dijkstra_shortest_path(self.my_head, opp_heads[0])
+            trapped_opp_length = [opp_snake["length"] for opp_snake in self.opponents.values() if opp_snake["head"] == opp_heads[0]][0]
+            if trap_space == 0:
+                edge_kill_check = False
+                if dist_to_trapped_opp % 2 == 1 and self.my_length > trapped_opp_length:
+                    trap_space = 1
 
-        # ARE WE GOING TO GET EDGE-KILLED???
-        possible_edged = self.edge_kill_detection()
-        if possible_edged:
-            space_penalty = -1e5
-            self.edge_kill_detection()
+                # Shoot we're trapped
+                else:
+                    space_penalty = -1e7  # We'd prefer getting killed than getting trapped, so penalise this more
+                    print("WE'RE TRAPPED")
+
+        else:
+            # ARE WE GOING TO GET EDGE-KILLED???
+            possible_edged = self.edge_kill_detection()
+            if possible_edged:
+                space_penalty = -1e7
+                self.edge_kill_detection()
 
         # Estimate the space we have in our peripheral vision
         available_peripheral = self.flood_fill(self.my_id, confined_area="auto")
@@ -921,7 +990,7 @@ class Battlesnake:
             return heuristic, None, heuristic_data
 
         global tree_edges
-        # Our snake's turn
+        # Minimax on our snake
         if maximising_snake:
             logging.info("=" * 50)
             logging.info(f"DEPTH = {depth} OUR SNAKE")
@@ -938,7 +1007,7 @@ class Battlesnake:
             best_val, best_move = -np.inf, None
             best_node_data, best_edge = None, None
             for num, move in enumerate(possible_moves):
-                SIMULATED_BOARD_INSTANCE = self.simulate_move(move, self.my_id)
+                SIMULATED_BOARD_INSTANCE = self.simulate_move({self.my_id: move})
 
                 logging.info(f"{len(possible_moves)} CHILD NODES: VISITING {num + 1} OF {len(possible_moves)}")
                 logging.info(f"Running minimax for OUR SNAKE moving {move}")
@@ -976,24 +1045,23 @@ class Battlesnake:
             logging.info(f"FINISHED MINIMAX LAYER on our snake in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
             return best_val, best_move, best_node_data
 
-        # Opponents' turns
+        # Minimax on opponent snakes
         else:
             logging.info("=" * 50)
             logging.info(f"DEPTH = {depth} OPPONENT SNAKES")
             logging.info(f"BETA = {beta} | alpha = {alpha}")
 
             clock_in = time.time_ns()
-            # If there are multiple opponent snakes, search only for those within a reasonable distance of ours
+
+            # Only simulate full set of opponent moves if they're within a reasonable distance of our snake
             if len(self.opponents) == 1:
                 search_within = self.board_width * self.board_height
             elif len(self.opponents) <= 3:
                 search_within = self.board_width
-            elif len(self.opponents) <= 5:
-                search_within = self.board_width // 2 + 1
             else:
-                search_within = self.board_width // 2
+                search_within = self.board_width // 2 + 1
 
-            # Grab possible moves for all opponent snakes
+            # Grab all possible opponent moves
             opps_nearby = 0  # Counter for opponents in our vicinity
             opps_moves = {}  # Store possible moves for each snake id
             for opp_id, opp_snake in self.opponents.items():
@@ -1001,18 +1069,18 @@ class Battlesnake:
                 if len(opp_move) == 0:  # If the snake has no legal moves, move down and die
                     opp_move = ["down"]
 
-                # Save time by only searching for snakes within close range
+                # Save time by only using full opponent move sets if they're within a certain range
                 dist_opp_to_us = self.manhattan_distance(self.my_head, opp_snake["head"])
                 if dist_opp_to_us <= search_within:
                     opps_moves[opp_id] = opp_move  # Put all of their moves
                     opps_nearby += 1
                 else:
-                    if len(self.opponents) <= 5:
-                        opps_moves[opp_id] = [opp_move[0]]
+                    opps_moves[opp_id] = [opp_move[0]]
 
-            # Use Manhattan distance since Dijkstra's fails if there's no actual path
-            sorted_opps_by_dists = sorted(self.opponents.keys(), key=lambda opp_id: self.manhattan_distance(self.my_head, self.opponents[opp_id]["head"]))
-            opps_moves = dict(sorted(opps_moves.items(), key=lambda pair: sorted_opps_by_dists.index(pair[0])))
+            sorted_by_dists = sorted(self.opponents.keys(),
+                                     key=lambda opp_id2: self.manhattan_distance(
+                                         self.my_head, self.opponents[opp_id2]["head"]))
+            opps_moves = dict(sorted(opps_moves.items(), key=lambda pair: sorted_by_dists.index(pair[0])))
 
             logging.info(f"Found {opps_nearby} of {len(self.opponents)} OPPONENT SNAKES within {search_within} "
                          f"squares of us in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
@@ -1047,13 +1115,16 @@ class Battlesnake:
             possible_movesets = []
             possible_sims = []
             # Get all possible boards by simulating moves for each opponent snake, one at a time
+            SIMULATED_BOARD_INSTANCE = self.__copy__()
             for move_combo in all_opp_combos:
-                SIMULATED_BOARD_INSTANCE = self.__copy__()
+                opp_move_dict = {}
                 for num, move in enumerate(move_combo):
-                    evaluate_flag = (num + 1 == len(move_combo))
-                    SIMULATED_BOARD_INSTANCE = SIMULATED_BOARD_INSTANCE.simulate_move(
-                        move, list(opps_moves.keys())[num], evaluate_deaths=evaluate_flag)
-                possible_sims.append(SIMULATED_BOARD_INSTANCE.__copy__())
+                    # evaluate_flag = (num + 1 == len(move_combo))
+                    opp_move_dict[list(opps_moves.keys())[num]] = move
+
+                SIMULATED_BOARD_INSTANCE2 = SIMULATED_BOARD_INSTANCE.simulate_move(
+                    opp_move_dict, evaluate_deaths=True)
+                possible_sims.append(SIMULATED_BOARD_INSTANCE2)
                 possible_movesets.append(move_combo)
 
             logging.info(f"SIMULATED {len(possible_sims)} POSSIBLE BOARDS OF OPPONENT MOVE COMBOS in "
@@ -1113,6 +1184,10 @@ class Battlesnake:
 
         tree_tracker[search_depth].append(0)
         _, best_move, _ = self.minimax(depth=search_depth, alpha=-np.inf, beta=np.inf, maximising_snake=True)
+
+        print("GRAPH")
+        print(tot_time_graph)
+        print(counter_graph)
 
         # Output a visualisation of the minimax decision tree for debugging
         if self.debugging:
