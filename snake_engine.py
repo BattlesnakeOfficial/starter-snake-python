@@ -676,7 +676,8 @@ class Battlesnake:
             # See how flood fill changes when all snakes fast-forward X turns
             if fast_forward > 0:
                 for snake in self.all_snakes_dict.values():
-                    tail_removed = snake["body"][-fast_forward:]
+                    to_remove = max(-(len(snake["body"]) - 1), -fast_forward)
+                    tail_removed = snake["body"][to_remove:]
                     for remove in tail_removed:
                         board[remove["x"]][remove["y"]] = " "
             # Try to avoid any squares that our enemy can go to
@@ -827,11 +828,11 @@ class Battlesnake:
         if available_space <= 10:
             fast_forward_space, opp_heads = self.flood_fill(self.my_id, fast_forward=available_space, return_touching_opps=True)
             trap_space = available_space - fast_forward_space
-            dist_to_trapped_opp = self.dijkstra_shortest_path(self.my_head, opp_heads[0])
+            dist_to_trapped_opp = self.dijkstra_shortest_path(self.my_head, opp_heads[0]) if len(opp_heads) > 0 else None
             trapped_opp_length = [opp_snake["length"] for opp_snake in self.opponents.values() if opp_snake["head"] == opp_heads[0]][0]
             if trap_space == 0:
                 edge_kill_check = False
-                if dist_to_trapped_opp % 2 == 1 and self.my_length > trapped_opp_length:
+                if (dist_to_trapped_opp is not None and dist_to_trapped_opp % 2 == 1) and self.my_length > trapped_opp_length:
                     trap_space = 1
 
                 # Shoot we're trapped
