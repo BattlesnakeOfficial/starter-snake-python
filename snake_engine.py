@@ -630,9 +630,9 @@ class Battlesnake:
                     if (snake["head"]["x"] == butt_head[0] and snake["head"]["y"] == butt_head[1])
                 ])
                 lengths = overlapping_snakes[:, 1].astype(int)
+                # If our snake died, don't remove it just yet
                 # Special cases where the snake committed suicide and also killed our snake => don't remove
-                if not (self.my_id in overlapping_snakes[:, 0]
-                        and np.count_nonzero(lengths == new_game.my_length) > 1):
+                if not (self.my_id in overlapping_snakes[:, 0]):
                     indices_largest_snakes = np.argwhere(lengths == lengths.max()).flatten().tolist()
                     if len(indices_largest_snakes) > 1:  # No winner if the snakes are the same length
                         winner_id = None
