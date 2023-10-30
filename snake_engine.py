@@ -211,6 +211,12 @@ class Battlesnake:
             snake_head["x"] += 1
         return snake_head
 
+    def closest_distance(self, start: dict, end: dict) -> int:
+        closest = self.dijkstra_shortest_path(start, end)
+        if closest == 1e6:
+            closest = self.manhattan_distance(start, end)
+        return closest
+
     @staticmethod
     def manhattan_distance(start: dict, end: dict) -> int:
         """
@@ -247,9 +253,9 @@ class Battlesnake:
             self.graph.add_node(end)
             temp_end_node = True
 
-            new_graph = nx.grid_2d_graph(self.board_width, self.board_height)
-            new_graph.add_nodes_from(sorted(self.graph.nodes()))
-            self.graph = new_graph
+            # new_graph = nx.grid_2d_graph(self.board_width, self.board_height)
+            # new_graph.add_nodes_from(sorted(self.graph.nodes()))
+            # self.graph = new_graph
 
 
         # Run networkx's Dijkstra method (it'll error out if no path is possible)
@@ -257,7 +263,7 @@ class Battlesnake:
             path = nx.shortest_path(self.graph, start, end)
             shortest = len(path)
         except nx.exception.NetworkXNoPath:
-            shortest =  1e6
+            shortest = 1e6
 
         # Remove any nodes that were temporarily added in
         if temp_start_node:
@@ -471,7 +477,7 @@ class Battlesnake:
         if sort_by_dist_to is not None:
             head2 = self.all_snakes_dict[sort_by_dist_to]["head"]
             possible_moves = sorted(possible_moves,
-                                    key=lambda move2: self.manhattan_distance(head2, self.look_ahead(head, move2)))
+                                    key=lambda move2: self.closest_distance(head2, self.look_ahead(head, move2)))
         if sort_by_peripheral:
             possible_moves = sorted(possible_moves,
                                     key=lambda move2: self.flood_fill(snake_id, confined_area=move2),
