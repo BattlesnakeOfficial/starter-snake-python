@@ -581,27 +581,6 @@ class Battlesnake:
         }
         new_game = Battlesnake({"turn": self.turn, "board": board, "you": you}, debugging=self.debugging)
 
-        # # clock_in = time.time_ns()
-        # new_game = self.__copy__()
-        #
-        # # Simulate the new head position
-        # old_head = self.all_snakes_dict[snake_id]["head"]
-        # new_head = self.look_ahead(old_head, move)
-        #
-        # # Insert the simulated snake position into the new instance
-        # new_game.all_snakes_dict[snake_id]["body"] = [new_head] + new_game.all_snakes_dict[snake_id]["body"][:-1]
-        # new_game.all_snakes_dict[snake_id]["head"] = new_head
-        # new_game.all_snakes_dict[snake_id]["health"] -= 1
-        # # Repeat for our snake's specific attributes
-        # if snake_id == self.my_id:
-        #     new_game.my_body = [new_head] + new_game.my_body[:-1]
-        #     new_game.my_head = new_head
-        #     new_game.my_health -= 1
-        #
-        # # Track if food was consumed - this elongates the snake from the tail and restores health
-        # if new_head in self.food:
-        #     new_game.all_snakes_dict[snake_id]["food_eaten"] = new_head
-
         # Check if any snakes died from this simulated move and remove them from the game
         if evaluate_deaths:
             # First update snake lengths from any food eaten
@@ -642,6 +621,10 @@ class Battlesnake:
                     for rm_id in overlapping_snakes[:, 0]:
                         if rm_id != winner_id:
                             new_game.all_snakes_dict.pop(rm_id)
+
+            new_game.opponents = new_game.all_snakes_dict.copy()
+            new_game.opponents.pop(self.my_id)
+            new_game.update_board()
 
         # logging.info(f"Done with simulation in {round((time.time_ns() - clock_in) / 1000000, 3)} ms")
         return new_game
