@@ -828,15 +828,17 @@ class Battlesnake:
         if available_space <= 10:
             fast_forward_space, opp_heads = self.flood_fill(self.my_id, fast_forward=available_space, return_touching_opps=True)
             trap_space = available_space - fast_forward_space
-            dist_to_trapped_opp = self.dijkstra_shortest_path(self.my_head, opp_heads[0]) if len(opp_heads) > 0 else None
-            trapped_opp_length = [opp_snake["length"] for opp_snake in self.opponents.values() if opp_snake["head"] == opp_heads[0]][0]
+            if len(opp_heads) > 0:
+                dist_to_trapped_opp = self.dijkstra_shortest_path(self.my_head, opp_heads[0])
+                trapped_opp_length = [opp_snake["length"] for opp_snake in self.opponents.values() if opp_snake["head"] == opp_heads[0]][0]
             if trap_space == 0:
-                edge_kill_check = False
-                if (dist_to_trapped_opp is not None and dist_to_trapped_opp % 2 == 1) and self.my_length > trapped_opp_length:
-                    trap_space = 1
+                trapped = True
+                if len(opp_heads) > 0:
+                    if dist_to_trapped_opp % 2 == 1 and self.my_length > trapped_opp_length:
+                        trapped = False
 
                 # Shoot we're trapped
-                else:
+                if trapped:
                     space_penalty = -1e7  # We'd prefer getting killed than getting trapped, so penalise this more
                     print("WE'RE TRAPPED")
 
