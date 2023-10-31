@@ -242,35 +242,52 @@ class Battlesnake:
         """
         start = (start["x"], start["y"])
         end = (end["x"], end["y"])
-
-        # If the desired location is on a hazard or snake, then it's absent from the graph - add it in but remove later
-        temp_start_node = False
-        temp_end_node = False
-        if start not in self.graph.nodes():
-            self.graph.add_node(start)
-            temp_start_node = True
-        if end not in self.graph.nodes():
-            self.graph.add_node(end)
-            temp_end_node = True
-
-            # new_graph = nx.grid_2d_graph(self.board_width, self.board_height)
-            # new_graph.add_nodes_from(sorted(self.graph.nodes()))
-            # self.graph = new_graph
-
+        temp_graph = self.check_missing_nodes(self.graph, [start, end])
 
         # Run networkx's Dijkstra method (it'll error out if no path is possible)
         try:
-            path = nx.shortest_path(self.graph, start, end)
+            path = nx.shortest_path(temp_graph, start, end)
             shortest = len(path)
         except nx.exception.NetworkXNoPath:
             shortest = 1e6
 
-        # Remove any nodes that were temporarily added in
-        if temp_start_node:
-            self.graph.remove_node(start)
-        if temp_end_node:
-            self.graph.remove_node(end)
         return shortest
+
+    def stall_path(self, start: dict, end: dict) -> int:
+        """
+        Return the longest path between two positions using algorithm implemented in networkx
+
+        :param start: A location on the board as a dictionary e.g. {"x": 5, "y": 10}
+        :param end: A different location on the board
+
+        :return: The longest distance between the start and end inputs. -1e6 if no path could be found
+        """
+        start = (start["x"], start["y"])
+        end = (end["x"], end["y"])
+        temp_graph = self.check_missing_nodes(self.graph, [start, end])
+
+        find_longest = [path for path in nx.all_simple_paths(temp_graph, start, end)]
+        if len(find_longest) > 0:
+            longest_path = max(find_longest, key=lambda path: len(path))
+            longest = len(longest_path) - 1
+        else:
+            longest = -1e6
+
+        return longest
+
+    @staticmethod
+    def check_missing_nodes(graph, nodes):
+        G = graph.copy()
+        # If the desired location is on a hazard or snake, then it's absent from the graph - add it in but remove later
+        for node in nodes:
+            if node not in graph.nodes():
+                G.add_node(node)
+                x, y = node
+                possible_edges = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+                for e in possible_edges:
+                    if e in G.nodes:
+                        G.add_edge(node, e)
+        return G
 
     @staticmethod
     def snake_compass(head: dict, neck: dict) -> str:
@@ -814,12 +831,19 @@ class Battlesnake:
 
         # ARE WE TRAPPED???
         edge_kill_check = True
-        if available_space <= 10:
+        if available_space <= 15:
             fast_forward_space, opp_heads = self.flood_fill(self.my_id, fast_forward=available_space, return_touching_opps=True)
             trap_space = available_space - fast_forward_space
+
+            stalling_path = self.stall_path(self.my_head, self.my_body[-available_space])
+            if stalling_path < available_space:
+                space_penalty = -1e7
+                trapped = True
+
             if len(opp_heads) > 0:
                 dist_to_trapped_opp = self.dijkstra_shortest_path(self.my_head, opp_heads[0])
                 trapped_opp_length = [opp_snake["length"] for opp_snake in self.opponents.values() if opp_snake["head"] == opp_heads[0]][0]
+
             if trap_space == 0:
                 trapped = True
                 if len(opp_heads) > 0:
