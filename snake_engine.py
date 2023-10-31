@@ -20,6 +20,7 @@ tree_node_counter = 1
 
 tot_time_graph = 0
 counter_graph = 0
+copy_graph = 0
 
 
 class Battlesnake:
@@ -242,7 +243,7 @@ class Battlesnake:
         """
         start = (start["x"], start["y"])
         end = (end["x"], end["y"])
-        temp_graph = self.check_missing_nodes(self.graph, [start, end])
+        temp_graph, temp_added_nodes = self.check_missing_nodes(self.graph, [start, end])
 
         # Run networkx's Dijkstra method (it'll error out if no path is possible)
         try:
@@ -251,6 +252,8 @@ class Battlesnake:
         except nx.exception.NetworkXNoPath:
             shortest = 1e6
 
+        for temp_nodes in temp_added_nodes:
+            temp_graph.remove_node(temp_nodes)
         return shortest
 
     def stall_path(self, start: dict, end: dict) -> int:
@@ -264,7 +267,7 @@ class Battlesnake:
         """
         start = (start["x"], start["y"])
         end = (end["x"], end["y"])
-        temp_graph = self.check_missing_nodes(self.graph, [start, end])
+        temp_graph, temp_added_nodes = self.check_missing_nodes(self.graph, [start, end])
 
         find_longest = [path for path in nx.all_simple_paths(temp_graph, start, end)]
         if len(find_longest) > 0:
@@ -272,22 +275,28 @@ class Battlesnake:
             longest = len(longest_path) - 1
         else:
             longest = 1e6
-
+        for temp_nodes in temp_added_nodes:
+            temp_graph.remove_node(temp_nodes)
         return longest
 
     @staticmethod
-    def check_missing_nodes(graph, nodes):
-        G = graph.copy()
+    def check_missing_nodes(G, nodes):
+        global copy_graph
+        clock_in = time.time_ns()
+
         # If the desired location is on a hazard or snake, then it's absent from the graph - add it in but remove later
-        for node in nodes:
-            if node not in graph.nodes():
+        added = []
+        for num, node in enumerate(nodes):
+            if node not in G.nodes():
+                added.append(node)
                 G.add_node(node)
                 x, y = node
                 possible_edges = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
                 for e in possible_edges:
                     if e in G.nodes:
                         G.add_edge(node, e)
-        return G
+        copy_graph += round((time.time_ns() - clock_in) / 1000000, 3)
+        return G, added
 
     @staticmethod
     def snake_compass(head: dict, neck: dict) -> str:
@@ -1131,15 +1140,14 @@ class Battlesnake:
             possible_movesets = []
             possible_sims = []
             # Get all possible boards by simulating moves for each opponent snake, one at a time
-            SIMULATED_BOARD_INSTANCE = self.__copy__()
+            # SIMULATED_BOARD_INSTANCE = self.__copy__()
             for move_combo in all_opp_combos:
                 opp_move_dict = {}
                 for num, move in enumerate(move_combo):
                     # evaluate_flag = (num + 1 == len(move_combo))
                     opp_move_dict[list(opps_moves.keys())[num]] = move
 
-                SIMULATED_BOARD_INSTANCE2 = SIMULATED_BOARD_INSTANCE.simulate_move(
-                    opp_move_dict, evaluate_deaths=True)
+                SIMULATED_BOARD_INSTANCE2 = self.simulate_move(opp_move_dict, evaluate_deaths=True)
                 possible_sims.append(SIMULATED_BOARD_INSTANCE2)
                 possible_movesets.append(move_combo)
 
@@ -1202,8 +1210,9 @@ class Battlesnake:
         _, best_move, _ = self.minimax(depth=search_depth, alpha=-np.inf, beta=np.inf, maximising_snake=True)
 
         print("GRAPH")
-        print(tot_time_graph)
-        print(counter_graph)
+        print(f"Total time graphs: {tot_time_graph}")
+        print(f"Count of runs: {counter_graph}")
+        print(f"Time copying graphs: {copy_graph}")
 
         # Output a visualisation of the minimax decision tree for debugging
         if self.debugging:
