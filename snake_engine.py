@@ -823,7 +823,7 @@ class Battlesnake:
 
         # Get closer to enemy snakes if we're longer by 3
         if 2 >= len(self.opponents) == sum([self.you.length > s.length + 3 for s in self.opponents.values()]):
-            dist_from_enemies = sorted([self.dijkstra_shortest_path(self.you.head.as_dict(), opp.head) for opp in self.opponents.values()])
+            dist_from_enemies = sorted([self.dijkstra_shortest_path(self.you.head, opp.head) for opp in self.opponents.values()])
             dist_to_enemy = dist_from_enemies[0]
         else:
             dist_to_enemy = 0
