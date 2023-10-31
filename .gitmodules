@@ -1,0 +1,3 @@
+[submodule "battlesnake-utils"]
+	path = battlesnake-utils
+	url = https://github.com/Diluent67/battlesnake-utils.git
