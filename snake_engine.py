@@ -818,7 +818,7 @@ class Battlesnake:
                     if bounds[0] <= esc_attempt < bounds[1]:
                         # Look at the space in the column/row ahead of us 
                         strip = self.board[esc_attempt, self.my_head[ax_dir]:] if scan_dir == +1 \
-                            else self.board[esc_attempt, :self.my_head[ax_dir]]
+                            else self.board[esc_attempt, :self.my_head[ax_dir]][::-1]
                         danger_strip = strip[:np.where(strip == "$")[0][0]] if "$" in strip else strip
                         # Check if there's free space ahead of us, we're trapped if there's none
                         if np.count_nonzero(danger_strip == " ") == 0:
