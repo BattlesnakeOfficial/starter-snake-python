@@ -260,7 +260,7 @@ class Battlesnake:
         :param start: A location on the board as a dictionary e.g. {"x": 5, "y": 10}
         :param end: A different location on the board
 
-        :return: The longest distance between the start and end inputs. -1e6 if no path could be found
+        :return: The longest distance between the start and end inputs. 1e6 if no path could be found
         """
         start = (start["x"], start["y"])
         end = (end["x"], end["y"])
@@ -271,7 +271,7 @@ class Battlesnake:
             longest_path = max(find_longest, key=lambda path: len(path))
             longest = len(longest_path) - 1
         else:
-            longest = -1e6
+            longest = 1e6
 
         return longest
 
@@ -831,11 +831,11 @@ class Battlesnake:
 
         # ARE WE TRAPPED???
         edge_kill_check = True
-        if available_space <= 15:
+        if available_space_ra <= 15:
             fast_forward_space, opp_heads = self.flood_fill(self.my_id, fast_forward=available_space, return_touching_opps=True)
             trap_space = available_space - fast_forward_space
-
-            stalling_path = self.stall_path(self.my_head, self.my_body[-available_space])
+            to_remove = max(-(self.my_length - 1), -available_space)
+            stalling_path = self.stall_path(self.my_head, self.my_body[to_remove])
             if stalling_path < available_space:
                 space_penalty = -1e7
                 trapped = True
