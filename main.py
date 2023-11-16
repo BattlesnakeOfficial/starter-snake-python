@@ -10,8 +10,57 @@
 # To get you started we've included code to prevent your Battlesnake from moving backwards.
 # For more info see docs.battlesnake.com
 
+
+###==============================###
+### RULES ###
+###==============================###
+
+## Criteria to win
+#- Avoid walls (it must stay within the boundary)
+#- Avoid running into your own body or other battlesnakes
+#- Eat food to stay healthy. Battlesnakes lose 1 health on every turn.   
+  #Eliminated if health reaches zero. Food = 1
+# - Head-to-head collision - the longer battlesnake will survive. If both are the same length, they are both eliminated.
+
+#- Size = 11 x 11
+#- operate in coorinates based.
+# left bottom = 0, top left = 11 
+# right bottom = 11
+
+# Watch video: https://youtu.be/yAA2HpMKiaA
+
+## Battlesnake HTTP API
+#- GET /
+#    - testing latency and defining how your battlesnake looks
+#- POST /move
+#    - analyze the game board and return your next move
+# - POST /start & POST /end
+#     - allocate & deallocate any game specific resources
+#     - Optional
+
+## Other Technical Notes
+#- Battlesnakes must respond with HTTP 200 OK
+#- Battlesnakes have 500 ms to respond (includes roundtrip latency)
+#- Any error will move your battlesnake forward
+#- The game engine runs in GCP US-WEST1
+
+###==============================###
+###==============================###
+
+
+
+
+
+
+
+
+
 import random
 import typing
+
+
+
+
 
 
 # info is called when you create your Battlesnake on play.battlesnake.com
