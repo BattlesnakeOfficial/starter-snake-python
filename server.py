@@ -38,7 +38,7 @@ def run_server(handlers: dict[str, typing.Callable]):
         return response
 
     host = "0.0.0.0"
-    port = int(os.environ.get("PORT", "8000"))
+    port = int(os.getenv("PORT", 8000))
 
     logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
