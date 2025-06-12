@@ -6,7 +6,7 @@ from flask import Flask
 from flask import request
 
 
-def run_server(handlers: typing.Dict):
+def run_server(handlers: dict[str, typing.Callable]):
     app = Flask("Battlesnake")
 
     @app.get("/")
