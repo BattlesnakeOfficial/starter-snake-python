@@ -1,3 +1,6 @@
 *.DS_Store
 *.pyc
+*.venv
 __pycache__/
+game_state_example.txt
+run_local_game.txt
